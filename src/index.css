@@ -1,0 +1,314 @@
+/* ===================================================
+   RM Portfolio — Global Styles & Design Tokens
+   =================================================== */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts Loaded via HTML <link> ──────────── */
+
+/* ── CSS Custom Properties (Design Tokens) ────────── */
+@layer base {
+  :root {
+    /* Dark Mode (default) */
+    --bg: #080810;
+    --surface: #0e0e1c;
+    --card: #121224;
+    --card-hover: #161630;
+    --border: #1e1e38;
+    --border-dim: #16162e;
+    --accent: #7c3aed;
+    --accent-light: #a78bfa;
+    --accent-dim: rgba(124, 58, 237, 0.15);
+    --accent-glow: rgba(124, 58, 237, 0.3);
+    --text-primary: #f1f0ff;
+    --text-secondary: #9b9bbf;
+    --text-muted: #6b6b8f;
+    --gradient-mesh: radial-gradient(at 40% 20%, rgba(124,58,237,0.12) 0, transparent 50%),
+                     radial-gradient(at 80% 80%, rgba(99,102,241,0.08) 0, transparent 50%),
+                     radial-gradient(at 10% 80%, rgba(167,139,250,0.06) 0, transparent 40%);
+  }
+
+  .light {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --card: #f4f4f8;
+    --card-hover: #eeeef5;
+    --border: #e2e2ea;
+    --border-dim: #ededf5;
+    --accent: #6d28d9;
+    --accent-light: #7c3aed;
+    --accent-dim: rgba(109, 40, 217, 0.1);
+    --accent-glow: rgba(109, 40, 217, 0.2);
+    --text-primary: #0e0e1c;
+    --text-secondary: #4a4a6a;
+    --text-muted: #8a8aa8;
+    --gradient-mesh: radial-gradient(at 40% 20%, rgba(109,40,217,0.06) 0, transparent 50%),
+                     radial-gradient(at 80% 80%, rgba(99,102,241,0.04) 0, transparent 50%);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    overflow-x: clip;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    overflow-x: clip;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Headings use Syne (display font) */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Syne', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  /* Code uses JetBrains Mono */
+  code, pre, kbd, samp {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--surface);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+
+  /* Selection color */
+  ::selection {
+    background-color: var(--accent-dim);
+    color: var(--accent-light);
+  }
+
+  /* Focus visible — accessible */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ── Component Utilities ───────────────────────────── */
+@layer components {
+
+  /* RM Container */
+  .rm-container {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section Padding */
+  .rm-section {
+    @apply py-20 lg:py-28;
+  }
+
+  /* RM Card */
+  .rm-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    @apply rounded-2xl transition-all duration-300;
+  }
+  .rm-card:hover {
+    background: var(--card-hover);
+    border-color: var(--accent-dim);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+
+  /* Bento Card */
+  .bento-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    @apply rounded-2xl p-6 transition-all duration-300 relative overflow-hidden;
+  }
+  .bento-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--accent-dim), transparent 60%);
+  }
+  .bento-card:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Accent gradient text */
+  .gradient-text {
+    background: linear-gradient(135deg, var(--accent-light) 0%, #c084fc 50%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glow button */
+  .btn-primary {
+    background: var(--accent);
+    color: #ffffff;
+    @apply px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 inline-flex items-center gap-2 relative overflow-hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: rgba(255,255,255,0.1);
+  }
+  .btn-primary:hover::after {
+    @apply opacity-100;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 24px var(--accent-glow), 0 4px 16px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  /* Ghost button */
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    @apply px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 inline-flex items-center gap-2;
+  }
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent-light);
+  }
+
+  /* Tag / Badge */
+  .rm-tag {
+    background: var(--accent-dim);
+    color: var(--accent-light);
+    border: 1px solid rgba(124,58,237,0.2);
+    @apply text-xs font-mono px-2.5 py-1 rounded-lg;
+  }
+
+  /* Nav link */
+  .nav-link {
+    color: var(--text-secondary);
+    @apply text-sm font-medium transition-colors duration-200 relative;
+  }
+  .nav-link:hover {
+    color: var(--text-primary);
+  }
+  .nav-link.active {
+    color: var(--accent-light);
+  }
+  .nav-link.active::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 right-0 h-px;
+    background: var(--accent-light);
+  }
+
+  /* Divider */
+  .rm-divider {
+    @apply w-full h-px;
+    background: var(--border);
+  }
+
+  /* Glass surface */
+  .glass {
+    backdrop-filter: blur(16px) saturate(180%);
+    background: rgba(8, 8, 16, 0.75);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .light .glass {
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* Noise texture overlay */
+  .noise-overlay::after {
+    content: '';
+    @apply absolute inset-0 pointer-events-none opacity-30;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  /* Mesh gradient background */
+  .mesh-bg {
+    background-image: var(--gradient-mesh);
+  }
+
+  /* Scroll progress bar */
+  .scroll-progress {
+    @apply fixed top-0 left-0 h-px z-50 transition-all duration-100;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  }
+
+  /* Section separator — subtle gradient line */
+  .section-sep {
+    @apply h-px w-full max-w-xs mx-auto;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  /* Tech icon card */
+  .tech-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    @apply p-4 rounded-xl flex flex-col items-center gap-2 transition-all duration-300 cursor-default;
+  }
+  .tech-card:hover {
+    border-color: var(--accent-dim);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  /* Certificate card */
+  .cert-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    @apply rounded-2xl overflow-hidden transition-all duration-300;
+  }
+  .cert-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+}
+
+/* ── Utility Overrides ─────────────────────────────── */
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+  .animation-delay-600 { animation-delay: 600ms; }
+
+  /* Hide scrollbar but keep functionality */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
