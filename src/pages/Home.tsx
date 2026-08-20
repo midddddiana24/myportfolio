@@ -13,6 +13,7 @@ import { PageTransition } from '@/components/layout/PageTransition'
 import { ScrollReveal, StaggerReveal, staggerItemVariants } from '@/components/ui/ScrollReveal'
 import { SocialLinks } from '@/components/ui/SocialLinks'
 import { Card3D } from '@/components/ui/Card3D'
+import { GitHubStats } from '@/components/home/GitHubStats'
 import { FloatingShape } from '@/components/3d/FloatingShape'
 import { projects } from '@/data/projects'
 
@@ -31,6 +32,18 @@ const up = {
 const stagger = {
   visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
   hidden: {},
+}
+
+// Inline hero stat with light-on-dark style
+function StatCounterHero({ target, suffix = '', label }: { target: number; suffix?: string; label: string }) {
+  return (
+    <div style={{ display:'flex', flexDirection:'column' }}>
+      <span style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'2rem', lineHeight:1, letterSpacing:'-0.05em', color:'#F5F3EE' }}>
+        {target}{suffix}
+      </span>
+      <span className="t-eyebrow mt-1" style={{ color:'rgba(245,243,238,0.4)' }}>{label}</span>
+    </div>
+  )
 }
 
 // ── HERO ───────────────────────────────────────────────────────────
@@ -121,21 +134,20 @@ function Hero() {
               <SocialLinks className="ml-1" />
             </motion.div>
 
-            {/* Stats */}
+            {/* Stats — animated counters */}
             <motion.div variants={up}>
               <div style={{ height: 1, background: 'rgba(245,243,238,0.12)', margin: '0.5rem 0 1.5rem' }} />
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-                {[
-                  { num: '4th',  label: 'Year Student' },
-                  { num: '2027', label: 'Expected Grad' },
-                  { num: '20+',  label: 'Technologies' },
-                  { num: '3+',   label: 'Projects Built' },
-                ].map(s => (
-                  <div key={s.label}>
-                    <p style={{ fontFamily: "'Geist', sans-serif", fontWeight: 800, fontSize: '2rem', lineHeight: 1, letterSpacing: '-0.05em', color: '#F5F3EE' }}>{s.num}</p>
-                    <p className="t-eyebrow mt-1" style={{ color: 'rgba(245,243,238,0.4)' }}>{s.label}</p>
-                  </div>
-                ))}
+                <div>
+                  <p style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'2rem', lineHeight:1, letterSpacing:'-0.05em', color:'#F5F3EE' }}>4th</p>
+                  <p className="t-eyebrow mt-1" style={{ color:'rgba(245,243,238,0.4)' }}>Year Student</p>
+                </div>
+                <div>
+                  <p style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'2rem', lineHeight:1, letterSpacing:'-0.05em', color:'#F5F3EE' }}>2027</p>
+                  <p className="t-eyebrow mt-1" style={{ color:'rgba(245,243,238,0.4)' }}>Expected Grad</p>
+                </div>
+                <StatCounterHero target={20} suffix="+" label="Technologies" />
+                <StatCounterHero target={3} suffix="+" label="Projects Built" />
               </div>
             </motion.div>
           </motion.div>
@@ -529,6 +541,7 @@ export default function Home() {
       <SkillsSection />
       <ToolsSection />
       <ExpertiseSection />
+      <GitHubStats />
       <ContactSection />
     </PageTransition>
   )

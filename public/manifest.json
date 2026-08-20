@@ -1,0 +1,16 @@
+{
+  "name": "Roberto Mediana Jr. — Developer Portfolio",
+  "short_name": "RM Portfolio",
+  "description": "BSIT Student & Aspiring Full-Stack Developer at West Visayas State University",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111110",
+  "theme_color": "#CF4500",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "categories": ["portfolio", "developer", "technology"],
+  "lang": "en",
+  "scope": "/"
+}

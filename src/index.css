@@ -458,3 +458,16 @@ html { scroll-behavior: smooth; }
 @media (max-width: 768px) {
   .cards-3d-grid { transform-style: flat; }
 }
+
+/* ── Custom cursor support ──────────────────────────────────────── */
+/* Hide system cursor when custom cursor is active (desktop) */
+@media (pointer: fine) {
+  *, *::before, *::after { cursor: none !important; }
+}
+/* Restore cursor on touch devices */
+@media (pointer: coarse) {
+  *, *::before, *::after { cursor: auto !important; }
+  a, button, [role="button"] { cursor: pointer !important; }
+}
+/* Preloader base — ensure it covers everything */
+#root { position: relative; z-index: 1; }
