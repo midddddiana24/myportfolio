@@ -1,61 +1,45 @@
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Primary Meta Tags -->
-    <title>Roberto Mediana Jr. — BSIT Student & Aspiring Full-Stack Developer</title>
-    <meta name="title" content="Roberto Mediana Jr. — BSIT Student & Aspiring Full-Stack Developer" />
-    <meta name="description" content="Portfolio of Roberto Mediana Jr., an incoming 4th year BSIT student at West Visayas State University – Janiuay Campus. Aspiring full-stack developer building modern web applications, systems, and digital experiences." />
-    <meta name="keywords" content="Roberto Mediana Jr, full-stack developer, BSIT, West Visayas State University, web developer, React, Laravel, Node.js, portfolio, Philippines" />
+    <title>Roberto Mediana Jr. — Full-Stack Developer</title>
+    <meta name="description" content="Portfolio of Roberto Mediana Jr., BSIT student at West Visayas State University – Janiuay Campus. Aspiring Full-Stack Developer building modern web applications." />
     <meta name="author" content="Roberto Mediana Jr." />
-    <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#080810" />
-
-    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="Roberto Mediana Jr. — Full-Stack Developer" />
+    <meta property="og:description" content="BSIT Student · Aspiring Full-Stack Developer · WVSU Janiuay Campus" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://rmjdev.vercel.app/" />
-    <meta property="og:title" content="Roberto Mediana Jr. — BSIT Student & Aspiring Full-Stack Developer" />
-    <meta property="og:description" content="Portfolio of Roberto Mediana Jr., an incoming 4th year BSIT student at West Visayas State University. Aspiring full-stack developer specializing in React, Laravel, Node.js, and modern web technologies." />
-    <meta property="og:image" content="/og-image.png" />
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://rmjdev.vercel.app/" />
-    <meta property="twitter:title" content="Roberto Mediana Jr. — Aspiring Full-Stack Developer" />
-    <meta property="twitter:description" content="BSIT Student at West Visayas State University building modern web applications and systems." />
-    <meta property="twitter:image" content="/og-image.png" />
-
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-
-    <!-- Google Fonts — Inter + Syne + JetBrains Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Prevent FOIC (flash of incorrect color theme) -->
+    <!-- Geist fonts self-hosted (Claude Code's exact font) -->
+    <style>
+      @font-face {
+        font-family: 'Geist';
+        src: url('/fonts/geist-sans/Geist-Variable.woff2') format('woff2');
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Geist Mono';
+        src: url('/fonts/geist-mono/GeistMono-Variable.woff2') format('woff2');
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
+    <!-- Anti-FOIC -->
     <script>
-      ;(function () {
-        const saved = localStorage.getItem('rm-theme')
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        if (saved === 'light' || (!saved && !prefersDark)) {
-          document.documentElement.classList.remove('dark')
-          document.documentElement.classList.add('light')
-        } else {
-          document.documentElement.classList.add('dark')
-          document.documentElement.classList.remove('light')
-        }
+      ;(function(){
+        const s = localStorage.getItem('rm-theme')
+        const d = window.matchMedia('(prefers-color-scheme: dark)').matches
+        const dark = s ? s === 'dark' : d
+        document.documentElement.classList.toggle('dark', dark)
+        document.documentElement.classList.toggle('light', !dark)
       })()
     </script>
   </head>
-  <body class="overflow-x-clip">
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

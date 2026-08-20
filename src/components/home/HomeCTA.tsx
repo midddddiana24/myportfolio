@@ -1,83 +1,53 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, MessageCircle } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { ScrollReveal } from '@/components/ui/ScrollReveal'
-
-// ===================================================
-// HomeCTA — Final call-to-action section
-// ===================================================
 
 export function HomeCTA() {
   return (
-    <section
-      className="rm-section"
-      style={{ background: 'var(--surface)' }}
-      aria-label="Call to action"
-    >
+    <section className="rm-section" style={{ background: 'var(--surface)' }}>
       <div className="rm-container">
         <ScrollReveal>
           <div
-            className="relative rounded-3xl overflow-hidden p-10 sm:p-16 text-center"
-            style={{
-              background: 'var(--card)',
-              border: '1px solid var(--border)',
-            }}
+            className="grain relative rounded-3xl overflow-hidden px-10 sm:px-16 py-16 sm:py-20 text-center"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
           >
-            {/* Background glow */}
+            {/* Top gradient */}
             <div
               className="absolute inset-0 pointer-events-none"
-              aria-hidden="true"
-              style={{
-                background:
-                  'radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.15) 0%, transparent 60%)',
-              }}
+              style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(212,82,10,0.10) 0%, transparent 60%)' }}
             />
-
-            {/* Top accent line */}
             <div
-              className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-48"
-              style={{
-                background:
-                  'linear-gradient(90deg, transparent, var(--accent), transparent)',
-              }}
-              aria-hidden="true"
+              className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-64"
+              style={{ background: 'linear-gradient(90deg, transparent, var(--accent), transparent)' }}
             />
 
             <div className="relative z-10">
-              {/* Eyebrow */}
-              <div className="flex items-center justify-center gap-2 mb-5">
-                <MessageCircle size={16} style={{ color: 'var(--accent-light)' }} />
-                <span
-                  className="text-xs font-mono uppercase tracking-widest"
-                  style={{ color: 'var(--accent-light)' }}
-                >
-                  Get In Touch
-                </span>
-              </div>
+              <p className="t-eyebrow mb-5">Get In Touch</p>
 
-              {/* Heading */}
               <h2
-                className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl mb-4 text-balance"
-                style={{ color: 'var(--text-primary)' }}
+                className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl mb-3 text-balance"
+                style={{ color: 'var(--text-primary)', letterSpacing: '-0.04em' }}
               >
-                Have a project or idea?
+                Have a project{' '}
+                <em
+                  style={{
+                    fontFamily: '"Instrument Serif", serif',
+                    fontStyle: 'italic',
+                    fontWeight: 400,
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  or idea?
+                </em>
               </h2>
 
-              <p
-                className="text-base sm:text-lg mb-8 max-w-xl mx-auto leading-relaxed"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                I'm open to collaborations, academic partnerships, and freelance
-                projects. Whether you have a project in mind or just want to chat
-                about technology — let's connect.
+              <p className="text-base sm:text-lg mb-8 max-w-md mx-auto leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                I'm open to collaborations, academic partnerships, and freelance projects.
+                Let's talk.
               </p>
 
-              {/* CTA button */}
-              <Link
-                to="/contact"
-                className="btn-primary text-base px-8 py-3.5"
-              >
-                Get In Touch
-                <ArrowRight size={18} />
+              <Link to="/contact" className="btn-primary text-base px-8 py-3.5">
+                Get In Touch <ArrowRight size={17} />
               </Link>
             </div>
           </div>

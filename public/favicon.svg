@@ -1,11 +1,5 @@
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="8" fill="#7c3aed"/>
-  <!-- Left bracket -->
-  <path d="M6 8L3 16L6 24" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- R -->
-  <text x="8" y="22" font-family="system-ui, sans-serif" font-weight="800" font-size="14" fill="#a78bfa">R</text>
-  <!-- M -->
-  <text x="18" y="22" font-family="system-ui, sans-serif" font-weight="800" font-size="14" fill="white">M</text>
-  <!-- Right bracket -->
-  <path d="M26 8L29 16L26 24" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="32" height="32" rx="8" fill="#CF4500"/>
+  <text x="4" y="22" font-family="'Geist Mono', monospace" font-weight="700" font-size="14" fill="white" letter-spacing="-0.5">RM</text>
+  <circle cx="28" cy="26" r="2.5" fill="rgba(255,255,255,0.5)"/>
 </svg>

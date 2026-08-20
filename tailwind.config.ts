@@ -2,114 +2,70 @@ import type { Config } from 'tailwindcss'
 
 const config: Config = {
   darkMode: 'class',
-  content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      colors: {
-        // Dark theme tokens
-        dark: {
-          bg: '#080810',
-          surface: '#0e0e1c',
-          card: '#121224',
-          border: '#1e1e38',
-          hover: '#1a1a30',
-        },
-        // Light theme tokens
-        light: {
-          bg: '#fafafa',
-          surface: '#ffffff',
-          card: '#f4f4f8',
-          border: '#e2e2ea',
-          hover: '#ededf5',
-        },
-        // Accent — Electric Violet
-        accent: {
-          DEFAULT: '#7c3aed',
-          light: '#a78bfa',
-          dim: '#4c1d95',
-          glow: 'rgba(124,58,237,0.25)',
-        },
-        // Text hierarchy
-        text: {
-          primary: '#f1f0ff',
-          secondary: '#9b9bbf',
-          muted: '#6b6b8f',
-          inverted: '#0e0e1c',
-        },
-      },
       fontFamily: {
-        display: ['Syne', 'system-ui', 'sans-serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        sans:    ['Geist', 'system-ui', 'sans-serif'],
+        mono:    ['"Geist Mono"', 'ui-monospace', 'monospace'],
+        display: ['Geist', 'system-ui', 'sans-serif'],
+      },
+      colors: {
+        // Claude-exact warm palette
+        cream: {
+          50:  '#FAFAF8',
+          100: '#F5F4F0',
+          200: '#EDECEA',
+          300: '#E0DEDB',
+          400: '#C8C5C0',
+          500: '#A09890',
+          600: '#706860',
+          700: '#403830',
+          800: '#201A15',
+          900: '#100C08',
+        },
+        // Claude accent — warm terracotta/clay
+        clay: {
+          DEFAULT: '#CF4500',
+          50:  '#FEF3EE',
+          100: '#FDE0CC',
+          200: '#FAB88A',
+          300: '#F78C4A',
+          400: '#F5782A',
+          500: '#CF4500',
+          600: '#A03800',
+          700: '#782A00',
+          light: '#E8602A',
+          dim:   'rgba(207,69,0,0.10)',
+          glow:  'rgba(207,69,0,0.22)',
+        },
       },
       fontSize: {
-        '2xs': ['0.625rem', { lineHeight: '1rem' }],
+        '2xs': ['0.625rem', { lineHeight: '1rem', letterSpacing: '0.08em' }],
       },
       spacing: {
         '18': '4.5rem',
         '22': '5.5rem',
-        '88': '22rem',
         '100': '25rem',
         '112': '28rem',
         '128': '32rem',
       },
       borderRadius: {
         '4xl': '2rem',
-        '5xl': '2.5rem',
-      },
-      boxShadow: {
-        'accent': '0 0 20px rgba(124,58,237,0.3)',
-        'accent-lg': '0 0 40px rgba(124,58,237,0.4)',
-        'card': '0 4px 24px rgba(0,0,0,0.4)',
-        'card-hover': '0 8px 40px rgba(0,0,0,0.6)',
-        'glow': '0 0 60px rgba(124,58,237,0.15)',
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'mesh-gradient': 'radial-gradient(at 40% 20%, rgba(124,58,237,0.15) 0, transparent 50%), radial-gradient(at 80% 80%, rgba(99,102,241,0.1) 0, transparent 50%)',
       },
       animation: {
-        'float': 'float 6s ease-in-out infinite',
+        'fade-in':    'fadeIn 0.5s ease forwards',
+        'slide-up':   'slideUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards',
+        'ticker':     'ticker 22s linear infinite',
+        'spin-slow':  'spin 20s linear infinite',
         'pulse-slow': 'pulse 4s ease-in-out infinite',
-        'spin-slow': 'spin 20s linear infinite',
-        'glow': 'glow 3s ease-in-out infinite alternate',
-        'shimmer': 'shimmer 2s linear infinite',
-        'gradient': 'gradient 8s ease infinite',
       },
       keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-12px)' },
-        },
-        glow: {
-          '0%': { boxShadow: '0 0 20px rgba(124,58,237,0.2)' },
-          '100%': { boxShadow: '0 0 40px rgba(124,58,237,0.5)' },
-        },
-        shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
-        },
-        gradient: {
-          '0%, 100%': { backgroundPosition: '0% 50%' },
-          '50%': { backgroundPosition: '100% 50%' },
-        },
+        fadeIn:  { from: { opacity: '0' },                          to: { opacity: '1' } },
+        slideUp: { from: { opacity: '0', transform: 'translateY(28px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        ticker:  { from: { transform: 'translateX(0)' },           to: { transform: 'translateX(-50%)' } },
       },
-      backdropBlur: {
-        xs: '2px',
-      },
-      screens: {
-        'xs': '375px',
-        '3xl': '1920px',
-      },
-      transitionDuration: {
-        '400': '400ms',
-        '600': '600ms',
-        '800': '800ms',
-      },
+      screens: { xs: '375px', '3xl': '1920px' },
     },
   },
   plugins: [],
