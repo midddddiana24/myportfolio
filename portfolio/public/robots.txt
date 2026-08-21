@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rmjdev.vercel.app/sitemap.xml

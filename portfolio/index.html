@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta -->
+    <title>Roberto Mediana Jr. — Full-Stack Developer</title>
+    <meta name="title"       content="Roberto Mediana Jr. — Full-Stack Developer" />
+    <meta name="description" content="Portfolio of Roberto Mediana Jr., BSIT student at West Visayas State University – Janiuay Campus. Building modern web applications, systems, and 3D digital experiences." />
+    <meta name="keywords"    content="Roberto Mediana Jr, full-stack developer, BSIT, West Visayas State University, web developer, React, Laravel, Node.js, portfolio, Philippines" />
+    <meta name="author"      content="Roberto Mediana Jr." />
+    <meta name="robots"      content="index, follow" />
+
+    <!-- PWA / Theme color -->
+    <meta name="theme-color" content="#CF4500" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#CF4500" media="(prefers-color-scheme: light)" />
+    <meta name="mobile-web-app-capable"       content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title"   content="RM Portfolio" />
+
+    <!-- Open Graph -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://rmjdev.vercel.app/" />
+    <meta property="og:title"       content="Roberto Mediana Jr. — Full-Stack Developer" />
+    <meta property="og:description" content="BSIT Student at West Visayas State University – Janiuay Campus. Aspiring Full-Stack Developer building modern web applications and 3D experiences." />
+    <meta property="og:image"       content="https://rmjdev.vercel.app/og-image.svg" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale"      content="en_PH" />
+    <meta property="og:site_name"   content="Roberto Mediana Jr. Portfolio" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Roberto Mediana Jr. — Full-Stack Developer" />
+    <meta name="twitter:description" content="BSIT Student · Aspiring Full-Stack Developer · WVSU Janiuay Campus" />
+    <meta name="twitter:image"       content="https://rmjdev.vercel.app/og-image.svg" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://rmjdev.vercel.app/" />
+
+    <!-- Favicon -->
+    <link rel="icon"             type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon"   type="image/x-icon"  href="/favicon.ico" />
+    <link rel="apple-touch-icon"                      href="/favicon.svg" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Geist fonts — self-hosted variable fonts (Claude Code's exact fonts) -->
+    <style>
+      @font-face {
+        font-family: 'Geist';
+        src: url('/fonts/geist-sans/Geist-Variable.woff2') format('woff2');
+        font-weight: 100 900; font-style: normal; font-display: swap;
+      }
+      @font-face {
+        font-family: 'Geist Mono';
+        src: url('/fonts/geist-mono/GeistMono-Variable.woff2') format('woff2');
+        font-weight: 100 900; font-style: normal; font-display: swap;
+      }
+    </style>
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Roberto Mediana Jr.",
+      "jobTitle": "Aspiring Full-Stack Developer",
+      "description": "BSIT student at West Visayas State University – Janiuay Campus. Building modern web applications and systems.",
+      "url": "https://rmjdev.vercel.app",
+      "sameAs": [
+        "https://github.com/yourusername",
+        "https://linkedin.com/in/yourprofile"
+      ],
+      "alumniOf": {
+        "@type": "EducationalOrganization",
+        "name": "West Visayas State University – Janiuay Campus"
+      },
+      "knowsAbout": ["React", "Laravel", "Node.js", "TypeScript", "Web Development", "Web Security"]
+    }
+    </script>
+
+    <!-- Anti-FOIC — apply saved theme before first paint -->
+    <script>
+      ;(function(){
+        const s = localStorage.getItem('rm-theme')
+        const d = window.matchMedia('(prefers-color-scheme: dark)').matches
+        const dark = s ? s === 'dark' : d
+        document.documentElement.classList.toggle('dark',  dark)
+        document.documentElement.classList.toggle('light', !dark)
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
