@@ -1,16 +1,16 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { lazy, Suspense, useState } from 'react'
-import { Navbar }          from '@/components/layout/Navbar'
-import { Footer }          from '@/components/layout/Footer'
-import { ScrollProgress }  from '@/components/ui/ScrollProgress'
-import { ScrollToTop }     from '@/components/ui/ScrollToTop'
-import { CustomCursor }    from '@/components/ui/CustomCursor'
-import { EasterEgg }       from '@/components/ui/EasterEgg'
-import { Preloader }       from '@/components/ui/Preloader'
-import { ParticleCanvas }  from '@/components/3d/ParticleCanvas'
-import { SmoothScroll }    from '@/components/motion/SmoothScroll'
-import { PageCurtain }     from '@/components/motion/PageCurtain'
+import { Navbar }         from '@/components/layout/Navbar'
+import { Footer }         from '@/components/layout/Footer'
+import { ScrollProgress } from '@/components/ui/ScrollProgress'
+import { ScrollToTop }    from '@/components/ui/ScrollToTop'
+import { CustomCursor }   from '@/components/ui/CustomCursor'
+import { EasterEgg }      from '@/components/ui/EasterEgg'
+import { Preloader }      from '@/components/ui/Preloader'
+import { ParticleCanvas } from '@/components/3d/ParticleCanvas'
+import { SmoothScroll }   from '@/components/motion/SmoothScroll'
+import { PageCurtain }    from '@/components/motion/PageCurtain'
 
 const Home          = lazy(() => import('@/pages/Home'))
 const About         = lazy(() => import('@/pages/About'))
@@ -24,8 +24,7 @@ const NotFound      = lazy(() => import('@/pages/NotFound'))
 function PageLoader() {
   return (
     <div className="min-h-screen flex items-center justify-center" role="status">
-      <div className="w-7 h-7 border-2 border-t-transparent rounded-full animate-spin"
-        style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }} />
+      <div style={{ width:24, height:24, border:'1px solid #1f1f1f', borderTopColor:'#c8f269', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
     </div>
   )
 }
@@ -50,40 +49,27 @@ function AnimatedRoutes() {
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
-  const isTouchDevice = typeof window !== 'undefined' &&
+  const isTouch = typeof window !== 'undefined' &&
     ('ontouchstart' in window || navigator.maxTouchPoints > 0)
 
   return (
     <BrowserRouter>
-      {/* Preloader — must be outside SmoothScroll */}
       {!loaded && <Preloader onComplete={() => setLoaded(true)} />}
-
-      {/* Custom cursor (desktop only) */}
-      {!isTouchDevice && <CustomCursor />}
-
-      {/* Easter egg overlay */}
+      {!isTouch  && <CustomCursor />}
       <EasterEgg />
-
-      {/* Global 2D particle background */}
       <ParticleCanvas />
 
-      {/* Lenis smooth scroll wraps everything */}
       <SmoothScroll>
         <div className="min-h-screen flex flex-col relative z-[1]"
-          style={{ background: 'transparent', color: 'var(--text-1)' }}>
+          style={{ background:'transparent', color:'#f0f0f0' }}>
           <ScrollProgress />
-
-          {/* Page transition curtain */}
           <PageCurtain />
-
           <Navbar />
-
           <div className="flex-1">
             <Suspense fallback={<PageLoader />}>
               <AnimatedRoutes />
             </Suspense>
           </div>
-
           <Footer />
         </div>
       </SmoothScroll>

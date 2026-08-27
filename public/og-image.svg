@@ -1,41 +1,38 @@
 <svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="1200" height="630" fill="#111110"/>
-  <!-- Gradient overlay -->
-  <radialGradient id="g1" cx="60%" cy="30%" r="60%">
-    <stop offset="0%" stop-color="#CF4500" stop-opacity="0.15"/>
-    <stop offset="100%" stop-color="#111110" stop-opacity="0"/>
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+  <radialGradient id="g1" cx="65%" cy="25%" r="55%">
+    <stop offset="0%" stop-color="#c8f269" stop-opacity="0.08"/>
+    <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
   </radialGradient>
   <rect width="1200" height="630" fill="url(#g1)"/>
-  <!-- Decorative grid lines -->
-  <line x1="0" y1="315" x2="1200" y2="315" stroke="#2E2D2A" stroke-width="1"/>
-  <line x1="600" y1="0" x2="600" y2="630" stroke="#2E2D2A" stroke-width="1"/>
-  <!-- Border -->
-  <rect x="2" y="2" width="1196" height="626" rx="0" stroke="#2E2D2A" stroke-width="1" fill="none"/>
-  <!-- RM logo box -->
-  <rect x="80" y="80" width="72" height="72" rx="16" fill="#CF4500" fill-opacity="0.12"/>
-  <rect x="80.5" y="80.5" width="71" height="71" rx="15.5" stroke="#CF4500" stroke-opacity="0.35"/>
-  <text x="94" y="133" font-family="monospace" font-weight="700" font-size="28" fill="#CF4500" letter-spacing="-1">RM</text>
-  <circle cx="146" cy="138" r="4" fill="#CF4500"/>
+  <rect x="1" y="1" width="1198" height="628" stroke="#1f1f1f" stroke-width="1" fill="none"/>
+  <!-- Grid lines -->
+  <line x1="0" y1="315" x2="1200" y2="315" stroke="#1f1f1f" stroke-width="1"/>
+  <!-- Logo mark -->
+  <rect x="80" y="80" width="60" height="60" fill="#c8f269" fill-opacity="0.06"/>
+  <rect x="80.5" y="80.5" width="59" height="59" stroke="#c8f269" stroke-opacity="0.2"/>
+  <text x="91" y="121" font-family="monospace" font-weight="500" font-size="22" fill="#c8f269">RM</text>
+  <circle cx="136" cy="131" r="3" fill="#c8f269"/>
   <!-- Name -->
-  <text x="80" y="290" font-family="system-ui, sans-serif" font-weight="800" font-size="88" fill="#F5F3EE" letter-spacing="-5">Roberto</text>
-  <text x="80" y="390" font-family="system-ui, sans-serif" font-weight="800" font-size="72" fill="transparent" stroke="#F5F3EE" stroke-width="2" letter-spacing="-4">Mediana Jr.</text>
+  <text x="80" y="305" font-family="system-ui" font-weight="700" font-size="88" fill="#f0f0f0" letter-spacing="-4">Roberto</text>
+  <text x="80" y="400" font-family="system-ui" font-weight="700" font-size="72" fill="#f0f0f0" fill-opacity="0.15" letter-spacing="-3">Mediana Jr.</text>
   <!-- Role -->
-  <rect x="80" y="420" width="6" height="32" rx="3" fill="#CF4500"/>
-  <text x="100" y="443" font-family="system-ui, sans-serif" font-weight="600" font-size="24" fill="#9A9690" letter-spacing="-0.5">Full-Stack Developer · BSIT Student</text>
+  <rect x="80" y="430" width="4" height="28" fill="#c8f269"/>
+  <text x="98" y="450" font-family="monospace" font-size="16" fill="#5a5a5a" letter-spacing="2">FULL-STACK DEVELOPER · WEB PENTESTER</text>
   <!-- University -->
-  <text x="80" y="490" font-family="monospace" font-size="14" fill="#605C58" letter-spacing="2">WEST VISAYAS STATE UNIVERSITY — JANIUAY CAMPUS</text>
+  <text x="80" y="500" font-family="monospace" font-size="12" fill="#2a2a2a" letter-spacing="3">WEST VISAYAS STATE UNIVERSITY — JANIUAY CAMPUS</text>
   <!-- Stats -->
-  <text x="80" y="570" font-family="system-ui, sans-serif" font-weight="800" font-size="32" fill="#CF4500">4th</text>
-  <text x="80" y="590" font-family="monospace" font-size="11" fill="#605C58" letter-spacing="2">YEAR STUDENT</text>
-  <text x="220" y="570" font-family="system-ui, sans-serif" font-weight="800" font-size="32" fill="#CF4500">2027</text>
-  <text x="220" y="590" font-family="monospace" font-size="11" fill="#605C58" letter-spacing="2">EXPECTED GRAD</text>
-  <text x="380" y="570" font-family="system-ui, sans-serif" font-weight="800" font-size="32" fill="#CF4500">20+</text>
-  <text x="380" y="590" font-family="monospace" font-size="11" fill="#605C58" letter-spacing="2">TECHNOLOGIES</text>
-  <!-- Decorative circle -->
-  <circle cx="1050" cy="315" r="220" stroke="#CF4500" stroke-opacity="0.07" stroke-width="1" fill="none"/>
-  <circle cx="1050" cy="315" r="160" stroke="#CF4500" stroke-opacity="0.05" stroke-width="1" fill="none"/>
-  <circle cx="1050" cy="315" r="80"  fill="#CF4500" fill-opacity="0.06"/>
+  <text x="80" y="575" font-family="system-ui" font-weight="800" font-size="28" fill="#c8f269">4th</text>
+  <text x="80" y="595" font-family="monospace" font-size="9" fill="#2a2a2a" letter-spacing="2">YEAR</text>
+  <text x="210" y="575" font-family="system-ui" font-weight="800" font-size="28" fill="#c8f269">2027</text>
+  <text x="210" y="595" font-family="monospace" font-size="9" fill="#2a2a2a" letter-spacing="2">GRAD</text>
+  <text x="340" y="575" font-family="system-ui" font-weight="800" font-size="28" fill="#c8f269">20+</text>
+  <text x="340" y="595" font-family="monospace" font-size="9" fill="#2a2a2a" letter-spacing="2">TECH</text>
+  <!-- Decorative -->
+  <rect x="900" y="100" width="200" height="200" stroke="#c8f269" stroke-opacity="0.05" fill="none"/>
+  <rect x="950" y="150" width="100" height="100" stroke="#c8f269" stroke-opacity="0.08" fill="none"/>
+  <rect x="975" y="175" width="50" height="50" fill="#c8f269" fill-opacity="0.06"/>
+  <circle cx="1000" cy="200" r="2" fill="#c8f269"/>
   <!-- URL -->
-  <text x="1120" y="590" font-family="monospace" font-size="13" fill="#605C58" text-anchor="end" letter-spacing="1">rmjdev.vercel.app</text>
+  <text x="1120" y="595" font-family="monospace" font-size="11" fill="#2a2a2a" text-anchor="end" letter-spacing="1">rmjdev.vercel.app</text>
 </svg>

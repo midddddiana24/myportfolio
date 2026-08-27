@@ -1,167 +1,127 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Github, Star, GitFork, ExternalLink } from 'lucide-react'
-import { ScrollReveal, StaggerReveal, staggerItemVariants } from '@/components/ui/ScrollReveal'
-import { Card3D } from '@/components/ui/Card3D'
+import { ClipReveal }     from '@/components/motion/ClipReveal'
+import { MagneticButton } from '@/components/motion/MagneticButton'
 
 // ================================================================
-// GitHubStats — Live GitHub profile stats + pinned repos
-// Update GITHUB_USERNAME in src/data/socials.ts
+// GitHubStats — lime green editorial stats display
 // ================================================================
 
-const GITHUB_USERNAME = 'yourusername'   // ← Replace with your real username
+const GITHUB_USERNAME = 'yourusername'  // ← Replace
 
-interface GitHubUser {
-  public_repos: number
-  followers: number
-  following: number
-  name: string
-  bio: string
-}
-interface GitHubRepo {
-  id: number
-  name: string
-  description: string | null
-  stargazers_count: number
-  forks_count: number
-  language: string | null
-  html_url: string
-  updated_at: string
-}
+interface GitHubUser   { public_repos:number; followers:number; following:number }
+interface GitHubRepo   { id:number; name:string; description:string|null; stargazers_count:number; forks_count:number; language:string|null; html_url:string }
 
 const langColors: Record<string,string> = {
   TypeScript:'#3178c6', JavaScript:'#f7df1e', PHP:'#777bb4',
   Python:'#3572A5', Vue:'#42b883', HTML:'#e34f26', CSS:'#1572b6',
-  Shell:'#89e051', Dockerfile:'#384d54',
 }
 
 export function GitHubStats() {
-  const [user, setUser]   = useState<GitHubUser | null>(null)
+  const [user, setUser]   = useState<GitHubUser|null>(null)
   const [repos, setRepos] = useState<GitHubRepo[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError]   = useState(false)
+  const [error, setError]     = useState(false)
 
   useEffect(() => {
     const base = `https://api.github.com/users/${GITHUB_USERNAME}`
-    Promise.all([
-      fetch(base).then(r => r.json()),
-      fetch(`${base}/repos?sort=updated&per_page=6`).then(r => r.json()),
-    ])
+    Promise.all([fetch(base).then(r=>r.json()), fetch(`${base}/repos?sort=updated&per_page=6`).then(r=>r.json())])
       .then(([u, r]) => {
         if (u.message) throw new Error('not found')
         setUser(u)
-        setRepos(Array.isArray(r) ? r.filter((repo: GitHubRepo) => !repo.name.includes(GITHUB_USERNAME)).slice(0, 3) : [])
+        setRepos(Array.isArray(r) ? r.filter((repo: GitHubRepo) => !repo.name.includes(GITHUB_USERNAME)).slice(0,3) : [])
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
   }, [])
 
-  if (error) return null   // Silently hide if username not configured
+  if (error) return null
 
   return (
-    <section className="rm-section" style={{ background:'var(--section-bg-alt)' }}>
+    <section className="rm-section border-t" style={{ borderColor:'#1f1f1f', background:'#111111' }}>
       <div className="rm-container">
-        {/* Section header */}
-        <div className="flex items-center gap-4 mb-10">
-          <span className="section-num">07</span>
-          <div className="rm-divider flex-1" />
-          <span className="t-eyebrow">Open Source</span>
+        <div className="flex items-center gap-4 mb-16">
+          <span className="eyebrow">/ Open Source</span>
+          <div className="rule flex-1" />
+          <MagneticButton strength={0.3}>
+            <a href={`https://github.com/${GITHUB_USERNAME}`} target="_blank" rel="noopener noreferrer"
+              className="btn-ghost" style={{ padding:'0.375rem 0.875rem', fontSize:'0.625rem', fontFamily:"'DM Mono', monospace", letterSpacing:'0.1em', textTransform:'uppercase' }}>
+              <Github size={13} /> Profile
+            </a>
+          </MagneticButton>
         </div>
 
-        <ScrollReveal>
-          <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
-            <h2 className="t-display text-3xl sm:text-4xl" style={{ color:'var(--text-1)' }}>
-              GitHub Activity
-            </h2>
-            <a href={`https://github.com/${GITHUB_USERNAME}`} target="_blank" rel="noopener noreferrer"
-              className="btn-ghost text-sm">
-              <Github size={14} />View Profile
-            </a>
-          </div>
-        </ScrollReveal>
-
         {loading ? (
-          <div className="flex items-center justify-center py-16 gap-3">
-            <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin"
-              style={{ borderColor:'var(--accent)', borderTopColor:'transparent' }} />
-            <span className="font-mono text-xs" style={{ color:'var(--text-3)' }}>Fetching GitHub data...</span>
+          <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', paddingBottom:'2rem' }}>
+            <div style={{ width:14, height:14, border:'1px solid #1f1f1f', borderTopColor:'#c8f269', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
+            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#2a2a2a' }}>
+              Fetching GitHub data…
+            </span>
           </div>
         ) : (
           <>
-            {/* User stats */}
             {user && (
-              <StaggerReveal className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              <div className="grid grid-cols-3 gap-px border mb-8" style={{ background:'#1f1f1f', borderColor:'#1f1f1f' }}>
                 {[
-                  { label:'Public Repos', value: user.public_repos, icon:'📦' },
-                  { label:'Followers',    value: user.followers,    icon:'👥' },
-                  { label:'Following',    value: user.following,    icon:'🔍' },
-                ].map(stat => (
-                  <motion.div key={stat.label} variants={staggerItemVariants}>
-                    <Card3D className="bento-card flex items-center gap-4" intensity={8} lift={6}>
-                      <span style={{ fontSize:'1.75rem' }}>{stat.icon}</span>
-                      <div>
-                        <p style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'1.75rem', letterSpacing:'-0.04em', color:'var(--text-1)', lineHeight:1 }}>
-                          {stat.value}
-                        </p>
-                        <p className="t-eyebrow">{stat.label}</p>
-                      </div>
-                    </Card3D>
-                  </motion.div>
+                  { label:'Public Repos', value:user.public_repos },
+                  { label:'Followers',    value:user.followers },
+                  { label:'Following',    value:user.following },
+                ].map((s, i) => (
+                  <ClipReveal key={s.label} direction="down" delay={i*0.07}>
+                    <div style={{ background:'#111111', padding:'2rem 1.5rem' }}>
+                      <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:800, fontSize:'2.5rem', letterSpacing:'-0.05em', color:'#c8f269', lineHeight:1 }}>
+                        {s.value}
+                      </p>
+                      <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a', marginTop:'0.5rem' }}>
+                        {s.label}
+                      </p>
+                    </div>
+                  </ClipReveal>
                 ))}
-              </StaggerReveal>
+              </div>
             )}
 
-            {/* Contribution graph from github-readme-stats */}
-            <ScrollReveal className="mb-8">
-              <div className="rounded-2xl overflow-hidden border" style={{ borderColor:'var(--border)', background:'var(--card)' }}>
-                <img
-                  src={`https://github-readme-stats.vercel.app/api?username=${GITHUB_USERNAME}&show_icons=true&theme=dark&bg_color=1C1A18&title_color=E8702A&icon_color=CF4500&text_color=9A9690&border_color=2E2D2A&hide_border=false&count_private=true`}
-                  alt={`${GITHUB_USERNAME} GitHub stats`}
-                  className="w-full max-w-lg mx-auto block"
-                  loading="lazy"
-                />
-              </div>
-            </ScrollReveal>
-
-            {/* Recent repos */}
             {repos.length > 0 && (
-              <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {repos.map(repo => (
-                  <motion.div key={repo.id} variants={staggerItemVariants}>
-                    <Card3D className="bento-card flex flex-col gap-3 h-full group" intensity={10} lift={7}>
-                      <div className="flex items-start justify-between gap-2">
-                        <h3 style={{ fontFamily:"'Geist', sans-serif", fontWeight:700, fontSize:'0.875rem', letterSpacing:'-0.01em', color:'var(--text-1)' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px border" style={{ background:'#1f1f1f', borderColor:'#1f1f1f' }}>
+                {repos.map((repo, i) => (
+                  <motion.div key={repo.id} initial={{ opacity:0, y:16 }} whileInView={{ opacity:1, y:0 }}
+                    transition={{ delay:i*0.07, duration:0.45 }} viewport={{ once:true }}>
+                    <div style={{ background:'#111111', padding:'1.75rem', display:'flex', flexDirection:'column', gap:'0.75rem', height:'100%' }}>
+                      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:'0.5rem' }}>
+                        <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'0.9375rem', letterSpacing:'-0.02em', color:'#f0f0f0' }}>
                           {repo.name}
                         </h3>
                         <a href={repo.html_url} target="_blank" rel="noopener noreferrer"
-                          style={{ color:'var(--text-3)', flexShrink:0 }}
-                          className="transition-colors hover:text-accent">
-                          <ExternalLink size={13} />
+                          style={{ color:'#2a2a2a', flexShrink:0, transition:'color 0.2s' }}
+                          onMouseEnter={e=>{e.currentTarget.style.color='#c8f269'}}
+                          onMouseLeave={e=>{e.currentTarget.style.color='#2a2a2a'}}>
+                          <ExternalLink size={13}/>
                         </a>
                       </div>
                       {repo.description && (
-                        <p className="text-xs leading-relaxed flex-1" style={{ color:'var(--text-2)', fontFamily:"'Geist', sans-serif" }}>
-                          {repo.description.length > 90 ? repo.description.slice(0, 90) + '…' : repo.description}
+                        <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.8125rem', color:'#5a5a5a', lineHeight:1.6, flex:1 }}>
+                          {repo.description.length > 80 ? repo.description.slice(0,80)+'…' : repo.description}
                         </p>
                       )}
-                      <div className="flex items-center gap-4 mt-auto">
+                      <div style={{ display:'flex', alignItems:'center', gap:'1rem', marginTop:'auto' }}>
                         {repo.language && (
-                          <span className="flex items-center gap-1.5 text-xs font-mono" style={{ color:'var(--text-3)' }}>
-                            <span className="w-2.5 h-2.5 rounded-full" style={{ background: langColors[repo.language] ?? '#888' }} />
+                          <span style={{ display:'flex', alignItems:'center', gap:'0.375rem', fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.08em', color:'#5a5a5a' }}>
+                            <span style={{ width:8, height:8, borderRadius:'50%', background:langColors[repo.language]??'#555' }}/>
                             {repo.language}
                           </span>
                         )}
-                        <span className="flex items-center gap-1 text-xs font-mono" style={{ color:'var(--text-3)' }}>
-                          <Star size={11} />{repo.stargazers_count}
+                        <span style={{ display:'flex', alignItems:'center', gap:'0.25rem', fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#5a5a5a' }}>
+                          <Star size={10}/>{repo.stargazers_count}
                         </span>
-                        <span className="flex items-center gap-1 text-xs font-mono" style={{ color:'var(--text-3)' }}>
-                          <GitFork size={11} />{repo.forks_count}
+                        <span style={{ display:'flex', alignItems:'center', gap:'0.25rem', fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#5a5a5a' }}>
+                          <GitFork size={10}/>{repo.forks_count}
                         </span>
                       </div>
-                    </Card3D>
+                    </div>
                   </motion.div>
                 ))}
-              </StaggerReveal>
+              </div>
             )}
           </>
         )}

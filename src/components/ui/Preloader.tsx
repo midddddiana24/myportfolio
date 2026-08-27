@@ -1,99 +1,60 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// ================================================================
-// Preloader — RM branded splash screen
-// Hides Three.js canvas flash · Minimum 1.8s display · Smooth exit
-// ================================================================
-
-interface PreloaderProps { onComplete: () => void }
-
-export function Preloader({ onComplete }: PreloaderProps) {
+// Lime green branded preloader — spec timing
+export function Preloader({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0)
-  const [phase, setPhase] = useState<'loading' | 'done'>('loading')
+  const [done, setDone]         = useState(false)
 
   useEffect(() => {
-    // Simulate load progress
-    const steps = [15, 30, 50, 65, 80, 92, 100]
-    const delays = [120, 200, 250, 300, 280, 350, 200]
+    const steps  = [10, 25, 45, 62, 78, 91, 100]
+    const delays = [100, 180, 220, 280, 250, 320, 180]
     let i = 0
     const tick = () => {
       if (i >= steps.length) return
       setProgress(steps[i])
       if (steps[i] === 100) {
-        setTimeout(() => { setPhase('done') }, 400)
-        setTimeout(onComplete, 900)
+        setTimeout(() => setDone(true), 350)
+        setTimeout(onComplete, 820)
       }
-      i++
-      setTimeout(tick, delays[i - 1] ?? 200)
+      i++; setTimeout(tick, delays[i - 1] ?? 200)
     }
-    // Enforce minimum display time
-    const minTimer = setTimeout(tick, 200)
-    return () => clearTimeout(minTimer)
+    setTimeout(tick, 150)
   }, [onComplete])
 
   return (
     <AnimatePresence>
-      {phase === 'loading' && (
-        <motion.div
-          key="preloader"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.04 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 9999,
-            background: 'var(--bg)',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            gap: '2rem',
-          }}
-        >
-          {/* RM Logo animate in */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col items-center gap-3"
-          >
-            {/* Animated SVG mark */}
-            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-label="RM Logo">
-              <rect width="64" height="64" rx="16" fill="var(--accent)" fillOpacity="0.12" />
-              <rect x="1" y="1" width="62" height="62" rx="15" stroke="var(--accent)" strokeOpacity="0.3" />
-              <motion.text
-                x="8" y="44"
-                fontFamily="'Geist Mono', monospace" fontWeight="700" fontSize="28"
-                fill="var(--accent)" letterSpacing="-1"
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25, duration: 0.4 }}
-              >
-                RM
-              </motion.text>
-              <motion.circle cx="56" cy="52" r="4" fill="var(--accent)"
-                initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5, type: 'spring' }} />
-            </svg>
+      {!done && (
+        <motion.div key="loader"
+          initial={{ opacity:1 }} exit={{ opacity:0, scale:1.03 }}
+          transition={{ duration:0.5, ease:[0.22,1,0.36,1] }}
+          style={{ position:'fixed', inset:0, zIndex:9999, background:'#0a0a0a',
+            display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'2.5rem' }}>
 
-            <motion.p
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
-              style={{ fontFamily: "'Geist', sans-serif", fontWeight: 700, fontSize: '1.125rem', letterSpacing: '-0.03em', color: 'var(--text-1)' }}
-            >
-              roberto<span style={{ color: 'var(--accent)' }}>.</span>
+          {/* RM mark */}
+          <motion.div initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }}
+            transition={{ duration:0.5, ease:[0.22,1,0.36,1] }}
+            style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'1rem' }}>
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+              <rect width="56" height="56" fill="#c8f269" fillOpacity="0.06" />
+              <rect x="0.5" y="0.5" width="55" height="55" stroke="#c8f269" strokeOpacity="0.2" />
+              <text x="9" y="38" fontFamily="'DM Mono', monospace" fontWeight="500" fontSize="24" fill="#c8f269" letterSpacing="-1">RM</text>
+              <circle cx="48" cy="45" r="3" fill="#c8f269" />
+            </svg>
+            <motion.p initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.25 }}
+              style={{ fontFamily:"'DM Mono', monospace", fontWeight:400, fontSize:'0.6875rem', letterSpacing:'0.18em', textTransform:'uppercase', color:'#5a5a5a' }}>
+              rm<span style={{ color:'#c8f269' }}>.</span>dev
             </motion.p>
           </motion.div>
 
           {/* Progress bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', width: '180px' }}
-          >
-            <div style={{ width: '100%', height: '2px', background: 'var(--border)', borderRadius: '999px', overflow: 'hidden' }}>
-              <motion.div
-                style={{ height: '100%', background: 'linear-gradient(90deg, var(--accent), var(--accent-h))', borderRadius: '999px', transformOrigin: 'left' }}
-                initial={{ width: '0%' }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
-              />
+          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.35 }}
+            style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'0.75rem', width:'160px' }}>
+            <div style={{ width:'100%', height:'1px', background:'#1f1f1f', overflow:'hidden' }}>
+              <motion.div style={{ height:'100%', background:'#c8f269', width:`${progress}%`, transition:'width 0.35s ease-out' }} />
             </div>
-            <p style={{ fontFamily: "'Geist Mono', monospace", fontSize: '0.625rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
-              {progress < 100 ? 'Loading experience...' : 'Ready'}
+            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#2a2a2a' }}>
+              {progress < 100 ? `Loading — ${progress}%` : 'Ready'}
             </p>
           </motion.div>
         </motion.div>

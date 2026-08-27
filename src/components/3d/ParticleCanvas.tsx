@@ -46,7 +46,7 @@ export function ParticleCanvas() {
       })
     }
 
-    const accentR = 207, accentG = 69, accentB = 0   // clay #CF4500
+    const accentR = 200, accentG = 242, accentB = 105  // lime #c8f269
 
     const draw = () => {
       ctx.clearRect(0, 0, w, h)

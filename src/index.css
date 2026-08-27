@@ -1,532 +1,453 @@
 /* ================================================================
-   RM Portfolio v3 — Claude Code Design System
-   Font: Geist (Claude Code's exact font)
-   Colors: Claude.ai warm palette
-   Layout: Vlad Esplana-inspired editorial structure
+   RM Portfolio v7 — rojvillacampa-inspired Design System
+   Color: Near-black + Electric Lime Green
+   Font: Space Grotesk (body) + DM Mono (labels/eyebrows)
+   Rule: NO border-radius on cards. Brutalist editorial.
    ================================================================ */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design Tokens ─────────────────────────────────────────────── */
-@layer base {
+/* ── CSS Custom Properties ──────────────────────────────────────── */
+:root {
+  --bg-base:      #0a0a0a;
+  --bg-surface:   #111111;
+  --border:       #1f1f1f;
+  --accent:       #c8f269;
+  --accent-dim:   rgba(200, 242, 105, 0.08);
+  --accent-glow:  rgba(200, 242, 105, 0.20);
+  --text-primary: #f0f0f0;
+  --text-muted:   #5a5a5a;
+  --text-subtle:  #1e1e1e;
 
-  /* LIGHT — Claude.ai warm cream */
-  :root, .light {
-    --bg:              #F9F8F5;
-    --surface:         #FFFFFF;
-    --card:            #F3F2EE;
-    --card-hover:      #EDEDEA;
-    --border:          #E3E2DC;
-    --border-strong:   #CCCAC4;
-
-    --accent:          #CF4500;
-    --accent-h:        #E8602A;
-    --accent-dim:      rgba(207,69,0,0.08);
-    --accent-glow:     rgba(207,69,0,0.18);
-
-    --text-1:          #1A1917;
-    --text-2:          #5C5952;
-    --text-3:          #A09890;
-
-    --shadow-sm:  0 1px 3px rgba(0,0,0,0.06);
-    --shadow-md:  0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
-    --shadow-lg:  0 8px 32px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
-
-    --section-bg-alt: #F3F2EE;
-
-    color-scheme: light;
-  }
-
-  /* DARK — Claude Code warm dark */
-  .dark {
-    --bg:              #111110;
-    --surface:         #1A1917;
-    --card:            #222120;
-    --card-hover:      #2A2825;
-    --border:          #2E2D2A;
-    --border-strong:   #403E3A;
-
-    --accent:          #E8602A;
-    --accent-h:        #F57840;
-    --accent-dim:      rgba(232,96,42,0.10);
-    --accent-glow:     rgba(232,96,42,0.20);
-
-    --text-1:          #F5F3EE;
-    --text-2:          #9A9690;
-    --text-3:          #605C58;
-
-    --shadow-sm:  0 1px 4px rgba(0,0,0,0.3);
-    --shadow-md:  0 4px 20px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.2);
-    --shadow-lg:  0 8px 40px rgba(0,0,0,0.5);
-
-    --section-bg-alt: #161614;
-
-    color-scheme: dark;
-  }
-
-  /* ── Base ─────────────────────────────────────────────────────── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { overflow-x: clip; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-
-  body {
-    font-family: 'Geist', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text-1);
-    line-height: 1.6;
-    overflow-x: clip;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.2s, color 0.2s;
-  }
-
-  h1,h2,h3,h4,h5,h6 {
-    font-family: 'Geist', system-ui, sans-serif;
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.03em;
-    color: var(--text-1);
-  }
-
-  code, pre, kbd, samp, .font-mono {
-    font-family: 'Geist Mono', ui-monospace, monospace;
-  }
-
-  ::selection { background: var(--accent-dim); color: var(--accent); }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-
-  ::-webkit-scrollbar       { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
+  /* Keep Geist variables as aliases for components that use them */
+  --bg:           var(--bg-base);
+  --surface:      var(--bg-surface);
+  --card:         var(--bg-surface);
+  --card-hover:   #161616;
+  --border-dim:   #161616;
+  --border-strong: #2a2a2a;
+  --accent-h:     #d4f47a;
+  --text-1:       var(--text-primary);
+  --text-2:       #8a8a8a;
+  --text-3:       var(--text-muted);
+  --section-bg-alt: var(--bg-surface);
+  --shadow-sm:    0 1px 4px rgba(0,0,0,0.5);
+  --shadow-md:    0 4px 20px rgba(0,0,0,0.6);
+  --shadow-lg:    0 8px 40px rgba(0,0,0,0.7);
 }
 
-/* ── Components ─────────────────────────────────────────────────── */
-@layer components {
-
-  .rm-container { @apply w-full max-w-6xl mx-auto px-5 sm:px-8 lg:px-12; }
-  .rm-section   { @apply py-20 lg:py-28; }
-
-  /* ── Typography ──────────────────────────────────────────────── */
-
-  /* Hero display — Geist heavy, massive */
-  .t-hero {
-    font-family: 'Geist', system-ui, sans-serif;
-    font-weight: 800;
-    line-height: 0.95;
-    letter-spacing: -0.05em;
-  }
-
-  /* Section display heading */
-  .t-display {
-    font-family: 'Geist', system-ui, sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    line-height: 1.1;
-  }
-
-  /* Eyebrow — Geist Mono */
-  .t-eyebrow {
-    font-family: 'Geist Mono', monospace;
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.10em;
-    text-transform: uppercase;
-    color: var(--text-3);
-  }
-
-  /* Body */
-  .t-body { font-family: 'Geist', system-ui, sans-serif; font-weight: 400; line-height: 1.65; color: var(--text-2); }
-
-  /* ── Cards ───────────────────────────────────────────────────── */
-  .rm-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-  }
-  .rm-card:hover {
-    border-color: var(--border-strong);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
-  }
-
-  /* Project card — Vlad style large card with image */
-  .project-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
-    display: flex;
-    flex-direction: column;
-  }
-  .project-card:hover {
-    border-color: var(--border-strong);
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-3px);
-  }
-
-  /* Bento */
-  .bento-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    transition: all 0.2s;
-  }
-  .bento-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
-
-  /* Skill card — Vlad-style with title + desc */
-  .skill-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.5rem;
-    transition: all 0.2s;
-  }
-  .skill-card:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-dim); }
-
-  /* Tool icon card */
-  .tool-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 0.75rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s;
-  }
-  .tool-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
-
-  /* ── Buttons ─────────────────────────────────────────────────── */
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.625rem 1.25rem;
-    border-radius: 8px;
-    background: var(--accent);
-    color: #fff;
-    font-family: 'Geist', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    transition: all 0.15s;
-    white-space: nowrap;
-    border: 1px solid transparent;
-  }
-  .btn-primary:hover {
-    background: var(--accent-h);
-    box-shadow: 0 4px 16px var(--accent-glow);
-    transform: translateY(-1px);
-  }
-  .btn-primary:active { transform: none; }
-
-  .btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.625rem 1.25rem;
-    border-radius: 8px;
-    border: 1px solid var(--border-strong);
-    background: transparent;
-    color: var(--text-2);
-    font-family: 'Geist', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-
-  /* ── Tags ────────────────────────────────────────────────────── */
-  .rm-tag {
-    font-family: 'Geist Mono', monospace;
-    font-size: 0.6875rem;
-    font-weight: 500;
-    padding: 0.2rem 0.5rem;
-    border-radius: 5px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text-3);
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-  }
-  .rm-tag-accent {
-    background: var(--accent-dim);
-    border-color: rgba(207,69,0,0.15);
-    color: var(--accent-h);
-  }
-
-  /* ── Nav link ────────────────────────────────────────────────── */
-  .nav-link {
-    font-family: 'Geist', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-2);
-    transition: color 0.15s;
-    letter-spacing: -0.01em;
-  }
-  .nav-link:hover { color: var(--text-1); }
-  .nav-link.active { color: var(--text-1); font-weight: 600; }
-
-  /* ── Glass ───────────────────────────────────────────────────── */
-  .glass {
-    backdrop-filter: blur(20px) saturate(160%);
-    background: rgba(249,248,245,0.88);
-    border: 1px solid rgba(0,0,0,0.07);
-  }
-  .dark .glass {
-    background: rgba(17,17,16,0.90);
-    border: 1px solid rgba(255,255,255,0.05);
-  }
-
-  /* ── Divider ─────────────────────────────────────────────────── */
-  .rm-divider {
-    height: 1px;
-    background: var(--border);
-  }
-  .rm-divider-accent {
-    height: 1px;
-    background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
-  }
-
-  /* ── Section number ──────────────────────────────────────────── */
-  .section-num {
-    font-family: 'Geist Mono', monospace;
-    font-size: 0.625rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    color: var(--text-3);
-    text-transform: uppercase;
-  }
-
-  /* ── Filter tabs ─────────────────────────────────────────────── */
-  .filter-tab {
-    font-family: 'Geist', sans-serif;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    padding: 0.375rem 0.875rem;
-    border-radius: 6px;
-    border: 1px solid transparent;
-    transition: all 0.15s;
-    cursor: pointer;
-    color: var(--text-2);
-    background: transparent;
-  }
-  .filter-tab:hover { color: var(--text-1); background: var(--card); border-color: var(--border); }
-  .filter-tab.active {
-    color: var(--text-1);
-    background: var(--surface);
-    border-color: var(--border-strong);
-    font-weight: 600;
-    box-shadow: var(--shadow-sm);
-  }
-
-  /* ── Cert card ───────────────────────────────────────────────── */
-  .cert-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    transition: all 0.2s;
-  }
-  .cert-card:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--shadow-md); }
-
-  /* ── Tech card ───────────────────────────────────────────────── */
-  .tech-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 0.75rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: default;
-    transition: all 0.2s;
-  }
-  .tech-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
-
-  /* ── Expertise item (Vlad numbered) ──────────────────────────── */
-  .expertise-item {
-    padding: 1.75rem 0;
-    border-bottom: 1px solid var(--border);
-    display: grid;
-    grid-template-columns: 3rem 1fr;
-    gap: 1.5rem;
-    align-items: start;
-    transition: all 0.2s;
-  }
-  .expertise-item:hover .expertise-title { color: var(--accent); }
-}
-
-/* ── Utilities ──────────────────────────────────────────────────── */
-@layer utilities {
-  .text-balance { text-wrap: balance; }
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .animation-delay-100 { animation-delay: 100ms; }
-  .animation-delay-200 { animation-delay: 200ms; }
-  .animation-delay-300 { animation-delay: 300ms; }
-  .animation-delay-400 { animation-delay: 400ms; }
-  .animation-delay-500 { animation-delay: 500ms; }
-  .animation-delay-600 { animation-delay: 600ms; }
-  .animation-delay-700 { animation-delay: 700ms; }
-}
-
-/* ── 3D / Animation additions ───────────────────────────────────── */
-
-/* Ensure body bg is transparent so ParticleCanvas shows through */
-body { background-color: var(--bg); position: relative; }
-
-/* Hero canvas container */
-.hero-canvas-wrap {
-  position: absolute;
+/* ── Noise Grain Overlay ────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 9998;
   pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
 }
 
-/* 3D scene depth */
-.scene-depth {
-  transform-style: preserve-3d;
-  perspective: 1200px;
+/* ── Base Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  overflow-x: clip;
+  scroll-behavior: auto; /* Lenis handles scroll */
+  -webkit-text-size-adjust: 100%;
+  background: var(--bg-base);
 }
 
-/* Perspective wrapper for sections with 3D cards */
-.cards-3d-grid {
-  transform-style: preserve-3d;
+body {
+  overflow-x: clip;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Glowing border on hover — used for 3D-enhanced cards */
-.glow-on-hover {
-  transition: box-shadow 0.25s ease;
-}
-.glow-on-hover:hover {
-  box-shadow: 0 0 0 1px var(--accent-dim), 0 0 20px var(--accent-glow), var(--shadow-lg);
-}
-
-/* Ticker animation */
-@keyframes ticker {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-.animate-ticker { animation: ticker 22s linear infinite; }
-
-/* Floating blob for hero bg */
-@keyframes blob {
-  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-  50%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
-}
-.blob { animation: blob 14s ease-in-out infinite; }
-
-/* Three.js canvas always transparent */
-canvas[data-engine] { background: transparent !important; }
-
-/* 3D section title counter */
-.section-num {
-  font-family: 'Geist Mono', monospace;
-  font-size: 0.625rem;
-  font-weight: 500;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  white-space: nowrap;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
 }
 
-/* Expertise hover accent */
-.expertise-item:hover .expertise-title { color: var(--accent) !important; }
-
-/* Smooth scroll snap for long pages */
-html { scroll-behavior: smooth; }
-
-/* Prevent 3D transforms from causing overflow on mobile */
-@media (max-width: 768px) {
-  .cards-3d-grid { transform-style: flat; }
+code, pre, kbd, .font-mono {
+  font-family: 'DM Mono', ui-monospace, monospace;
 }
 
-/* ── Custom cursor support ──────────────────────────────────────── */
-/* Hide system cursor when custom cursor is active (desktop) */
+::selection { background: rgba(200,242,105,0.2); color: #c8f269; }
+:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ── Hide system cursor on desktop ─────────────────────────────── */
 @media (pointer: fine) {
   *, *::before, *::after { cursor: none !important; }
 }
-/* Restore cursor on touch devices */
 @media (pointer: coarse) {
-  *, *::before, *::after { cursor: auto !important; }
   a, button, [role="button"] { cursor: pointer !important; }
 }
-/* Preloader base — ensure it covers everything */
-#root { position: relative; z-index: 1; }
 
-/* ── GSAP animation base states ────────────────────────────────── */
-/* Elements controlled by GSAP start invisible */
-.gsap-hidden    { opacity: 0; }
-.gsap-slide-up  { opacity: 0; transform: translateY(40px); }
-.gsap-clip      { clip-path: inset(100% 0 0 0); }
-
-/* TextReveal mask line */
-.text-mask-line {
-  overflow: hidden;
-  display: inline-block;
-  vertical-align: top;
-}
-
-/* Horizontal scroll cursor hint */
-.hs-hint {
-  position: absolute;
-  bottom: 2rem;
-  right: 2rem;
-  font-family: 'Geist Mono', monospace;
-  font-size: 0.6875rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  opacity: 0.6;
-}
-
-/* Expertise hover accent fix */
-.group:hover .expertise-title,
-.exp-row:hover .expertise-title { color: var(--accent) !important; }
-
-/* Magnetic button container */
-.magnetic-wrap { display: inline-block; will-change: transform; }
-
-/* Page curtain acceleration */
-.page-curtain { will-change: transform; }
-
-/* Lenis scroll class */
+/* ── Lenis ──────────────────────────────────────────────────────── */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
-.lenis.lenis-scrolling iframe { pointer-events: none; }
 
-/* Horizontal scroll section */
+/* ── Layout ─────────────────────────────────────────────────────── */
+.rm-container {
+  width: 100%;
+  max-width: 88rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+@media (min-width: 768px) {
+  .rm-container { padding-left: 3rem; padding-right: 3rem; }
+}
+
+.rm-section { padding-top: 7rem; padding-bottom: 7rem; }
+@media (min-width: 768px) { .rm-section { padding-top: 10rem; padding-bottom: 10rem; } }
+
+/* ── Eyebrow / Label ────────────────────────────────────────────── */
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.eyebrow-accent {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ── Horizontal rule ────────────────────────────────────────────── */
+.rule { height: 1px; background: var(--border); width: 100%; }
+
+/* ── Buttons — NO border-radius ──────────────────────────────────── */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: var(--accent);
+  color: #0a0a0a;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.875rem; font-weight: 600; letter-spacing: -0.01em;
+  transition: all 0.2s;
+  border: 1px solid var(--accent);
+  border-radius: 0;
+}
+.btn-primary:hover { background: #d4f47a; }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.875rem; font-weight: 600; letter-spacing: -0.01em;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+  border-radius: 0;
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Tags — pill only ───────────────────────────────────────────── */
+.rm-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.625rem; font-weight: 400;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 999px; /* pill — allowed */
+  color: var(--text-muted);
+  background: transparent;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.rm-tag-accent {
+  border-color: rgba(200,242,105,0.3);
+  color: var(--accent);
+  background: rgba(200,242,105,0.06);
+}
+
+/* ── Nav link ───────────────────────────────────────────────────── */
+.nav-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem; font-weight: 400;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-link::after {
+  content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+  height: 1px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.nav-link:hover { color: var(--text-primary); }
+.nav-link:hover::after { transform: scaleX(1); }
+.nav-link.active { color: var(--accent); }
+.nav-link.active::after { transform: scaleX(1); }
+
+/* ── Glass navbar ───────────────────────────────────────────────── */
+.navbar-blur {
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Project card — NO border-radius ───────────────────────────── */
+.project-row {
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s;
+}
+.project-row::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(200,242,105,0.03);
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.project-row:hover { border-color: var(--accent); }
+.project-row:hover::after { opacity: 1; }
+
+/* Project card (grid style, no radius) */
+.project-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  overflow: hidden;
+  transition: border-color 0.3s;
+  display: flex; flex-direction: column;
+}
+.project-card:hover { border-color: var(--accent); }
+
+/* Hover image reveal on project cards */
+.project-thumb {
+  position: absolute; inset: 0; z-index: 0;
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 0.65s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.project-row:hover .project-thumb { clip-path: inset(0% 0 0 0); }
+
+/* ── Skill card — NO border-radius ─────────────────────────────── */
+.skill-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 1.5rem;
+  transition: border-color 0.2s;
+}
+.skill-card:hover { border-color: var(--accent); }
+
+/* ── Tool card — NO border-radius ──────────────────────────────── */
+.tool-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 1rem 0.75rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.tool-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+/* ── Bento card — NO border-radius ─────────────────────────────── */
+.bento-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 1.5rem;
+  transition: border-color 0.2s;
+}
+.bento-card:hover { border-color: var(--border-strong); }
+
+/* ── rm-card ────────────────────────────────────────────────────── */
+.rm-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  transition: border-color 0.2s;
+}
+.rm-card:hover { border-color: var(--border-strong); }
+
+/* ── Section number ─────────────────────────────────────────────── */
+.section-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.625rem; font-weight: 400;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Huge watermark number */
+.section-watermark {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(8rem, 20vw, 18rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--text-subtle);
+  opacity: 0.06;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── Expertise row ──────────────────────────────────────────────── */
+.expertise-item {
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  transition: all 0.2s;
+}
+.expertise-title { transition: color 0.2s; }
+.expertise-item:hover .expertise-title { color: var(--accent); }
+
+/* ── Filter tab ─────────────────────────────────────────────────── */
+.filter-tab {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6875rem; font-weight: 400;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.375rem 0.875rem;
+  border: 1px solid transparent;
+  border-radius: 0;
+  transition: all 0.15s;
+  cursor: none;
+  color: var(--text-muted);
+  background: transparent;
+}
+.filter-tab:hover { color: var(--text-primary); border-color: var(--border); }
+.filter-tab.active {
+  color: var(--bg-base);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 500;
+}
+
+/* ── Cert card ──────────────────────────────────────────────────── */
+.cert-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.cert-card:hover { border-color: var(--accent); }
+
+/* ── Tech card ──────────────────────────────────────────────────── */
+.tech-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 1rem 0.75rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  cursor: default; transition: border-color 0.2s, transform 0.2s;
+}
+.tech-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+/* ── Card3D ─────────────────────────────────────────────────────── */
+/* Override Card3D border-radius to 0 */
+[data-card3d] { border-radius: 0 !important; }
+
+/* ── Marquee ────────────────────────────────────────────────────── */
+.marquee-track { display: flex; width: max-content; }
+.marquee-fwd   { animation: marquee 28s linear infinite; }
+.marquee-rev   { animation: marqueeRev 28s linear infinite; }
+
+@keyframes marquee    { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes marqueeRev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+/* ── Ticker ─────────────────────────────────────────────────────── */
+.animate-ticker { animation: ticker 22s linear infinite; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── Text reveal keyframe ───────────────────────────────────────── */
+@keyframes slideUp {
+  from { transform: translateY(110%) skewY(5deg); }
+  to   { transform: translateY(0%) skewY(0deg); }
+}
+
+/* ── GSAP base states ────────────────────────────────────────────── */
+.gsap-hidden   { opacity: 0; }
+.gsap-slide-up { opacity: 0; transform: translateY(40px); }
+
+/* ── Section progress dots (side nav) ────────────────────────────── */
+.side-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.3s;
+  cursor: none;
+}
+.side-dot.active { background: var(--accent); transform: scale(1.4); }
+
+/* ── Scroll indicator ───────────────────────────────────────────── */
+@keyframes scrollDrop {
+  0%   { transform: translateY(0); opacity: 1; }
+  80%  { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 0; }
+}
+.scroll-line-anim { animation: scrollDrop 1.8s ease-in-out infinite; }
+
+/* ── Availability dot pulse ─────────────────────────────────────── */
+.avail-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse 2s ease-in-out infinite; }
+
+/* ── Horizontal scroll ──────────────────────────────────────────── */
 .hs-section { overflow: hidden; position: relative; }
 .hs-track   { display: flex; width: max-content; will-change: transform; }
 
-/* slideUp keyframe for CSS-based fallback */
-@keyframes slideUp {
-  from { transform: translateY(110%); }
-  to   { transform: translateY(0%); }
+/* ── t-eyebrow alias ────────────────────────────────────────────── */
+.t-eyebrow { font-family: 'DM Mono', monospace; font-size: 0.6875rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+.t-display { font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+.t-body    { font-family: 'Space Grotesk', sans-serif; font-weight: 400; line-height: 1.65; color: var(--text-muted); }
+
+/* ── Glow on accent element ─────────────────────────────────────── */
+.accent-glow {
+  box-shadow: 0 0 60px rgba(200,242,105,0.15), 0 0 120px rgba(200,242,105,0.08);
 }
 
-/* Value props hover */
-.value-card:hover { border-color: var(--accent) !important; }
+/* ── rm-divider ─────────────────────────────────────────────────── */
+.rm-divider { height: 1px; background: var(--border); }
+
+/* ── Scroll to top button ───────────────────────────────────────── */
+.stt-btn {
+  width: 48px; height: 48px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border-radius: 0;
+  color: var(--text-muted);
+  transition: all 0.2s; cursor: none;
+}
+.stt-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Utilities ──────────────────────────────────────────────────── */
+.text-balance { text-wrap: balance; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.will-change-t { will-change: transform; }

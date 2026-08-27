@@ -247,3 +247,50 @@ lenis.on('scroll', ScrollTrigger.update)
 // RAF loop keeps both in sync at 60fps
 requestAnimationFrame(time => lenis.raf(time))
 ```
+
+---
+
+## v7 — rojvillacampa-inspired Design (Complete Rebuild)
+
+### Design System
+| Token | Value |
+|---|---|
+| Background | `#0a0a0a` (near-black) |
+| Surface | `#111111` |
+| Border | `#1f1f1f` |
+| Accent | `#c8f269` (electric lime green) |
+| Text | `#f0f0f0` / `#5a5a5a` / `#2a2a2a` |
+| Display font | **Space Grotesk 700** |
+| Label/mono font | **DM Mono 400** |
+| Border-radius | **0** on all cards — brutalist editorial |
+
+### Animation Stack
+| Animation | Implementation |
+|---|---|
+| Smooth scroll | Lenis `duration: 1.2` + GSAP ticker sync |
+| Hero char-by-char | TextReveal — `splitBy: 'chars'` + `skewY: 4deg` |
+| Section reveals | ClipReveal — `inset(100% 0 0 0)` → `inset(0%)` |
+| Magnetic buttons | MagneticButton — `strength: 0.3`, elastic return |
+| Page transitions | Lime green curtain — `scaleY` bottom→top |
+| Project hover | CSS `clip-path` image reveal on `.project-row` |
+| Skills ticker | Marquee — dual rows, forward + reverse |
+| Noise grain | `body::before` SVG fractalNoise at 3.5% opacity |
+
+### Key Pages
+- `/` — Full single-page portfolio: Hero → About → Work → Skills → Contact
+- `/projects` — List-style rows with hover image reveal + filter
+- `/about` — Timeline, education, certifications
+- `/tech-stack` — Category grid + marquee icon strip
+- `/services` — Editorial numbered list + FAQ
+- `/contact` — Split layout with EmailJS form
+- `*` — 3D broken geometry 404
+
+### What makes it feel like rojvillacampa
+1. **Char-by-char skew reveal** — the signature hero moment
+2. **Lenis** — native scroll feels broken after you use this
+3. **Project rows** with clip-path image reveal on hover
+4. **Lime `#c8f269`** as the ONLY accent — no gradients
+5. **Noise grain** at 3.5% opacity — without it the design looks flat
+6. **DM Mono** for ALL labels, eyebrows, metadata
+7. **Zero border-radius** on cards — intentional, editorial
+8. **Magnetic buttons** with elastic spring-back

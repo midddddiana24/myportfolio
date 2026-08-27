@@ -2,50 +2,33 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
 
-// ================================================================
-// ScrollToTop — Appears after 30% scroll · Smooth scroll to top
-// ================================================================
-
 export function ScrollToTop() {
   const [visible, setVisible] = useState(false)
-
   useEffect(() => {
-    const onScroll = () => {
-      const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)
-      setVisible(pct > 0.28)
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const fn = () => setVisible(window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) > 0.28)
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => window.removeEventListener('scroll', fn)
   }, [])
-
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.7, y: 12 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.7, y: 12 }}
-          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          onClick={scrollToTop}
+          initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:12 }}
+          transition={{ duration:0.25 }}
+          onClick={() => window.scrollTo({ top:0, behavior:'smooth' })}
           aria-label="Scroll to top"
           style={{
-            position: 'fixed', bottom: '1.75rem', right: '1.75rem',
-            zIndex: 500, width: '42px', height: '42px',
-            borderRadius: '12px',
-            background: 'var(--accent)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            color: '#fff',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'none',
-            boxShadow: '0 4px 20px var(--accent-glow)',
-            transition: 'box-shadow 0.2s',
+            position:'fixed', bottom:'1.75rem', right:'1.75rem', zIndex:500,
+            width:'40px', height:'40px', border:'1px solid #1f1f1f',
+            background:'transparent', color:'#5a5a5a',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            borderRadius:0, transition:'border-color 0.2s, color 0.2s',
           }}
-          whileHover={{ scale: 1.08, boxShadow: '0 6px 28px var(--accent-glow)' }}
-          whileTap={{ scale: 0.94 }}
+          whileHover={{ borderColor:'#c8f269', color:'#c8f269' }}
+          whileTap={{ scale:0.94 }}
         >
-          <ArrowUp size={17} />
+          <ArrowUp size={15} />
         </motion.button>
       )}
     </AnimatePresence>

@@ -1,92 +1,124 @@
 import { useEffect, useRef, useState } from 'react'
+import { gsap } from '@/lib/gsap'
 
 // ================================================================
-// CustomCursor — Glowing dot + trailing ring cursor
-// Hides default OS cursor · Reacts to links/buttons/canvas
+// CustomCursor v2 — Dot + Ring with VIEW state on project cards
+// Ring uses GSAP quickTo for maximum perf
 // ================================================================
+
+type CursorState = 'default' | 'link' | 'button' | 'view' | 'canvas'
 
 export function CustomCursor() {
-  const dotRef  = useRef<HTMLDivElement>(null)
-  const ringRef = useRef<HTMLDivElement>(null)
-  const [hoverType, setHoverType] = useState<'default' | 'link' | 'button' | 'canvas'>('default')
-  const mouseRef = useRef({ x: 0, y: 0 })
-  const ringPos  = useRef({ x: 0, y: 0 })
-  const rafRef   = useRef<number>(0)
-
+  const dotRef    = useRef<HTMLDivElement>(null)
+  const ringRef   = useRef<HTMLDivElement>(null)
+  const labelRef  = useRef<HTMLSpanElement>(null)
+  const [state, setState] = useState<CursorState>('default')
+  const stateRef  = useRef<CursorState>('default')
+  
   useEffect(() => {
-    // Hide system cursor
-    document.documentElement.style.cursor = 'none'
+    const dot  = dotRef.current
+    const ring = ringRef.current
+    if (!dot || !ring) return
+
+    // GSAP quickTo for ring — smoothest possible follow
+    const xTo = gsap.quickTo(ring, 'x', { duration: 0.45, ease: 'power3.out' })
+    const yTo = gsap.quickTo(ring, 'y', { duration: 0.45, ease: 'power3.out' })
 
     const onMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY }
-      // Dot snaps immediately
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${e.clientX - 5}px, ${e.clientY - 5}px)`
-      }
+      // Dot: instant
+      gsap.set(dot, { x: e.clientX - 5, y: e.clientY - 5 })
+
+      // Ring: smooth lag
+      xTo(e.clientX - 20)
+      yTo(e.clientY - 20)
+
       // Detect hover target
       const target = e.target as HTMLElement
-      if (target.closest('canvas'))        setHoverType('canvas')
-      else if (target.closest('button, [role="button"], .btn-primary, .btn-ghost')) setHoverType('button')
-      else if (target.closest('a, [data-cursor="link"]')) setHoverType('link')
-      else setHoverType('default')
-    }
+      let newState: CursorState = 'default'
 
-    // Ring follows with lerp
-    const animate = () => {
-      ringPos.current.x += (mouseRef.current.x - ringPos.current.x) * 0.12
-      ringPos.current.y += (mouseRef.current.y - ringPos.current.y) * 0.12
-      if (ringRef.current) {
-        ringRef.current.style.transform = `translate(${ringPos.current.x - 18}px, ${ringPos.current.y - 18}px)`
+      if (target.closest('[data-cursor="view"], .project-row, .project-card'))
+        newState = 'view'
+      else if (target.closest('canvas'))
+        newState = 'canvas'
+      else if (target.closest('button, .btn-primary, .btn-ghost, .filter-tab, .stt-btn, [data-cursor="button"]'))
+        newState = 'button'
+      else if (target.closest('a, [role="button"], .nav-link, [data-cursor="link"]'))
+        newState = 'link'
+
+      if (newState !== stateRef.current) {
+        stateRef.current = newState
+        setState(newState)
       }
-      rafRef.current = requestAnimationFrame(animate)
     }
-    rafRef.current = requestAnimationFrame(animate)
 
-    document.addEventListener('mousemove', onMove, { passive: true })
+    const onLeave = () => gsap.to([dot, ring], { opacity: 0, duration: 0.3 })
+    const onEnter = () => gsap.to([dot, ring], { opacity: 1, duration: 0.3 })
+    const onClick = () => {
+      gsap.fromTo(ring, { scale: 0.8 }, { scale: 1, duration: 0.35, ease: 'elastic.out(1, 0.5)' })
+    }
+
+    window.addEventListener('mousemove', onMove, { passive: true })
+    document.addEventListener('mouseleave', onLeave)
+    document.addEventListener('mouseenter', onEnter)
+    window.addEventListener('click', onClick)
+
     return () => {
-      document.removeEventListener('mousemove', onMove)
-      cancelAnimationFrame(rafRef.current)
-      document.documentElement.style.cursor = ''
+      window.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseleave', onLeave)
+      document.removeEventListener('mouseenter', onEnter)
+      window.removeEventListener('click', onClick)
     }
   }, [])
 
-  // Styles by hover state
-  const ringScale = hoverType === 'link' ? 'scale(1.7)' : hoverType === 'button' ? 'scale(1.4)' : hoverType === 'canvas' ? 'scale(2.2)' : 'scale(1)'
-  const dotOpacity = hoverType === 'link' ? 0 : 1
-  const ringOpacity = hoverType === 'canvas' ? 0.35 : 0.65
-  const ringBg = hoverType === 'link' ? 'var(--accent-dim)' : hoverType === 'button' ? 'var(--accent-dim)' : 'transparent'
+  // Ring size / style by state
+  const ringSize     = state === 'view' ? 72 : state === 'canvas' ? 56 : state === 'link' ? 52 : state === 'button' ? 44 : 40
+  const ringBg       = state === 'view' ? 'rgba(200,242,105,0.9)' : state === 'link' ? 'rgba(200,242,105,0.08)' : 'transparent'
+  const ringBorder   = state === 'view' ? 'none' : '1.5px solid #c8f269'
+  const dotVisible   = state === 'view' || state === 'link' ? 0 : 1
+  const labelVisible = state === 'view' ? 1 : 0
 
   return (
     <>
       {/* Dot */}
-      <div
-        ref={dotRef}
-        style={{
-          position: 'fixed', top: 0, left: 0, zIndex: 99999,
-          width: 10, height: 10, borderRadius: '50%',
-          background: 'var(--accent)',
-          opacity: dotOpacity,
-          pointerEvents: 'none',
-          transition: 'opacity 0.2s',
-          boxShadow: '0 0 8px var(--accent-glow)',
-          willChange: 'transform',
-        }}
-      />
+      <div ref={dotRef} style={{
+        position: 'fixed', top: 0, left: 0, zIndex: 99999,
+        width: 10, height: 10, borderRadius: '50%',
+        background: '#c8f269',
+        opacity: dotVisible,
+        pointerEvents: 'none',
+        boxShadow: '0 0 8px rgba(200,242,105,0.5)',
+        transition: 'opacity 0.2s',
+        willChange: 'transform',
+      }} />
+
       {/* Ring */}
-      <div
-        ref={ringRef}
-        style={{
-          position: 'fixed', top: 0, left: 0, zIndex: 99998,
-          width: 36, height: 36, borderRadius: '50%',
-          border: '1.5px solid var(--accent)',
-          background: ringBg,
-          opacity: ringOpacity,
-          pointerEvents: 'none',
-          transition: 'transform 0.18s cubic-bezier(0.22,1,0.36,1), opacity 0.2s, background 0.2s',
-          transform: ringScale,
-          willChange: 'transform',
-        }}
-      />
+      <div ref={ringRef} style={{
+        position: 'fixed', top: 0, left: 0, zIndex: 99998,
+        width: ringSize, height: ringSize,
+        marginLeft: -(ringSize - 40) / 2,
+        marginTop:  -(ringSize - 40) / 2,
+        borderRadius: '50%',
+        border: ringBorder,
+        background: ringBg,
+        pointerEvents: 'none',
+        transition: 'width 0.3s cubic-bezier(0.22,1,0.36,1), height 0.3s cubic-bezier(0.22,1,0.36,1), background 0.25s, border 0.25s, margin 0.3s',
+        willChange: 'transform',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <span ref={labelRef} style={{
+          fontFamily: "'DM Mono', monospace",
+          fontWeight: 500,
+          fontSize: '0.5625rem',
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          color: '#0a0a0a',
+          opacity: labelVisible,
+          transition: 'opacity 0.2s',
+          userSelect: 'none',
+        }}>
+          VIEW
+        </span>
+      </div>
     </>
   )
 }

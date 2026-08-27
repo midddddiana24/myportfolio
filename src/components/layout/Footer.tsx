@@ -1,51 +1,90 @@
 import { NavLink } from 'react-router-dom'
-import { RMLogo } from '@/components/ui/RMLogo'
+import { ArrowUp }  from 'lucide-react'
+import { RMLogo }   from '@/components/ui/RMLogo'
 import { SocialLinks } from '@/components/ui/SocialLinks'
-import { DateTime } from '@/components/ui/DateTime'
-import { navItems } from '@/data/socials'
+import { DateTime }    from '@/components/ui/DateTime'
+import { MagneticButton } from '@/components/motion/MagneticButton'
+import { navItems }    from '@/data/socials'
+
+// ================================================================
+// Footer — Minimal dark editorial footer matching spec
+// © left · built-by right · back-to-top center
+// ================================================================
 
 const year = new Date().getFullYear()
 
 export function Footer() {
+  const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
   return (
-    <footer className="pt-14 pb-8 border-t" style={{ borderColor:'var(--border)', background:'var(--surface)' }} role="contentinfo">
-      <div className="rm-container">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
-          <div className="lg:col-span-2 flex flex-col gap-4">
-            <RMLogo showText size={30} />
-            <p className="text-sm leading-relaxed max-w-xs" style={{ color:'var(--text-2)', fontFamily:"'Geist', sans-serif" }}>
-              BSIT student at West Visayas State University — Janiuay Campus. Building modern web applications and systems.
+    <footer style={{ borderTop:'1px solid #1f1f1f', background:'#0a0a0a' }} role="contentinfo">
+
+      {/* Top section */}
+      <div className="rm-container py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+
+          {/* Brand */}
+          <div className="lg:col-span-2 flex flex-col gap-5">
+            <RMLogo showText size={28} />
+            <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.875rem', color:'#5a5a5a', lineHeight:1.65, maxWidth:'280px' }}>
+              BSIT student at WVSU – Janiuay Campus. Building modern web applications and systems.
             </p>
             <SocialLinks />
           </div>
+
+          {/* Navigation */}
           <nav aria-label="Footer navigation">
-            <p className="t-eyebrow mb-4">Navigation</p>
-            <ul className="flex flex-col gap-2">
+            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#2a2a2a', marginBottom:'1.25rem' }}>
+              Navigation
+            </p>
+            <ul className="flex flex-col gap-2.5">
               {navItems.map(item => (
                 <li key={item.href}>
-                  <NavLink to={item.href} className="text-sm transition-colors duration-150" style={{ color:'var(--text-3)', fontFamily:"'Geist', sans-serif", fontWeight:500 }}
-                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-1)' }}
-                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-3)' }}>
+                  <NavLink to={item.href}
+                    style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.875rem', color:'#5a5a5a', transition:'color 0.15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#f0f0f0' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = '#5a5a5a' }}>
                     {item.label}
                   </NavLink>
                 </li>
               ))}
             </ul>
           </nav>
+
+          {/* Info */}
           <div>
-            <p className="t-eyebrow mb-4">Info</p>
-            <div className="flex flex-col gap-2 text-sm" style={{ color:'var(--text-3)', fontFamily:"'Geist', sans-serif" }}>
+            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#2a2a2a', marginBottom:'1.25rem' }}>
+              Info
+            </p>
+            <div className="flex flex-col gap-2" style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.875rem', color:'#5a5a5a' }}>
               <span>WVSU – Janiuay Campus</span>
               <span>Iloilo, Philippines</span>
-              <span>Expected Graduation: 2027</span>
+              <span>Expected: 2027</span>
             </div>
             <DateTime compact className="mt-4" />
           </div>
         </div>
-        <div className="rm-divider mb-6" />
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs" style={{ color:'var(--text-3)', fontFamily:"'Geist Mono', monospace" }}>© {year} Roberto Mediana Jr. All rights reserved.</p>
-          <p className="text-xs" style={{ color:'var(--text-3)', fontFamily:"'Geist Mono', monospace" }}>Built with React + Geist</p>
+      </div>
+
+      {/* Bottom bar — spec layout */}
+      <div className="rm-container py-5 border-t" style={{ borderColor:'#1f1f1f' }}>
+        <div className="flex items-center justify-between gap-4">
+          {/* Left */}
+          <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'#2a2a2a' }}>
+            © {year} Roberto Mediana Jr.
+          </p>
+
+          {/* Center — back to top */}
+          <MagneticButton strength={0.4}>
+            <button onClick={scrollTop} className="stt-btn" aria-label="Back to top">
+              <ArrowUp size={14} />
+            </button>
+          </MagneticButton>
+
+          {/* Right */}
+          <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'#2a2a2a' }}>
+            Designed &amp; built by Roberto M. Jr.
+          </p>
         </div>
       </div>
     </footer>

@@ -6,21 +6,21 @@ interface DateTimeProps { className?: string; showIcon?: boolean; compact?: bool
 
 export function DateTime({ className, showIcon=true, compact=false }: DateTimeProps) {
   const { date, time } = useDateTime()
-  if (compact) {
-    return (
-      <div className={cn('flex items-center gap-1.5', className)} style={{ fontFamily:"'Geist Mono', monospace", fontSize:'0.6875rem', color:'var(--text-3)' }} aria-live="polite">
-        {showIcon && <Clock size={11} />}
-        <span>{time}</span>
-      </div>
-    )
-  }
+  const mono = { fontFamily:"'DM Mono', monospace" }
+
+  if (compact) return (
+    <div className={cn('flex items-center gap-1.5', className)} style={{ ...mono, fontSize:'0.5625rem', letterSpacing:'0.1em', color:'#2a2a2a' }} aria-live="polite">
+      {showIcon && <Clock size={10} />}
+      <span>{time}</span>
+    </div>
+  )
+
   return (
     <div className={cn('flex flex-col gap-0.5', className)} aria-live="polite">
-      <div className="flex items-center gap-1.5" style={{ fontFamily:"'Geist Mono', monospace", fontSize:'0.6875rem', color:'var(--text-3)' }}>
-        {showIcon && <Clock size={11} />}
-        <span>{date}</span>
+      <div style={{ ...mono, fontSize:'0.5625rem', letterSpacing:'0.08em', color:'#2a2a2a', display:'flex', alignItems:'center', gap:'0.375rem' }}>
+        {showIcon && <Clock size={10} />}<span>{date}</span>
       </div>
-      <div style={{ fontFamily:"'Geist Mono', monospace", fontSize:'0.875rem', fontWeight:500, color:'var(--text-2)' }}>{time}</div>
+      <div style={{ ...mono, fontSize:'0.75rem', fontWeight:400, color:'#5a5a5a' }}>{time}</div>
     </div>
   )
 }

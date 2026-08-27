@@ -1,16 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Github, ExternalLink } from 'lucide-react'
+import { Github, ExternalLink, ArrowUpRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PageTransition } from '@/components/layout/PageTransition'
-import { SectionHeading } from '@/components/ui/SectionHeading'
-import { ScrollReveal } from '@/components/ui/ScrollReveal'
+import { ClipReveal }     from '@/components/motion/ClipReveal'
+import { TextReveal }     from '@/components/motion/TextReveal'
+import { MagneticButton } from '@/components/motion/MagneticButton'
 import { projects, projectCategories } from '@/data/projects'
 import type { CategoryKey } from '@/data/projects'
+import { DUR_SLOW } from '@/lib/gsap'
 
-const catColors: Record<string,string> = { school:'rgba(99,102,241,0.12)', capstone:'rgba(207,69,0,0.10)', personal:'rgba(34,197,94,0.10)' }
-const catText:   Record<string,string> = { school:'#818cf8', capstone:'var(--accent-h)', personal:'#4ade80' }
-const statusColor: Record<string,string> = { completed:'#4ade80', 'in-progress':'#fbbf24', planned:'#60a5fa' }
+const catColors: Record<string,string> = { school:'rgba(99,102,241,0.1)', capstone:'rgba(200,242,105,0.08)', personal:'rgba(34,197,94,0.08)' }
+const catText:   Record<string,string> = { school:'#818cf8', capstone:'#c8f269', personal:'#4ade80' }
 
 export default function Projects() {
   const [active, setActive] = useState<CategoryKey>('all')
@@ -18,95 +19,85 @@ export default function Projects() {
 
   return (
     <PageTransition className="pt-28">
-
-      <section className="rm-section pb-8">
+      <section className="rm-section">
         <div className="rm-container">
-          <SectionHeading eyebrow="Portfolio" title="My Projects" subtitle="Systems, applications, and experiments built throughout my academic and development journey." />
+          <div className="flex items-center gap-4 mb-4">
+            <span className="eyebrow">/ Portfolio</span>
+            <div className="rule flex-1" />
+            <span className="eyebrow">Work</span>
+          </div>
+
+          <TextReveal as="h1" trigger="load" splitBy="words" delay={0.1} duration={DUR_SLOW} stagger={0.07} skewY={3}
+            style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2.5rem,7vw,6rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1, marginBottom:'3rem' }}>
+            My Projects.
+          </TextReveal>
 
           {/* Filter */}
-          <ScrollReveal>
-            <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-xl border w-fit mb-12"
-              style={{ background:'var(--card)', borderColor:'var(--border)' }}>
+          <ClipReveal direction="down">
+            <div className="flex flex-wrap items-center gap-1 p-1 border mb-12 w-fit" style={{ borderColor:'#1f1f1f', background:'#111111' }}>
               {projectCategories.map(cat => {
                 const count = cat.key === 'all' ? projects.length : projects.filter(p => p.category === cat.key).length
                 return (
-                  <button key={cat.key} onClick={() => setActive(cat.key)}
-                    className={`filter-tab ${active === cat.key ? 'active' : ''}`}>
+                  <button key={cat.key} onClick={() => setActive(cat.key)} className={`filter-tab ${active === cat.key ? 'active' : ''}`}>
                     {cat.label}
-                    <span className="ml-1.5 font-mono text-xs px-1.5 rounded" style={{
-                      background: active === cat.key ? 'rgba(207,69,0,0.15)' : 'var(--bg)',
-                      color: active === cat.key ? 'var(--accent-h)' : 'var(--text-3)',
-                    }}>{count}</span>
+                    <span style={{ marginLeft:'0.4rem', fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', opacity:0.6 }}>({count})</span>
                   </button>
                 )
               })}
             </div>
-          </ScrollReveal>
+          </ClipReveal>
 
-          <AnimatePresence mode="popLayout">
-            {filtered.length > 0 ? (
-              <motion.div key="grid" layout className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filtered.map((p, i) => (
-                  <motion.article key={p.id} layout
-                    initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-12 }}
-                    transition={{ duration:0.35, delay:i*0.05, ease:[0.22,1,0.36,1] }}
-                    className="project-card group">
-                    {/* Image */}
-                    <div className="relative h-52 overflow-hidden" style={{ background:'var(--border)' }}>
-                      {p.image && !p.image.includes('placeholder')
-                        ? <img src={p.image} alt={p.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                        : <div className="w-full h-full flex flex-col items-center justify-center gap-2 opacity-25">
-                            <span className="text-3xl">🖥️</span>
-                            <span className="font-mono text-xs" style={{ color:'var(--text-3)' }}>Project Preview</span>
-                          </div>
-                      }
-                      <span className="absolute top-3 left-3 text-xs font-mono px-2 py-0.5 rounded-md"
-                        style={{ background:catColors[p.category]??'var(--accent-dim)', color:catText[p.category]??'var(--accent-h)', backdropFilter:'blur(8px)' }}>
-                        {projectCategories.find(c=>c.key===p.category)?.label}
+          {/* List rows */}
+          <div className="border-t" style={{ borderColor:'#1f1f1f' }}>
+            <AnimatePresence mode="popLayout">
+              {filtered.length > 0 ? filtered.map((p, i) => (
+                <motion.div key={p.id} layout
+                  initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-12 }}
+                  transition={{ duration:0.4, delay:i*0.05, ease:[0.22,1,0.36,1] }}>
+                  <div className="project-row" data-cursor="view">
+                    {p.image && !p.image.includes('placeholder') && (
+                      <div className="project-thumb">
+                        <img src={p.image} alt="" className="w-full h-full object-cover" />
+                        <div style={{ position:'absolute', inset:0, background:'rgba(10,10,10,0.65)' }} />
+                      </div>
+                    )}
+                    <div className="relative z-10 grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] gap-4 items-center p-6 md:p-8">
+                      <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', color:'#2a2a2a', letterSpacing:'0.05em' }}>
+                        {String(i+1).padStart(2,'0')}
                       </span>
-                      <span className="absolute top-3 right-3 flex items-center gap-1 font-mono text-xs px-2 py-0.5 rounded-full"
-                        style={{ background:'rgba(0,0,0,0.55)', color:statusColor[p.status]??'var(--text-3)' }}>
-                        <span className="w-1.5 h-1.5 rounded-full" style={{ background:statusColor[p.status], opacity:p.status==='in-progress'?1:0.5 }} />
-                        {p.status==='in-progress'?'In Progress':p.status}
-                      </span>
-                    </div>
-                    {/* Content */}
-                    <div className="p-5 flex flex-col flex-1 gap-3">
                       <div>
-                        <p className="t-eyebrow mb-1">{p.role} · {p.date}</p>
-                        <h3 style={{ fontFamily:"'Geist', sans-serif", fontWeight:700, fontSize:'1rem', letterSpacing:'-0.02em', color:'var(--text-1)' }}>{p.title}</h3>
+                        <div className="flex flex-wrap items-center gap-3 mb-1">
+                          <span style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(1rem,2.5vw,1.375rem)', letterSpacing:'-0.02em', color:'#f0f0f0' }}>{p.title}</span>
+                          <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', textTransform:'uppercase', padding:'0.2rem 0.5rem', border:`1px solid ${catColors[p.category]}`, color:catText[p.category], background:catColors[p.category] }}>
+                            {p.category}
+                          </span>
+                        </div>
+                        <p className="text-sm mb-2" style={{ color:'#5a5a5a', fontFamily:"'Space Grotesk', sans-serif" }}>{p.shortDescription.slice(0,100)}…</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {p.technologies.slice(0,4).map(t => <span key={t} className="rm-tag" style={{ fontSize:'0.5625rem' }}>{t}</span>)}
+                        </div>
                       </div>
-                      <p className="text-sm leading-relaxed flex-1" style={{ color:'var(--text-2)' }}>{p.shortDescription}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {p.technologies.slice(0,4).map(t=><span key={t} className="rm-tag">{t}</span>)}
-                        {p.technologies.length>4 && <span className="rm-tag">+{p.technologies.length-4}</span>}
-                      </div>
-                      <div className="flex items-center gap-2 pt-1">
-                        <Link to={`/projects/${p.slug}`} className="btn-primary text-xs py-1.5 px-3 flex-1 justify-center">View Project</Link>
-                        {p.githubUrl && <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost p-2" aria-label="GitHub"><Github size={13}/></a>}
-                        {p.liveDemoUrl && <a href={p.liveDemoUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost p-2" aria-label="Live Demo"><ExternalLink size={13}/></a>}
+                      <div className="flex items-center gap-3">
+                        <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#2a2a2a' }}>{p.date}</span>
+                        <MagneticButton strength={0.3}>
+                          <Link to={`/projects/${p.slug}`} className="btn-ghost" style={{ padding:'0.5rem 0.875rem', fontSize:'0.6875rem', fontFamily:"'DM Mono', monospace", letterSpacing:'0.08em', textTransform:'uppercase' }}>
+                            View <ArrowUpRight size={12} />
+                          </Link>
+                        </MagneticButton>
+                        {p.githubUrl && <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color:'#5a5a5a', transition:'color 0.2s' }} onMouseEnter={e=>{e.currentTarget.style.color='#c8f269'}} onMouseLeave={e=>{e.currentTarget.style.color='#5a5a5a'}}><Github size={15}/></a>}
+                        {p.liveDemoUrl && <a href={p.liveDemoUrl} target="_blank" rel="noopener noreferrer" style={{ color:'#5a5a5a', transition:'color 0.2s' }} onMouseEnter={e=>{e.currentTarget.style.color='#c8f269'}} onMouseLeave={e=>{e.currentTarget.style.color='#5a5a5a'}}><ExternalLink size={15}/></a>}
                       </div>
                     </div>
-                  </motion.article>
-                ))}
-              </motion.div>
-            ) : (
-              <motion.div key="empty" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} className="text-center py-24">
-                <p className="text-5xl mb-3">🚧</p>
-                <p style={{ fontFamily:"'Geist', sans-serif", fontWeight:700, color:'var(--text-1)', marginBottom:'0.5rem' }}>No projects in this category yet</p>
-                <p className="text-sm" style={{ color:'var(--text-3)' }}>This portfolio is continuously evolving as I build and learn.</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <ScrollReveal className="mt-14">
-            <div className="bento-card text-center py-10 max-w-lg mx-auto">
-              <p style={{ fontFamily:"'Geist', sans-serif", fontWeight:700, fontSize:'0.9375rem', color:'var(--text-1)', marginBottom:'0.25rem' }}>🌱 Still Growing</p>
-              <p className="text-sm leading-relaxed" style={{ color:'var(--text-3)' }}>
-                This portfolio is continuously evolving as I build, learn, and explore new technologies.
-              </p>
-            </div>
-          </ScrollReveal>
+                  </div>
+                </motion.div>
+              )) : (
+                <motion.div key="empty" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} className="py-20 text-center">
+                  <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, color:'#f0f0f0', marginBottom:'0.5rem' }}>No projects yet</p>
+                  <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.1em', color:'#2a2a2a' }}>Continuously evolving…</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </section>
     </PageTransition>

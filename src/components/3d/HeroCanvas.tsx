@@ -41,7 +41,7 @@ function ClickBursts({ bursts, onExpired }: { bursts: Burst[]; onExpired: (id: n
         burst.particles.filter(p => p.life > 0).map((p, i) => (
           <mesh key={`${burst.id}-${i}`} position={p.pos}>
             <sphereGeometry args={[0.04, 6, 6]} />
-            <meshBasicMaterial color="#E8702A" transparent opacity={Math.max(0, p.life)} />
+            <meshBasicMaterial color="#d4f47a" transparent opacity={Math.max(0, p.life)} />
           </mesh>
         ))
       )}
@@ -84,12 +84,12 @@ function MainKnot({ scrollProgress, onClickBurst }: {
       <group onClick={handleClick}>
         <mesh ref={mesh}>
           <torusKnotGeometry args={[1.4, 0.42, 220, 36, 2, 3]} />
-          <MeshDistortMaterial color="#CF4500" distort={0.25} speed={2.5}
+          <MeshDistortMaterial color="#c8f269" distort={0.25} speed={2.5}
             metalness={0.7} roughness={0.15} transparent opacity={0.92} />
         </mesh>
         <mesh ref={wire}>
           <torusKnotGeometry args={[1.4, 0.42, 220, 36, 2, 3]} />
-          <meshBasicMaterial wireframe color="#FF8A50" transparent opacity={0.12} />
+          <meshBasicMaterial wireframe color="#c8f269" transparent opacity={0.12} />
         </mesh>
         {/* Invisible click hitbox — larger area */}
         <mesh visible={false}>
@@ -179,7 +179,7 @@ function EnergyRing({ radius, speed, tilt, scrollProgress }: {
   return (
     <mesh ref={ring}>
       <torusGeometry args={[radius, 0.012, 16, 200]} />
-      <meshBasicMaterial color="#E8702A" transparent opacity={0.3} />
+      <meshBasicMaterial color="#d4f47a" transparent opacity={0.3} />
     </mesh>
   )
 }
@@ -193,7 +193,7 @@ function CoreGlow() {
   })
   return (
     <Sphere ref={mesh} args={[0.5, 32, 32]}>
-      <meshStandardMaterial color="#FF6020" emissive="#CF4500" emissiveIntensity={2}
+      <meshStandardMaterial color="#c8f269" emissive="#c8f269" emissiveIntensity={2}
         transparent opacity={0.4} />
     </Sphere>
   )
@@ -211,8 +211,8 @@ function SceneLights() {
   return (
     <>
       <ambientLight intensity={0.25} />
-      <pointLight ref={l1} color="#CF4500" intensity={4} position={[5, 3, 5]}  distance={15} />
-      <pointLight ref={l2} color="#F5874A" intensity={3} position={[-4,-2, 3]} distance={12} />
+      <pointLight ref={l1} color="#c8f269" intensity={4} position={[5, 3, 5]}  distance={15} />
+      <pointLight ref={l2} color="#e8ff9a" intensity={3} position={[-4,-2, 3]} distance={12} />
       <pointLight        color="#ffffff"  intensity={1} position={[0,  6, 2]}  distance={10} />
     </>
   )
@@ -288,10 +288,10 @@ export function HeroCanvas() {
           <CoreGlow />
           <ClickBursts bursts={bursts} onExpired={expireBurst} />
 
-          <OrbitingShape radius={3.2} speed={0.4}  offset={0}           color="#F5874A" size={0.18} scrollProgress={scrollProgress} />
-          <OrbitingShape radius={3.8} speed={0.3}  offset={Math.PI}     color="#CF4500" size={0.14} scrollProgress={scrollProgress} />
+          <OrbitingShape radius={3.2} speed={0.4}  offset={0}           color="#e8ff9a" size={0.18} scrollProgress={scrollProgress} />
+          <OrbitingShape radius={3.8} speed={0.3}  offset={Math.PI}     color="#c8f269" size={0.14} scrollProgress={scrollProgress} />
           <OrbitingShape radius={2.9} speed={0.55} offset={Math.PI/2}   color="#ffffff" size={0.10} scrollProgress={scrollProgress} />
-          <OrbitingShape radius={4.2} speed={0.25} offset={Math.PI*1.5} color="#FF8A50" size={0.12} scrollProgress={scrollProgress} />
+          <OrbitingShape radius={4.2} speed={0.25} offset={Math.PI*1.5} color="#c8f269" size={0.12} scrollProgress={scrollProgress} />
 
           <EnergyRing radius={2.6} speed={0.5}  tilt={Math.PI/3} scrollProgress={scrollProgress} />
           <EnergyRing radius={3.4} speed={-0.3} tilt={Math.PI/5} scrollProgress={scrollProgress} />

@@ -1,6 +1,6 @@
 import { useRef, useEffect, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, ArrowRight, Github } from 'lucide-react'
+import { ArrowUpRight, ArrowRight, ArrowDown, Github } from 'lucide-react'
 import {
   SiReact, SiVuedotjs, SiNextdotjs, SiTypescript, SiJavascript,
   SiTailwindcss, SiHtml5, SiCss, SiNodedotjs, SiLaravel, SiPhp,
@@ -11,501 +11,453 @@ import { Brain, Workflow, Bot } from 'lucide-react'
 import { gsap, EASE_POWER4, DUR_SLOW, DUR_NORMAL } from '@/lib/gsap'
 import { TextReveal }        from '@/components/motion/TextReveal'
 import { MagneticButton }    from '@/components/motion/MagneticButton'
-import { ClipReveal } from '@/components/motion/ClipReveal'
-import { HorizontalScroll }  from '@/components/motion/HorizontalScroll'
+import { ClipReveal }        from '@/components/motion/ClipReveal'
+import { Marquee }           from '@/components/motion/Marquee'
 import { PageTransition }    from '@/components/layout/PageTransition'
 import { SocialLinks }       from '@/components/ui/SocialLinks'
 import { StatCounter }       from '@/components/ui/StatCounter'
-import { Card3D }            from '@/components/ui/Card3D'
-import { FloatingShape }     from '@/components/3d/FloatingShape'
-import { GitHubStats }       from '@/components/home/GitHubStats'
 import { projects }          from '@/data/projects'
 
 const HeroCanvas = lazy(() => import('@/components/3d/HeroCanvas').then(m => ({ default: m.HeroCanvas })))
-const TechGlobe  = lazy(() => import('@/components/3d/TechGlobe').then(m => ({ default: m.TechGlobe })))
 
 // ================================================================
-// HOME v6 — GSAP + Lenis animations
-// Signature: split-text reveals · clip-path wipes · horizontal scroll
-//            magnetic buttons · parallax · scroll-synced numbers
+// Home v7 — rojvillacampa-exact design
+// Lime accent · Space Grotesk · DM Mono · No border-radius
 // ================================================================
 
 // ── HERO ──────────────────────────────────────────────────────────
 function Hero() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const tagRef     = useRef<HTMLDivElement>(null)
-  const roleRef    = useRef<HTMLParagraphElement>(null)
-  const ctaRef     = useRef<HTMLDivElement>(null)
-  const statsRef   = useRef<HTMLDivElement>(null)
-  const lineRef    = useRef<HTMLDivElement>(null)
+  const tagRef    = useRef<HTMLDivElement>(null)
+  const subtextRef= useRef<HTMLParagraphElement>(null)
+  const ctaRef    = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const availRef  = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ delay: 1.95 }) // After preloader
-
-      // Status badge
+      const tl = gsap.timeline({ delay: 1.9 })
       tl.fromTo(tagRef.current,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: DUR_NORMAL, ease: EASE_POWER4 }
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: DUR_NORMAL, ease: EASE_POWER4 }
       )
-      // Role
-      tl.fromTo(roleRef.current,
-        { opacity: 0, y: 16 },
-        { opacity: 1, y: 0, duration: DUR_NORMAL, ease: EASE_POWER4 },
-        '-=0.5'
+      .fromTo(subtextRef.current,
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: DUR_NORMAL, ease: EASE_POWER4 }, '-=0.3'
       )
-      // CTAs
-      tl.fromTo(ctaRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: DUR_NORMAL, ease: EASE_POWER4 },
-        '-=0.4'
+      .fromTo(ctaRef.current,
+        { scale: 0.95, opacity: 0 },
+        { scale: 1, opacity: 1, duration: DUR_NORMAL, ease: 'back.out(1.7)' }, '-=0.35'
       )
-      // Divider line draws in
-      tl.fromTo(lineRef.current,
-        { scaleX: 0, transformOrigin: 'left center' },
-        { scaleX: 1, duration: 0.7, ease: EASE_POWER4 },
-        '-=0.3'
+      .fromTo(scrollRef.current,
+        { y: 12, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: EASE_POWER4 }, '-=0.2'
       )
-      // Stats
-      tl.fromTo(statsRef.current,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: DUR_NORMAL, ease: EASE_POWER4 },
-        '-=0.5'
+      .fromTo(availRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6 }, '-=0.4'
       )
-    }, sectionRef)
+    })
     return () => ctx.revert()
   }, [])
 
-  // Parallax on scroll
-  useEffect(() => {
-    const el = sectionRef.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const textCol = el.querySelector('.hero-text-col') as HTMLElement
-    if (!textCol) return
-    const anim = gsap.to(textCol, {
-      yPercent: -18,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: true,
-      },
-    })
-    return () => { anim.kill() }
-  }, [])
-
   return (
-    <section ref={sectionRef} className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-28 pb-20">
-      {/* Full-screen 3D canvas */}
-      <div className="absolute inset-0 z-0" aria-hidden="true">
+    <section className="relative min-h-[100svh] flex flex-col overflow-hidden pt-28" aria-label="Hero">
+
+      {/* 3D Background */}
+      <div className="absolute inset-0 z-0 opacity-40" aria-hidden="true">
         <Suspense fallback={null}><HeroCanvas /></Suspense>
       </div>
 
-      {/* Overlay gradients */}
-      <div className="absolute inset-0 z-[1]" aria-hidden="true" style={{
-        background: 'radial-gradient(ellipse 70% 80% at 30% 50%, rgba(17,17,16,0.7) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)',
-      }} />
-      <div className="absolute inset-0 z-[1]" aria-hidden="true" style={{
-        background: 'linear-gradient(to bottom, rgba(17,17,16,0.4) 0%, transparent 40%, transparent 60%, rgba(17,17,16,0.95) 100%)',
-      }} />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 z-[1]" aria-hidden="true"
+        style={{ background:'linear-gradient(135deg, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.75) 50%, rgba(10,10,10,0.5) 100%)' }} />
 
-      {/* Text */}
-      <div className="rm-container relative z-10 hero-text-col">
-        <div className="flex flex-col gap-6 max-w-3xl">
+      <div className="rm-container relative z-10 flex flex-col flex-1">
+        {/* Two-column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-[60%_40%] gap-8 flex-1 items-center py-12 lg:py-0">
 
-          {/* Status badge */}
-          <div ref={tagRef} style={{ opacity: 0 }}>
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-mono"
-              style={{ background:'rgba(207,69,0,0.12)', borderColor:'rgba(207,69,0,0.3)', color:'#F5874A', backdropFilter:'blur(8px)' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              Available for projects · Iloilo, Philippines
-            </span>
-          </div>
+          {/* LEFT column */}
+          <div className="flex flex-col gap-7">
+            {/* Eyebrow */}
+            <div ref={tagRef} style={{ opacity:0 }}>
+              <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#5a5a5a' }}>
+                Full-Stack Developer · Iloilo, Philippines
+              </span>
+            </div>
 
-          {/* Name — TextReveal character split */}
-          <div>
-            <TextReveal
-              as="h1"
-              trigger="load"
-              splitBy="words"
-              delay={1.95}
-              duration={DUR_SLOW}
-              stagger={0.12}
-              style={{ fontSize:'clamp(3.5rem,12vw,10rem)', fontFamily:"'Geist', sans-serif", fontWeight:800, lineHeight:1, letterSpacing:'-0.05em', color:'#F5F3EE', textShadow:'0 4px 40px rgba(207,69,0,0.3)' }}
-            >
-              Roberto
-            </TextReveal>
-            <div style={{ display:'flex', alignItems:'flex-end', gap:'0.75rem' }}>
+            {/* Headline — char-by-char reveal */}
+            <div>
               <TextReveal
                 as="h1"
                 trigger="load"
-                splitBy="words"
-                delay={2.1}
-                duration={DUR_SLOW}
-                stagger={0.12}
-                style={{ fontSize:'clamp(3.5rem,12vw,10rem)', fontFamily:"'Geist', sans-serif", fontWeight:800, lineHeight:1, letterSpacing:'-0.05em', color:'transparent', WebkitTextStroke:'2px #F5F3EE' }}
+                splitBy="chars"
+                delay={1.9}
+                duration={0.8}
+                stagger={0.025}
+                skewY={4}
+                style={{
+                  fontFamily:"'Space Grotesk', sans-serif",
+                  fontWeight: 700,
+                  fontSize: 'clamp(3.5rem, 10vw, 8rem)',
+                  lineHeight: 0.95,
+                  letterSpacing: '-0.04em',
+                  color: '#f0f0f0',
+                  display: 'block',
+                }}
               >
-                Mediana
+                Building
               </TextReveal>
               <TextReveal
-                as="span"
+                as="h1"
                 trigger="load"
-                splitBy="words"
-                delay={2.25}
-                duration={DUR_SLOW}
-                style={{ fontSize:'clamp(2rem,5vw,4.5rem)', fontFamily:"'Geist', sans-serif", fontWeight:800, lineHeight:1, paddingBottom:'0.25rem', color:'#E8702A' }}
+                splitBy="chars"
+                delay={2.05}
+                duration={0.8}
+                stagger={0.025}
+                skewY={4}
+                style={{
+                  fontFamily:"'Space Grotesk', sans-serif",
+                  fontWeight: 700,
+                  fontSize: 'clamp(3.5rem, 10vw, 8rem)',
+                  lineHeight: 0.95,
+                  letterSpacing: '-0.04em',
+                  color: '#f0f0f0',
+                  display: 'block',
+                }}
               >
-                Jr.
+                digital
+              </TextReveal>
+              <TextReveal
+                as="h1"
+                trigger="load"
+                splitBy="chars"
+                delay={2.2}
+                duration={0.8}
+                stagger={0.025}
+                skewY={4}
+                style={{
+                  fontFamily:"'Space Grotesk', sans-serif",
+                  fontWeight: 700,
+                  fontSize: 'clamp(3.5rem, 10vw, 8rem)',
+                  lineHeight: 0.95,
+                  letterSpacing: '-0.04em',
+                  color: '#c8f269',
+                  display: 'block',
+                }}
+              >
+                experiences.
+              </TextReveal>
+            </div>
+
+            {/* Subtext */}
+            <p ref={subtextRef} style={{ opacity:0, fontFamily:"'Space Grotesk', sans-serif", fontSize:'1.0625rem', color:'#5a5a5a', lineHeight:1.65, maxWidth:'480px' }}>
+              BSIT student at West Visayas State University – Janiuay Campus. Building practical
+              web applications and exploring the intersection of software and security.
+            </p>
+
+            {/* CTAs */}
+            <div ref={ctaRef} style={{ opacity:0, display:'flex', flexWrap:'wrap', gap:'1rem' }}>
+              <MagneticButton strength={0.3}>
+                <Link to="/projects" className="btn-primary">
+                  View My Work
+                </Link>
+              </MagneticButton>
+              <MagneticButton strength={0.3}>
+                <a href="/assets/resume-placeholder.pdf" className="btn-ghost">
+                  Download CV
+                </a>
+              </MagneticButton>
+            </div>
+          </div>
+
+          {/* RIGHT column — accent glow element */}
+          <div className="hidden lg:flex items-center justify-center relative" aria-hidden="true">
+            <div className="relative w-full aspect-square max-w-xs flex items-center justify-center">
+              {/* Lime glow orb */}
+              <div style={{
+                width:'200px', height:'200px', borderRadius:'50%',
+                background:'radial-gradient(circle, rgba(200,242,105,0.18) 0%, rgba(200,242,105,0.04) 50%, transparent 70%)',
+                filter:'blur(20px)',
+                position:'absolute',
+              }} />
+              {/* RM monogram */}
+              <div style={{
+                fontFamily:"'Space Grotesk', sans-serif",
+                fontWeight:700,
+                fontSize:'7rem',
+                letterSpacing:'-0.05em',
+                color:'rgba(200,242,105,0.08)',
+                userSelect:'none',
+                lineHeight:1,
+              }}>
+                RM
+              </div>
+              {/* Decorative border */}
+              <div style={{
+                position:'absolute', inset:'2rem',
+                border:'1px solid rgba(200,242,105,0.12)',
+                borderRadius:0,
+              }} />
+              <div style={{
+                position:'absolute', inset:'0',
+                border:'1px solid rgba(200,242,105,0.05)',
+                borderRadius:0,
+              }} />
+              {/* Corner dots */}
+              {[[-1,-1],[1,-1],[-1,1],[1,1]].map(([x,y], i) => (
+                <div key={i} style={{
+                  position:'absolute',
+                  left: x === -1 ? '2rem' : 'calc(100% - 2rem - 4px)',
+                  top:  y === -1 ? '2rem' : 'calc(100% - 2rem - 4px)',
+                  width:'4px', height:'4px', background:'#c8f269',
+                  borderRadius:0,
+                }} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="flex items-center justify-between py-6 border-t" style={{ borderColor:'#1f1f1f' }}>
+          {/* Availability */}
+          <div ref={availRef} style={{ opacity:0, display:'flex', alignItems:'center', gap:'0.625rem' }}>
+            <div className="avail-dot" />
+            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'#5a5a5a' }}>
+              Available for freelance
+            </span>
+          </div>
+
+          {/* Scroll indicator */}
+          <div ref={scrollRef} style={{ opacity:0, display:'flex', flexDirection:'column', alignItems:'center', gap:'0.5rem' }}>
+            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#5a5a5a' }}>
+              Scroll
+            </span>
+            <div className="scroll-line-anim">
+              <ArrowDown size={14} color="#5a5a5a" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── ABOUT — 01 ────────────────────────────────────────────────────
+function AboutSection() {
+  return (
+    <section className="rm-section relative overflow-hidden" style={{ background:'#0a0a0a' }}>
+      <div className="rm-container">
+        {/* Section header */}
+        <div className="flex items-center gap-4 mb-16">
+          <span className="eyebrow">/ About me</span>
+          <div className="rule flex-1" />
+          <span className="eyebrow">01</span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left: watermark + eyebrow */}
+          <div className="relative">
+            <div className="section-watermark absolute -left-4 -top-8 select-none" aria-hidden="true">01</div>
+            <div className="relative z-10">
+              <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.06}
+                style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2rem,5vw,3.5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1.1 }}>
+                Building the web, one pixel at a time.
               </TextReveal>
             </div>
           </div>
 
-          {/* Role */}
-          <p ref={roleRef} style={{ opacity:0, fontFamily:"'Geist', sans-serif", fontWeight:600, fontSize:'clamp(1rem,2.5vw,1.375rem)', color:'rgba(245,243,238,0.75)', letterSpacing:'-0.02em' }}>
-            Full-Stack Developer &amp; Web Penetration Tester
-            <span style={{ display:'block', fontWeight:400, fontSize:'0.9375rem', color:'rgba(245,243,238,0.45)', marginTop:'0.25rem' }}>
-              BSIT Student · West Visayas State University – Janiuay Campus
-            </span>
-          </p>
-
-          {/* CTAs — Magnetic */}
-          <div ref={ctaRef} style={{ opacity:0, display:'flex', flexWrap:'wrap', alignItems:'center', gap:'0.75rem', paddingTop:'0.25rem' }}>
-            <MagneticButton strength={0.4}>
-              <a href="/assets/resume-placeholder.pdf" className="btn-primary">
-                Resume <ArrowUpRight size={15} />
-              </a>
-            </MagneticButton>
-            <MagneticButton strength={0.3}>
-              <Link to="/contact" className="btn-ghost" style={{ borderColor:'rgba(255,255,255,0.2)', color:'rgba(245,243,238,0.8)' }}>
-                Get In Touch
-              </Link>
-            </MagneticButton>
-            <SocialLinks className="ml-1" />
-          </div>
-
-          {/* Stats */}
-          <div ref={statsRef} style={{ opacity:0 }}>
-            <div ref={lineRef} style={{ height:1, background:'rgba(245,243,238,0.12)', margin:'0.5rem 0 1.5rem', transformOrigin:'left' }} />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-              {[{ n:4, s:'th', l:'Year Student' },{ n:2027, s:'', l:'Expected Grad' },{ n:20, s:'+', l:'Technologies' },{ n:3, s:'+', l:'Projects Built' }].map(({ n, s, l }) => (
-                <div key={l}>
-                  <p style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'2rem', lineHeight:1, letterSpacing:'-0.05em', color:'#F5F3EE' }}>{n}{s}</p>
-                  <p className="t-eyebrow mt-1" style={{ color:'rgba(245,243,238,0.4)' }}>{l}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Ticker */}
-      <div className="absolute bottom-0 left-0 right-0 overflow-hidden py-2.5 z-10 border-t" style={{ borderColor:'rgba(255,255,255,0.07)', background:'rgba(17,17,16,0.75)', backdropFilter:'blur(12px)' }}>
-        <div className="flex whitespace-nowrap animate-ticker" style={{ width:'200%' }}>
-          {[...Array(2)].map((_,i) => (
-            <div key={i} className="flex items-center gap-8 mr-8">
-              {['React','Laravel','Node.js','TypeScript','Vue.js','PostgreSQL','Docker','Kali Linux','Next.js','MongoDB','Supabase','PHP'].map(t => (
-                <span key={t} className="font-mono text-xs" style={{ color:'rgba(245,243,238,0.3)' }}>{t} <span style={{ color:'#E8702A' }}>·</span></span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── ABOUT ─────────────────────────────────────────────────────────
-function AboutSection() {
-  return (
-    <section className="rm-section relative overflow-hidden" style={{ background:'var(--section-bg-alt)' }}>
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none hidden lg:block">
-        <FloatingShape type="icosahedron" color="#CF4500" size={140} />
-      </div>
-      <div className="rm-container relative z-10">
-        <div className="flex items-center gap-4 mb-12">
-          <span className="section-num">01</span>
-          <div className="rm-divider flex-1" />
-          <span className="t-eyebrow">About</span>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+          {/* Right: bio + stats */}
           <div>
-            <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.06}
-              style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'clamp(1.75rem,4vw,2.75rem)', letterSpacing:'-0.04em', color:'var(--text-1)', lineHeight:1.1, marginBottom:'1.25rem' }}>
-              Turning ideas into working software
-            </TextReveal>
-            <ClipReveal direction="down" delay={0.2}>
-              <p className="text-base leading-relaxed mb-6" style={{ color:'var(--text-2)', fontFamily:"'Geist', sans-serif" }}>
-                I'm a BSIT student with a genuine interest in how software is built, structured, and maintained —
-                working across both frontend and backend. I learn by building real things: management systems,
-                booking platforms, web apps, and experimenting with AI integrations.
+            <ClipReveal direction="down">
+              <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a', lineHeight:1.75, marginBottom:'1.25rem' }}>
+                I'm an IT student with a genuine passion for building software that solves real problems.
+                I work across the full stack — from clean, responsive UIs to reliable server-side logic
+                and database architecture.
+              </p>
+              <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a', lineHeight:1.75, marginBottom:'2rem' }}>
+                Currently pursuing my BSIT at West Visayas State University – Janiuay Campus and actively
+                building my capstone system while exploring web security and AI integrations.
               </p>
             </ClipReveal>
-            <ClipReveal direction="down" delay={0.35}>
-              <MagneticButton strength={0.3}>
-                <Link to="/about" className="btn-ghost text-sm">Full Story <ArrowRight size={13} /></Link>
-              </MagneticButton>
+
+            {/* Stat counters */}
+            <ClipReveal direction="down" delay={0.15}>
+              <div className="grid grid-cols-3 gap-0 border-t border-l" style={{ borderColor:'#1f1f1f' }}>
+                {[
+                  { target:4, suffix:'th', label:'Year of Study' },
+                  { target:20, suffix:'+', label:'Technologies' },
+                  { target:3, suffix:'+', label:'Projects Built' },
+                ].map(s => (
+                  <div key={s.label} className="border-b border-r p-5" style={{ borderColor:'#1f1f1f' }}>
+                    <StatCounter target={s.target} suffix={s.suffix} label={s.label} duration={1800}
+                      className={undefined} />
+                  </div>
+                ))}
+              </div>
+            </ClipReveal>
+
+            <ClipReveal direction="down" delay={0.25}>
+              <div className="mt-6">
+                <MagneticButton strength={0.3}>
+                  <Link to="/about" className="btn-ghost text-sm">
+                    More About Me <ArrowRight size={14} />
+                  </Link>
+                </MagneticButton>
+              </div>
             </ClipReveal>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { label:'Degree',     value:'B.S. Information Technology' },
-              { label:'University', value:'WVSU – Janiuay Campus' },
-              { label:'Status',     value:'Incoming 4th Year · 2027' },
-              { label:'Focus',      value:'Full-Stack Development' },
-            ].map((item, i) => (
-              <ClipReveal key={item.label} direction="down" delay={i * 0.08}>
-                <Card3D className="bento-card flex flex-col gap-2">
-                  <p className="t-eyebrow">{item.label}</p>
-                  <p style={{ fontFamily:"'Geist', sans-serif", fontWeight:700, fontSize:'0.8125rem', color:'var(--text-1)' }}>{item.value}</p>
-                </Card3D>
-              </ClipReveal>
-            ))}
-          </div>
         </div>
       </div>
     </section>
   )
 }
 
-// ── FEATURED PROJECT (large spotlight) ────────────────────────────
-function FeaturedProject() {
-  const proj = projects.find(p => p.featured) ?? projects[0]
-  if (!proj) return null
+// ── WORK / PROJECTS — 02 ──────────────────────────────────────────
+const catLabels: Record<string,string> = { school:'School', capstone:'Capstone', personal:'Personal' }
+
+function WorkSection() {
+  const listRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = listRef.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const rows = el.querySelectorAll('.project-row')
+    const ctx  = gsap.context(() => {
+      rows.forEach(row => {
+        gsap.fromTo(row,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: DUR_NORMAL, ease: EASE_POWER4,
+            scrollTrigger: { trigger: row, start: 'top 88%', once: true } }
+        )
+      })
+    }, listRef)
+    return () => ctx.revert()
+  }, [])
+
+  const featuredProj = projects.find(p => p.featured) ?? projects[0]
 
   return (
-    <section className="rm-section overflow-hidden">
+    <section className="rm-section" style={{ background:'#111111' }}>
       <div className="rm-container">
-        <div className="flex items-center gap-4 mb-12">
-          <span className="section-num">02</span>
-          <div className="rm-divider flex-1" />
-          <span className="t-eyebrow">Featured Project</span>
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-4">
+          <span className="eyebrow">/ Selected work</span>
+          <div className="rule flex-1" />
+          <span className="eyebrow">02</span>
         </div>
 
-        <ClipReveal direction="down">
-          <Card3D className="group relative rounded-3xl overflow-hidden border" intensity={6} lift={8} style={{ borderColor:'var(--border)', background:'var(--card)', minHeight:'420px', display:'flex', flexDirection:'column' }}>
-            {/* Big image area */}
-            <div className="relative flex-1 min-h-[260px] sm:min-h-[320px] flex items-center justify-center overflow-hidden"
-              style={{ background: 'var(--bg)' }}>
-              {proj.image && !proj.image.includes('placeholder')
-                ? <img src={proj.image} alt={proj.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                : <div className="flex flex-col items-center gap-3 opacity-20">
-                    <span className="text-6xl">🖥️</span>
-                    <span className="font-mono text-sm" style={{ color:'var(--text-3)' }}>Project Screenshot</span>
-                    <span className="font-mono text-xs opacity-60" style={{ color:'var(--text-3)' }}>Add to /public/assets/projects/</span>
-                  </div>
-              }
-              {/* Overlay gradient */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ background:'linear-gradient(to top, rgba(17,17,16,0.8) 0%, transparent 60%)' }} />
-            </div>
-
-            {/* Info bar */}
-            <div className="p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <span className="rm-tag rm-tag-accent mb-2 inline-block">Capstone Project</span>
-                <h3 style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'1.5rem', letterSpacing:'-0.03em', color:'var(--text-1)' }}>{proj.title}</h3>
-                <p className="text-sm mt-1 max-w-lg" style={{ color:'var(--text-2)', fontFamily:"'Geist', sans-serif" }}>{proj.shortDescription}</p>
-              </div>
-              <div className="flex gap-2 flex-shrink-0">
-                <MagneticButton strength={0.3}>
-                  <Link to={`/projects/${proj.slug}`} className="btn-primary text-sm">View Case Study <ArrowUpRight size={14} /></Link>
-                </MagneticButton>
-                {proj.githubUrl && (
-                  <MagneticButton strength={0.3}>
-                    <a href={proj.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost p-2.5"><Github size={16} /></a>
-                  </MagneticButton>
-                )}
-              </div>
-            </div>
-          </Card3D>
-        </ClipReveal>
-      </div>
-    </section>
-  )
-}
-
-// ── WORKS — HORIZONTAL SCROLL ─────────────────────────────────────
-type WF = 'All'|'School'|'Capstone'|'Personal'
-const catColors: Record<string,string> = { school:'rgba(99,102,241,0.12)', capstone:'rgba(207,69,0,0.10)', personal:'rgba(34,197,94,0.10)' }
-const catText:   Record<string,string> = { school:'#818cf8', capstone:'var(--accent-h)', personal:'#4ade80' }
-const catMap:    Record<string, WF>    = { school:'School', capstone:'Capstone', personal:'Personal' }
-
-function WorksSection() {
-  return (
-    <section style={{ background:'var(--section-bg-alt)' }}>
-      <div className="rm-container py-16 lg:py-24">
-        <div className="flex items-center gap-4 mb-10">
-          <span className="section-num">03</span>
-          <div className="rm-divider flex-1" />
-          <span className="t-eyebrow">Selected Works</span>
-        </div>
-        <div className="flex items-end justify-between mb-8">
+        <div className="flex items-end justify-between mb-14">
           <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.08}
-            style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'clamp(2rem,5vw,3.5rem)', letterSpacing:'-0.04em', color:'var(--text-1)', lineHeight:1.1 }}>
-            Selected Works
+            style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2.5rem,6vw,5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1 }}>
+            Things I've built.
           </TextReveal>
-          <MagneticButton strength={0.3}>
-            <Link to="/projects" className="btn-ghost text-sm hidden sm:inline-flex">All Projects <ArrowRight size={13} /></Link>
+          <MagneticButton strength={0.3} className="hidden sm:inline-flex">
+            <Link to="/projects" className="btn-ghost text-xs" style={{ fontFamily:"'DM Mono', monospace", letterSpacing:'0.08em', textTransform:'uppercase' }}>
+              View All
+            </Link>
           </MagneticButton>
         </div>
-      </div>
 
-      {/* Horizontal scroll track */}
-      <HorizontalScroll className="bg-transparent" speed={1}>
-        {projects.map((project, i) => (
-          <Card3D key={project.id} intensity={8} lift={10} style={{ flexShrink:0, width:'clamp(300px, 38vw, 500px)', height:'440px', display:'flex', flexDirection:'column', background:'var(--card)', border:'1px solid var(--border)', borderRadius:'20px', overflow:'hidden' }}>
-            {/* Image */}
-            <div className="relative flex-1 overflow-hidden" style={{ background:'var(--bg)', minHeight:'260px' }}>
-              {project.image && !project.image.includes('placeholder')
-                ? <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" loading="lazy" />
-                : <div className="w-full h-full flex flex-col items-center justify-center gap-2 opacity-20">
-                    <span className="text-4xl">🖥️</span>
-                    <span className="font-mono text-sm" style={{ color:'var(--text-3)' }}>0{i+1}</span>
+        {/* Featured project — large card */}
+        {featuredProj && (
+          <ClipReveal direction="down" className="mb-3">
+            <div className="project-card relative overflow-hidden" style={{ minHeight:'360px' }} data-cursor="view">
+              {/* Image reveal on hover */}
+              {featuredProj.image && !featuredProj.image.includes('placeholder') && (
+                <div className="project-thumb">
+                  <img src={featuredProj.image} alt={featuredProj.title} className="w-full h-full object-cover" />
+                </div>
+              )}
+
+              <div className="relative z-10 p-8 flex flex-col justify-between" style={{ minHeight:'360px' }}>
+                <div className="flex items-start justify-between">
+                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#c8f269' }}>
+                    Featured · Capstone
+                  </span>
+                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'#5a5a5a' }}>
+                    {featuredProj.date}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(1.5rem,4vw,2.5rem)', letterSpacing:'-0.03em', color:'#f0f0f0', marginBottom:'0.75rem' }}>
+                    {featuredProj.title}
+                  </h3>
+                  <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a', maxWidth:'520px', lineHeight:1.6, marginBottom:'1.25rem' }}>
+                    {featuredProj.shortDescription}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    {featuredProj.technologies.slice(0,5).map(t => <span key={t} className="rm-tag">{t}</span>)}
                   </div>
-              }
-              <span className="absolute top-4 left-4 text-xs font-mono px-2 py-0.5 rounded-md"
-                style={{ background:catColors[project.category]??'var(--accent-dim)', color:catText[project.category]??'var(--accent-h)', backdropFilter:'blur(8px)' }}>
-                {catMap[project.category]}
-              </span>
-              <span className="absolute top-4 right-4 font-mono text-xs opacity-40" style={{ color:'var(--text-1)' }}>0{i+1}</span>
-            </div>
-            {/* Info */}
-            <div className="p-5 flex flex-col gap-3">
-              <div>
-                <p className="t-eyebrow mb-1">{project.date}</p>
-                <h3 style={{ fontFamily:"'Geist', sans-serif", fontWeight:700, fontSize:'1rem', letterSpacing:'-0.02em', color:'var(--text-1)' }}>{project.title}</h3>
+                  <div className="flex items-center gap-3">
+                    <MagneticButton strength={0.3}>
+                      <Link to={`/projects/${featuredProj.slug}`} className="btn-primary text-sm">
+                        View Case Study <ArrowUpRight size={14} />
+                      </Link>
+                    </MagneticButton>
+                    {featuredProj.githubUrl && (
+                      <MagneticButton strength={0.3}>
+                        <a href={featuredProj.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding:'0.75rem' }}>
+                          <Github size={16} />
+                        </a>
+                      </MagneticButton>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {project.technologies.slice(0,4).map(t => <span key={t} className="rm-tag">{t}</span>)}
-              </div>
-              <Link to={`/projects/${project.slug}`} className="btn-primary text-xs py-1.5 justify-center" style={{ marginTop:'auto' }}>View Project</Link>
             </div>
-          </Card3D>
-        ))}
-        {/* "Coming soon" card */}
-        <Card3D intensity={8} lift={10} style={{ flexShrink:0, width:'clamp(260px, 30vw, 400px)', height:'440px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', background:'var(--card)', border:'1px dashed var(--border)', borderRadius:'20px', gap:'1rem', padding:'2rem', textAlign:'center' }}>
-          <span style={{ fontSize:'3rem', opacity:0.3 }}>🌱</span>
-          <p style={{ fontFamily:"'Geist', sans-serif", fontWeight:700, color:'var(--text-1)' }}>More Coming Soon</p>
-          <p className="text-sm" style={{ color:'var(--text-3)', fontFamily:"'Geist', sans-serif" }}>This portfolio grows with every project I build.</p>
-        </Card3D>
-      </HorizontalScroll>
+          </ClipReveal>
+        )}
 
-      <div className="rm-container py-8">
-        <MagneticButton strength={0.3}>
-          <Link to="/projects" className="btn-ghost text-sm sm:hidden">All Projects <ArrowRight size={13} /></Link>
-        </MagneticButton>
-      </div>
-    </section>
-  )
-}
+        {/* Project list rows */}
+        <div ref={listRef} className="border-t mt-2" style={{ borderColor:'#1f1f1f' }}>
+          {projects.map((project, i) => (
+            <div key={project.id} className="project-row" data-cursor="view">
+              {/* Hover thumbnail */}
+              {project.image && !project.image.includes('placeholder') && (
+                <div className="project-thumb" aria-hidden="true">
+                  <img src={project.image} alt="" className="w-full h-full object-cover" />
+                  <div style={{ position:'absolute', inset:0, background:'rgba(10,10,10,0.6)' }} />
+                </div>
+              )}
 
-// ── VALUE PROPS ────────────────────────────────────────────────────
-const valueProps = [
-  { emoji:'⚡', title:'Fast Learner',         desc:'I pick up new frameworks and tools quickly, applying them to real projects immediately.' },
-  { emoji:'🔐', title:'Security-Aware',        desc:'Understanding web vulnerabilities from the attacker\'s perspective makes my code more secure.' },
-  { emoji:'🎯', title:'Problem-First',         desc:'I focus on solving the actual problem before touching code — planning saves debugging.' },
-  { emoji:'📦', title:'End-to-End Builder',   desc:'Frontend to backend to deployment — I can own the full stack of any project.' },
-]
-
-function ValueProps() {
-  return (
-    <section className="rm-section" style={{ background:'var(--section-bg-alt)' }}>
-      <div className="rm-container">
-        <div className="flex items-center gap-4 mb-12">
-          <span className="section-num">04</span>
-          <div className="rm-divider flex-1" />
-          <span className="t-eyebrow">Why Work With Me</span>
-        </div>
-        <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.07}
-          style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'clamp(1.75rem,4vw,3rem)', letterSpacing:'-0.04em', color:'var(--text-1)', lineHeight:1.1, marginBottom:'2.5rem' }}>
-          What I bring to every project
-        </TextReveal>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {valueProps.map((v, i) => (
-            <ClipReveal key={v.title} direction="down" delay={i * 0.1}>
-              <Card3D className="bento-card flex flex-col gap-3 h-full" intensity={10} lift={8}>
-                <span style={{ fontSize:'2rem' }}>{v.emoji}</span>
-                <h3 style={{ fontFamily:"'Geist', sans-serif", fontWeight:700, fontSize:'1rem', letterSpacing:'-0.02em', color:'var(--text-1)' }}>{v.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color:'var(--text-2)', fontFamily:"'Geist', sans-serif" }}>{v.desc}</p>
-              </Card3D>
-            </ClipReveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── SKILLS + STATS ─────────────────────────────────────────────────
-const skills = [
-  { title:'Full-Stack Web Development', desc:'End-to-end apps with React, Vue.js, Laravel, Node.js, and modern databases.' },
-  { title:'Web Penetration Testing',    desc:'Security assessments using Kali Linux and ethical hacking techniques.' },
-  { title:'UI/UX Design',              desc:'Clean, accessible interfaces that prioritize usability and visual clarity.' },
-  { title:'API Development',           desc:'RESTful APIs, auth systems, and third-party integrations.' },
-  { title:'Database Architecture',     desc:'SQL and NoSQL data models across MySQL, PostgreSQL, MongoDB, Supabase.' },
-  { title:'AI & LLM Integration',      desc:'OpenAI API and Hugging Face models integrated into web workflows.' },
-]
-
-function SkillsSection() {
-  return (
-    <section className="rm-section overflow-hidden">
-      <div className="rm-container">
-        <div className="flex items-center gap-4 mb-12">
-          <span className="section-num">05</span>
-          <div className="rm-divider flex-1" />
-          <span className="t-eyebrow">Skills</span>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          <div>
-            <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.07}
-              style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'clamp(1.75rem,4vw,3rem)', letterSpacing:'-0.04em', color:'var(--text-1)', lineHeight:1.1, marginBottom:'1.5rem' }}>
-              Core Skills
-            </TextReveal>
-            <div className="flex flex-col border-t" style={{ borderColor:'var(--border)' }}>
-              {skills.map((s, i) => (
-                <ClipReveal key={s.title} direction="right" delay={i * 0.07}>
-                  <div className="py-5 border-b grid grid-cols-[1rem_1fr] gap-4 group" style={{ borderColor:'var(--border)' }}>
-                    <span className="font-mono text-xs mt-0.5" style={{ color:'var(--text-3)' }}>0{i+1}</span>
-                    <div>
-                      <h3 style={{ fontFamily:"'Geist', sans-serif", fontWeight:700, fontSize:'0.9375rem', letterSpacing:'-0.02em', color:'var(--text-1)', marginBottom:'0.25rem', transition:'color 0.2s' }} className="group-hover:text-accent">{s.title}</h3>
-                      <p className="text-sm leading-relaxed" style={{ color:'var(--text-2)', fontFamily:"'Geist', sans-serif" }}>{s.desc}</p>
+              <Link to={`/projects/${project.slug}`} className="relative z-10 flex items-center justify-between p-6 md:p-8 gap-4 group">
+                {/* Left: number + title */}
+                <div className="flex items-center gap-6 min-w-0">
+                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', color:'#2a2a2a', letterSpacing:'0.05em', flexShrink:0 }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div className="min-w-0">
+                    <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(1rem,2.5vw,1.375rem)', letterSpacing:'-0.02em', color:'#f0f0f0', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', transition:'color 0.2s' }}
+                      className="group-hover:text-[#c8f269]">
+                      {project.title}
+                    </h3>
+                    <div className="flex flex-wrap gap-2 mt-1 hidden sm:flex">
+                      {project.technologies.slice(0,3).map(t => <span key={t} className="rm-tag" style={{ fontSize:'0.5625rem' }}>{t}</span>)}
                     </div>
                   </div>
-                </ClipReveal>
-              ))}
+                </div>
+
+                {/* Right: category + year + arrow */}
+                <div className="flex items-center gap-6 flex-shrink-0">
+                  <span className="hidden md:block" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a' }}>
+                    {catLabels[project.category]}
+                  </span>
+                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', color:'#2a2a2a' }}>{project.date}</span>
+                  <ArrowUpRight size={16} style={{ color:'#2a2a2a', transition:'color 0.2s, transform 0.2s' }}
+                    className="group-hover:text-[#c8f269] group-hover:rotate-12" />
+                </div>
+              </Link>
             </div>
-          </div>
-          {/* Stats counters */}
-          <div className="flex flex-col gap-8">
-            <ClipReveal direction="left">
-              <div className="bento-card">
-                <p className="t-eyebrow mb-6">By the numbers</p>
-                <div className="grid grid-cols-2 gap-8">
-                  <StatCounter target={20} suffix="+"  label="Technologies Known"    duration={2000} />
-                  <StatCounter target={3}  suffix="+"  label="Projects Built"         duration={1500} />
-                  <StatCounter target={4}  suffix="th" label="Year of Study"          duration={1200} />
-                  <StatCounter target={2}  suffix=""   label="Capstone Systems Built"  duration={1000} />
-                </div>
-              </div>
-            </ClipReveal>
-            {/* Currently building card */}
-            <ClipReveal direction="left" delay={0.15}>
-              <div className="bento-card border" style={{ borderColor:'rgba(207,69,0,0.2)', background:'var(--accent-dim)' }}>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                  <p className="t-eyebrow" style={{ color:'var(--accent-h)' }}>Currently Building</p>
-                </div>
-                <h3 style={{ fontFamily:"'Geist', sans-serif", fontWeight:700, fontSize:'1rem', color:'var(--text-1)', letterSpacing:'-0.02em' }}>MIS Service Request System</h3>
-                <p className="text-sm mt-1 leading-relaxed" style={{ color:'var(--text-2)', fontFamily:"'Geist', sans-serif" }}>
-                  Capstone project — a role-based IT service request management system built with Laravel and MySQL.
-                </p>
-                <div className="flex gap-2 mt-3 flex-wrap">
-                  {['Laravel','MySQL','PHP','Tailwind CSS'].map(t => <span key={t} className="rm-tag">{t}</span>)}
-                </div>
-              </div>
-            </ClipReveal>
+          ))}
+
+          {/* Growing message */}
+          <div className="py-8 px-6 flex items-center gap-4" style={{ borderBottom:'1px solid #1f1f1f' }}>
+            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', color:'#2a2a2a' }}>—</span>
+            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'#2a2a2a' }}>
+              More projects in progress — portfolio growing continuously
+            </span>
           </div>
         </div>
       </div>
@@ -513,11 +465,18 @@ function SkillsSection() {
   )
 }
 
-// ── TOOLKIT ────────────────────────────────────────────────────────
+// ── SKILLS — 03 ───────────────────────────────────────────────────
+const skillGroups = [
+  { cat:'Frontend',  items:['React', 'Vue.js', 'Next.js', 'TypeScript', 'JavaScript', 'Tailwind CSS', 'HTML5', 'CSS3'] },
+  { cat:'Backend',   items:['Laravel', 'Node.js', 'Express.js', 'PHP', 'REST APIs'] },
+  { cat:'Database',  items:['MySQL', 'PostgreSQL', 'MongoDB', 'Supabase', 'Firebase'] },
+  { cat:'Tools',     items:['Git', 'Docker', 'Kali Linux', 'Postman', 'CI/CD', 'OpenAI', 'Hugging Face'] },
+]
+
 const toolsGrid = [
   { name:'React',      Icon:SiReact,      color:'#61dafb' },
   { name:'Vue.js',     Icon:SiVuedotjs,   color:'#42b883' },
-  { name:'Next.js',    Icon:SiNextdotjs,  color:'currentColor' },
+  { name:'Next.js',    Icon:SiNextdotjs,  color:'#f0f0f0' },
   { name:'TypeScript', Icon:SiTypescript, color:'#3178c6' },
   { name:'JavaScript', Icon:SiJavascript, color:'#f7df1e' },
   { name:'Tailwind',   Icon:SiTailwindcss,color:'#06b6d4' },
@@ -526,7 +485,7 @@ const toolsGrid = [
   { name:'Node.js',    Icon:SiNodedotjs,  color:'#339933' },
   { name:'Laravel',    Icon:SiLaravel,    color:'#ff2d20' },
   { name:'PHP',        Icon:SiPhp,        color:'#777bb4' },
-  { name:'Express',    Icon:SiExpress,    color:'currentColor' },
+  { name:'Express',    Icon:SiExpress,    color:'#f0f0f0' },
   { name:'MySQL',      Icon:SiMysql,      color:'#4479a1' },
   { name:'MongoDB',    Icon:SiMongodb,    color:'#47a248' },
   { name:'PostgreSQL', Icon:SiPostgresql, color:'#336791' },
@@ -534,49 +493,136 @@ const toolsGrid = [
   { name:'Firebase',   Icon:SiFirebase,   color:'#ffca28' },
   { name:'Git',        Icon:SiGit,        color:'#f05032' },
   { name:'Docker',     Icon:SiDocker,     color:'#2496ed' },
-  { name:'Postman',    Icon:SiPostman,    color:'#ff6c37' },
   { name:'Kali Linux', Icon:SiLinux,      color:'#557c94' },
+  { name:'Postman',    Icon:SiPostman,    color:'#ff6c37' },
   { name:'OpenAI',     Icon:Bot,          color:'#10a37f' },
-  { name:'AI/LLMs',   Icon:Brain,        color:'var(--accent-h)' },
-  { name:'REST APIs',  Icon:Workflow,     color:'var(--accent)' },
+  { name:'AI/LLMs',   Icon:Brain,        color:'#c8f269' },
+  { name:'REST APIs',  Icon:Workflow,     color:'#c8f269' },
 ]
 
-function ToolkitSection() {
+function SkillsSection() {
   return (
-    <section className="rm-section" style={{ background:'var(--section-bg-alt)' }}>
+    <section className="rm-section overflow-hidden" style={{ background:'#0a0a0a' }}>
       <div className="rm-container">
-        <div className="flex items-center gap-4 mb-12">
-          <span className="section-num">06</span>
-          <div className="rm-divider flex-1" />
-          <span className="t-eyebrow">Toolkit</span>
+        <div className="flex items-center gap-4 mb-16">
+          <span className="eyebrow">/ Expertise</span>
+          <div className="rule flex-1" />
+          <span className="eyebrow">03</span>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.07}
-              style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'clamp(1.75rem,4vw,3rem)', letterSpacing:'-0.04em', color:'var(--text-1)', lineHeight:1.1, marginBottom:'1rem' }}>
-              My Toolkit
-            </TextReveal>
-            <p className="t-body text-base mb-6">Technologies I actively use across frontend, backend, databases, and security.</p>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2.5">
-              {toolsGrid.map(({ name, Icon, color }, idx) => (
-                <ClipReveal key={name} direction="down" delay={idx * 0.025}>
-                  <Card3D className="tool-card" intensity={8} lift={5}>
-                    <Icon size={24} style={{ color }} />
-                    <span className="font-mono text-xs text-center leading-tight" style={{ color:'var(--text-2)' }}>{name}</span>
-                  </Card3D>
-                </ClipReveal>
-              ))}
-            </div>
-            <ClipReveal direction="down" delay={0.3}>
-              <MagneticButton strength={0.3} className="mt-5">
-                <Link to="/tech-stack" className="btn-ghost text-sm">Full Stack <ArrowRight size={13} /></Link>
-              </MagneticButton>
+
+        <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.07}
+          style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2.5rem,6vw,5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1, marginBottom:'4rem' }}>
+          Tools of the trade.
+        </TextReveal>
+
+        {/* Skill group list */}
+        <div className="border-t mb-20" style={{ borderColor:'#1f1f1f' }}>
+          {skillGroups.map((group, i) => (
+            <ClipReveal key={group.cat} direction="right" delay={i * 0.07}>
+              <div className="py-6 border-b grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-4 items-start" style={{ borderColor:'#1f1f1f' }}>
+                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a' }}>
+                  {group.cat}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {group.items.map(item => (
+                    <span key={item} style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:500, fontSize:'0.9375rem', color:'#f0f0f0', letterSpacing:'-0.01em' }}>
+                      {item}
+                      <span style={{ color:'#2a2a2a', marginLeft:'0.5rem' }}>·</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
             </ClipReveal>
-          </div>
-          <ClipReveal direction="left">
-            <Suspense fallback={<div style={{ height:480, display:'flex', alignItems:'center', justifyContent:'center' }}><div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor:'var(--accent)', borderTopColor:'transparent' }} /></div>}>
-              <TechGlobe size={480} />
-            </Suspense>
+          ))}
+        </div>
+
+        {/* Marquee icon rows */}
+        <div className="flex flex-col gap-4">
+          <Marquee speed="normal" gap="2.5rem">
+            {toolsGrid.slice(0, 12).map(({ name, Icon, color }) => (
+              <div key={name} className="flex items-center gap-2.5 px-1 flex-shrink-0">
+                <Icon size={20} style={{ color, flexShrink:0 }} />
+                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.75rem', letterSpacing:'0.06em', color:'#2a2a2a', textTransform:'uppercase', whiteSpace:'nowrap' }}>
+                  {name}
+                </span>
+              </div>
+            ))}
+          </Marquee>
+          <Marquee speed="normal" reverse gap="2.5rem">
+            {toolsGrid.slice(12).map(({ name, Icon, color }) => (
+              <div key={name} className="flex items-center gap-2.5 px-1 flex-shrink-0">
+                <Icon size={20} style={{ color, flexShrink:0 }} />
+                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.75rem', letterSpacing:'0.06em', color:'#2a2a2a', textTransform:'uppercase', whiteSpace:'nowrap' }}>
+                  {name}
+                </span>
+              </div>
+            ))}
+          </Marquee>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── CONTACT — 04 ──────────────────────────────────────────────────
+function ContactSection() {
+  const emailRef = useRef<HTMLAnchorElement>(null)
+
+  useEffect(() => {
+    const el = emailRef.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const line = el.querySelector('.email-line') as HTMLElement
+    if (!line) return
+
+    const onEnter = () => gsap.to(line, { scaleX: 1, transformOrigin: 'left center', duration: 0.4, ease: EASE_POWER4 })
+    const onLeave = () => gsap.to(line, { scaleX: 0, transformOrigin: 'right center', duration: 0.3, ease: EASE_POWER4 })
+
+    el.addEventListener('mouseenter', onEnter)
+    el.addEventListener('mouseleave', onLeave)
+    return () => { el.removeEventListener('mouseenter', onEnter); el.removeEventListener('mouseleave', onLeave) }
+  }, [])
+
+  return (
+    <section className="rm-section" style={{ background:'#111111' }}>
+      <div className="rm-container">
+        <div className="flex items-center gap-4 mb-16">
+          <span className="eyebrow">/ Get in touch</span>
+          <div className="rule flex-1" />
+          <span className="eyebrow">04</span>
+        </div>
+
+        {/* Center-aligned contact */}
+        <div className="max-w-2xl">
+          <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.08}
+            style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2.5rem,6vw,5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1, marginBottom:'2rem' }}>
+            Let's work together.
+          </TextReveal>
+
+          <ClipReveal direction="down" delay={0.2}>
+            <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a', lineHeight:1.7, marginBottom:'3rem', maxWidth:'480px' }}>
+              I'm open to collaborations, academic partnerships, and freelance projects.
+              Whether you have a project in mind or just want to talk tech — reach out.
+            </p>
+          </ClipReveal>
+
+          {/* Email — magnetic + underline slide */}
+          <ClipReveal direction="down" delay={0.3}>
+            <MagneticButton strength={0.2}>
+              <a ref={emailRef} href="mailto:your.email@example.com"
+                className="block relative mb-10 group"
+                style={{ width:'fit-content' }}>
+                <span style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(1.25rem,3vw,2rem)', letterSpacing:'-0.03em', color:'#f0f0f0', transition:'color 0.3s' }}
+                  className="group-hover:text-[#c8f269]">
+                  your.email@example.com
+                </span>
+                <div className="email-line" style={{ position:'absolute', bottom:'-4px', left:0, right:0, height:'1px', background:'#c8f269', transform:'scaleX(0)' }} />
+              </a>
+            </MagneticButton>
+          </ClipReveal>
+
+          {/* Social links */}
+          <ClipReveal direction="down" delay={0.4}>
+            <SocialLinks showLabels className="mb-12" />
           </ClipReveal>
         </div>
       </div>
@@ -584,153 +630,14 @@ function ToolkitSection() {
   )
 }
 
-// ── EXPERTISE ──────────────────────────────────────────────────────
-const expertise = [
-  { num:'(1)', title:'Full-Stack Web Development',     desc:'End-to-end from schema to UI.' },
-  { num:'(2)', title:'Web Penetration Testing',         desc:'Ethical hacking and vulnerability assessment.' },
-  { num:'(3)', title:'UI/UX Design & Prototyping',      desc:'Accessible, intentional interface design.' },
-  { num:'(4)', title:'RESTful API & Backend Systems',   desc:'Laravel and Express APIs with auth.' },
-  { num:'(5)', title:'Database Architecture',           desc:'SQL and NoSQL across multiple platforms.' },
-  { num:'(6)', title:'AI Integration & Experimentation',desc:'OpenAI API and Hugging Face in web apps.' },
-]
-
-function ExpertiseSection() {
-  const listRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const el = listRef.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const items = el.querySelectorAll('.exp-row')
-    const ctx = gsap.context(() => {
-      items.forEach((item) => {
-        gsap.fromTo(item,
-          { opacity:0, x:-40 },
-          { opacity:1, x:0, duration:0.7, ease:EASE_POWER4,
-            scrollTrigger: { trigger:item, start:'top 88%', once:true } }
-        )
-      })
-    }, listRef)
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <section className="rm-section">
-      <div className="rm-container">
-        <div className="flex items-center gap-4 mb-12">
-          <span className="section-num">07</span>
-          <div className="rm-divider flex-1" />
-          <span className="t-eyebrow">Expertise</span>
-        </div>
-        <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.07}
-          style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'clamp(2rem,5vw,3.5rem)', letterSpacing:'-0.04em', color:'var(--text-1)', lineHeight:1.1, marginBottom:'1rem' }}>
-          What I Do
-        </TextReveal>
-        <div ref={listRef} className="border-t mt-4" style={{ borderColor:'var(--border)' }}>
-          {expertise.map(item => (
-            <div key={item.num} className="exp-row expertise-item group" style={{ opacity:0 }}>
-              <span style={{ fontFamily:"'Geist Mono', monospace", fontWeight:500, fontSize:'0.75rem', color:'var(--text-3)', paddingTop:'0.125rem' }}>{item.num}</span>
-              <div className="flex flex-col sm:flex-row sm:items-start sm:gap-8">
-                <h3 className="expertise-title font-semibold text-base mb-1 sm:mb-0 sm:w-64 flex-shrink-0" style={{ fontFamily:"'Geist', sans-serif", letterSpacing:'-0.02em', color:'var(--text-1)' }}>{item.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color:'var(--text-2)' }}>{item.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-8">
-          <MagneticButton strength={0.3}>
-            <Link to="/services" className="btn-ghost text-sm">All Services <ArrowRight size={13} /></Link>
-          </MagneticButton>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── GITHUB STATS ──────────────────────────────────────────────────
-function GitHubSection() {
-  return <GitHubStats />
-}
-
-// ── CONTACT CTA ────────────────────────────────────────────────────
-function ContactSection() {
-  const headRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const el = headRef.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const ctx = gsap.context(() => {
-      gsap.fromTo(el,
-        { opacity:0, y:40 },
-        { opacity:1, y:0, duration:DUR_SLOW, ease:EASE_POWER4,
-          scrollTrigger:{ trigger:el, start:'top 85%', once:true } }
-      )
-    }, headRef)
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <section className="rm-section relative overflow-hidden">
-      <div className="absolute right-12 top-1/2 -translate-y-1/2 opacity-50 pointer-events-none hidden lg:block">
-        <FloatingShape type="torus" color="#CF4500" size={160} />
-      </div>
-      <div className="rm-container relative z-10">
-        <div className="flex items-center gap-4 mb-12">
-          <span className="section-num">09</span>
-          <div className="rm-divider flex-1" />
-          <span className="t-eyebrow">Contact</span>
-        </div>
-        <div ref={headRef} style={{ opacity:0 }} className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <div>
-            <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.08}
-              style={{ fontFamily:"'Geist', sans-serif", fontWeight:800, fontSize:'clamp(2rem,5vw,4rem)', letterSpacing:'-0.04em', color:'var(--text-1)', lineHeight:1.05, marginBottom:'1rem' }}>
-              Let's build something great
-            </TextReveal>
-            <p className="text-base leading-relaxed mb-8" style={{ color:'var(--text-2)', fontFamily:"'Geist', sans-serif" }}>
-              Open to collaborations, academic partnerships, and freelance projects.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <MagneticButton strength={0.35}>
-                <Link to="/contact" className="btn-primary">Email Me <ArrowUpRight size={14} /></Link>
-              </MagneticButton>
-              <SocialLinks showLabels />
-            </div>
-          </div>
-          <div className="flex flex-col gap-3">
-            {[
-              { label:'Email',    value:'your.email@example.com', note:'Update in socials.ts' },
-              { label:'Location', value:'Iloilo, Philippines',     note:'Available remotely' },
-              { label:'Status',   value:'Open to collaborations',  note:'Academic projects welcome' },
-            ].map(item => (
-              <ClipReveal key={item.label} direction="left">
-                <Card3D className="bento-card flex items-center justify-between gap-4" intensity={6} lift={4}>
-                  <div>
-                    <p className="t-eyebrow mb-0.5">{item.label}</p>
-                    <p style={{ fontFamily:"'Geist', sans-serif", fontWeight:600, fontSize:'0.875rem', color:'var(--text-1)' }}>{item.value}</p>
-                  </div>
-                  <span className="rm-tag text-xs shrink-0">{item.note}</span>
-                </Card3D>
-              </ClipReveal>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── PAGE ──────────────────────────────────────────────────────────
+// ── PAGE ASSEMBLY ─────────────────────────────────────────────────
 export default function Home() {
   return (
     <PageTransition>
       <Hero />
       <AboutSection />
-      <FeaturedProject />
-      <WorksSection />
-      <ValueProps />
+      <WorkSection />
       <SkillsSection />
-      <ToolkitSection />
-      <ExpertiseSection />
-      <GitHubSection />
       <ContactSection />
     </PageTransition>
   )

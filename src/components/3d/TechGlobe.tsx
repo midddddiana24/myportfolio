@@ -56,7 +56,7 @@ function Wireframe() {
   return (
     <mesh ref={mesh}>
       <sphereGeometry args={[2.75, 18, 14]} />
-      <meshBasicMaterial wireframe color="#CF4500" transparent opacity={0.08} />
+      <meshBasicMaterial wireframe color="#c8f269" transparent opacity={0.08} />
     </mesh>
   )
 }
@@ -75,8 +75,8 @@ function GlobeScene() {
   return (
     <>
       <ambientLight intensity={0.4} />
-      <pointLight position={[5, 5, 5]} color="#CF4500" intensity={3} />
-      <pointLight position={[-4, -3, 4]} color="#F5874A" intensity={2} />
+      <pointLight position={[5, 5, 5]} color="#c8f269" intensity={3} />
+      <pointLight position={[-4, -3, 4]} color="#d4f47a" intensity={2} />
 
       <Float speed={0.8} rotationIntensity={0.1} floatIntensity={0.3}>
         <group ref={group}>
@@ -88,7 +88,7 @@ function GlobeScene() {
           {positions.map((pos, i) => (
             <mesh key={i} position={pos}>
               <sphereGeometry args={[0.04, 8, 8]} />
-              <meshStandardMaterial color="#E8702A" emissive="#CF4500" emissiveIntensity={1.5} />
+              <meshStandardMaterial color="#c8f269" emissive="#c8f269" emissiveIntensity={1.5} />
             </mesh>
           ))}
         </group>
