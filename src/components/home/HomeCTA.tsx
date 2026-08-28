@@ -8,13 +8,13 @@ export function HomeCTA() {
       <div className="rm-container">
         <ScrollReveal>
           <div
-            className="grain relative rounded-3xl overflow-hidden px-10 sm:px-16 py-16 sm:py-20 text-center"
+            className="grain relative overflow-hidden px-10 sm:px-16 py-16 sm:py-20 text-center"
             style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
           >
             {/* Top gradient */}
             <div
               className="absolute inset-0 pointer-events-none"
-              style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(212,82,10,0.10) 0%, transparent 60%)' }}
+              style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.06) 0%, transparent 60%)' }}
             />
             <div
               className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-64"

@@ -17,15 +17,15 @@ const categoryLabels: Record<string, string> = {
 }
 
 const categoryColors: Record<string, string> = {
-  school: 'rgba(99,102,241,0.15)',
-  capstone: 'rgba(124,58,237,0.15)',
-  personal: 'rgba(167,139,250,0.15)',
+  school: 'rgba(255,255,255,0.04)',
+  capstone: 'rgba(255,255,255,0.10)',
+  personal: 'rgba(255,255,255,0.06)',
 }
 
 const categoryTextColors: Record<string, string> = {
-  school: '#818cf8',
-  capstone: '#a78bfa',
-  personal: '#c4b5fd',
+  school: '#8a8a8a',
+  capstone: '#ffffff',
+  personal: '#c8c8c8',
 }
 
 // Show featured projects (or first 3)
@@ -70,7 +70,7 @@ export function ProjectsPreview() {
                   ) : (
                     <div className="flex flex-col items-center gap-2 opacity-40">
                       <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center"
+                        className="w-12 h-12 flex items-center justify-center"
                         style={{ background: 'var(--accent-dim)' }}
                       >
                         <span className="text-2xl">🖥️</span>
@@ -86,7 +86,7 @@ export function ProjectsPreview() {
 
                   {/* Category badge */}
                   <span
-                    className="absolute top-3 left-3 text-xs font-mono px-2 py-1 rounded-lg font-medium"
+                    className="absolute top-3 left-3 text-xs font-mono px-2 py-1 font-medium"
                     style={{
                       background: categoryColors[project.category] ?? 'var(--accent-dim)',
                       color: categoryTextColors[project.category] ?? 'var(--accent-light)',
@@ -98,9 +98,9 @@ export function ProjectsPreview() {
                   {/* Status dot */}
                   {project.status === 'in-progress' && (
                     <span className="absolute top-3 right-3 flex items-center gap-1.5 text-xs px-2 py-1 rounded-full"
-                      style={{ background: 'rgba(0,0,0,0.6)', color: '#86efac' }}
+                      style={{ background: 'rgba(0,0,0,0.6)', color: '#ffffff' }}
                     >
-                      <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                      <span className="avail-dot" />
                       In Progress
                     </span>
                   )}

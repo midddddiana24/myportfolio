@@ -14,7 +14,7 @@ const config: Config = {
         base:    '#0a0a0a',
         surface: '#111111',
         border:  '#1f1f1f',
-        accent:  '#c8f269',
+        accent:  '#ffffff',
         'text-primary': '#f0f0f0',
         'text-muted':   '#5a5a5a',
         'text-subtle':  '#2a2a2a',

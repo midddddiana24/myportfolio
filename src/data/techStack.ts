@@ -6,39 +6,39 @@ import type { Technology, TechCategory } from '@/types'
 
 export const technologies: Technology[] = [
   // ── AI & LLMs ─────────────────────────────────────
-  { name: 'OpenAI', icon: 'openai', category: 'ai-llm', color: '#10a37f' },
-  { name: 'Hugging Face', icon: 'huggingface', category: 'ai-llm', color: '#ff9d00' },
+  { name: 'OpenAI', icon: 'openai', category: 'ai-llm', color: '#8a8a8a' },
+  { name: 'Hugging Face', icon: 'huggingface', category: 'ai-llm', color: '#8a8a8a' },
 
   // ── Frontend ─────────────────────────────────────
-  { name: 'React', icon: 'react', category: 'frontend', color: '#61dafb' },
-  { name: 'Vue.js', icon: 'vuejs', category: 'frontend', color: '#42b883' },
+  { name: 'React', icon: 'react', category: 'frontend', color: '#8a8a8a' },
+  { name: 'Vue.js', icon: 'vuejs', category: 'frontend', color: '#8a8a8a' },
   { name: 'Next.js', icon: 'nextjs', category: 'frontend', color: '#000000' },
-  { name: 'TypeScript', icon: 'typescript', category: 'frontend', color: '#3178c6' },
-  { name: 'JavaScript', icon: 'javascript', category: 'frontend', color: '#f7df1e' },
-  { name: 'Tailwind CSS', icon: 'tailwindcss', category: 'frontend', color: '#06b6d4' },
-  { name: 'HTML5', icon: 'html5', category: 'frontend', color: '#e34f26' },
-  { name: 'CSS3', icon: 'css3', category: 'frontend', color: '#1572b6' },
+  { name: 'TypeScript', icon: 'typescript', category: 'frontend', color: '#8a8a8a' },
+  { name: 'JavaScript', icon: 'javascript', category: 'frontend', color: '#8a8a8a' },
+  { name: 'Tailwind CSS', icon: 'tailwindcss', category: 'frontend', color: '#8a8a8a' },
+  { name: 'HTML5', icon: 'html5', category: 'frontend', color: '#8a8a8a' },
+  { name: 'CSS3', icon: 'css3', category: 'frontend', color: '#8a8a8a' },
 
   // ── Backend ──────────────────────────────────────
-  { name: 'Node.js', icon: 'nodejs', category: 'backend', color: '#339933' },
-  { name: 'Laravel', icon: 'laravel', category: 'backend', color: '#ff2d20' },
-  { name: 'PHP', icon: 'php', category: 'backend', color: '#777bb4' },
+  { name: 'Node.js', icon: 'nodejs', category: 'backend', color: '#8a8a8a' },
+  { name: 'Laravel', icon: 'laravel', category: 'backend', color: '#8a8a8a' },
+  { name: 'PHP', icon: 'php', category: 'backend', color: '#8a8a8a' },
   { name: 'Express.js', icon: 'express', category: 'backend', color: '#000000' },
-  { name: 'REST APIs', icon: 'api', category: 'backend', color: '#7c3aed' },
+  { name: 'REST APIs', icon: 'api', category: 'backend', color: '#8a8a8a' },
 
   // ── Database ─────────────────────────────────────
-  { name: 'MySQL', icon: 'mysql', category: 'database', color: '#4479a1' },
-  { name: 'MongoDB', icon: 'mongodb', category: 'database', color: '#47a248' },
-  { name: 'PostgreSQL', icon: 'postgresql', category: 'database', color: '#336791' },
-  { name: 'Supabase', icon: 'supabase', category: 'database', color: '#3ecf8e' },
-  { name: 'Firebase', icon: 'firebase', category: 'database', color: '#ffca28' },
+  { name: 'MySQL', icon: 'mysql', category: 'database', color: '#8a8a8a' },
+  { name: 'MongoDB', icon: 'mongodb', category: 'database', color: '#8a8a8a' },
+  { name: 'PostgreSQL', icon: 'postgresql', category: 'database', color: '#8a8a8a' },
+  { name: 'Supabase', icon: 'supabase', category: 'database', color: '#8a8a8a' },
+  { name: 'Firebase', icon: 'firebase', category: 'database', color: '#8a8a8a' },
 
   // ── Tools ────────────────────────────────────────
-  { name: 'Git', icon: 'git', category: 'tools', color: '#f05032' },
-  { name: 'Docker', icon: 'docker', category: 'tools', color: '#2496ed' },
-  { name: 'Kali Linux', icon: 'linux', category: 'tools', color: '#557c94' },
-  { name: 'Postman', icon: 'postman', category: 'tools', color: '#ff6c37' },
-  { name: 'CI/CD', icon: 'cicd', category: 'tools', color: '#7c3aed' },
+  { name: 'Git', icon: 'git', category: 'tools', color: '#8a8a8a' },
+  { name: 'Docker', icon: 'docker', category: 'tools', color: '#8a8a8a' },
+  { name: 'Kali Linux', icon: 'linux', category: 'tools', color: '#8a8a8a' },
+  { name: 'Postman', icon: 'postman', category: 'tools', color: '#8a8a8a' },
+  { name: 'CI/CD', icon: 'cicd', category: 'tools', color: '#8a8a8a' },
 ]
 
 // ── Category Display Config ─────────────────────────

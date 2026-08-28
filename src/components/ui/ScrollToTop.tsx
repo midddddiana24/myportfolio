@@ -25,7 +25,7 @@ export function ScrollToTop() {
             display:'flex', alignItems:'center', justifyContent:'center',
             borderRadius:0, transition:'border-color 0.2s, color 0.2s',
           }}
-          whileHover={{ borderColor:'#c8f269', color:'#c8f269' }}
+          whileHover={{ borderColor:'#ffffff', color:'#ffffff' }}
           whileTap={{ scale:0.94 }}
         >
           <ArrowUp size={15} />

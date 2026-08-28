@@ -62,12 +62,12 @@ export function Hero() {
             <span
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-mono tracking-wide"
               style={{
-                background: 'rgba(34,197,94,0.06)',
-                borderColor: 'rgba(34,197,94,0.2)',
-                color: '#16a34a',
+                background: 'rgba(255,255,255,0.05)',
+                borderColor: 'rgba(255,255,255,0.18)',
+                color: '#ffffff',
               }}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="avail-dot" />
               Available for Collaborations
             </span>
 
@@ -217,43 +217,27 @@ export function Hero() {
         className="hidden lg:block absolute right-16 xl:right-24 bottom-0 z-10"
         aria-label="Profile photo"
       >
-        {/*
-          Replace this div with your real photo:
-          <img src="/assets/photo.jpg" alt="Roberto Mediana Jr."
-               className="w-72 xl:w-80 h-auto object-cover" style={{...}} />
-        */}
         <div
           className="relative w-64 xl:w-72 flex flex-col items-center justify-end pb-0"
           style={{ height: '380px' }}
         >
-          {/* Placeholder silhouette */}
+          {/* Portrait — squared off to match the no-radius rule */}
           <div
-            className="w-full h-full flex flex-col items-center justify-center gap-3 rounded-t-3xl border-t border-x"
-            style={{
-              background: 'var(--card)',
-              borderColor: 'var(--border)',
-            }}
+            className="portrait-frame img-mono w-full h-full border-t border-x"
+            style={{ borderColor: 'var(--border)' }}
           >
-            <span className="text-5xl opacity-30">📸</span>
-            <div className="text-center">
-              <p
-                className="font-mono text-xs"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                Your Photo Here
-              </p>
-              <p
-                className="font-mono text-xs opacity-50 mt-0.5"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                Replace in Hero.tsx
-              </p>
-            </div>
+            <img
+              src="/assets/img/portrait.jpg"
+              alt="Roberto Mediana Jr."
+              loading="lazy"
+              decoding="async"
+              style={{ objectPosition: 'center top' }}
+            />
           </div>
 
           {/* Floating name card */}
           <div
-            className="absolute -left-12 top-1/3 px-4 py-2.5 rounded-xl shadow-lg"
+            className="absolute -left-12 top-1/3 px-4 py-2.5 shadow-lg"
             style={{
               background: 'var(--surface)',
               border: '1px solid var(--border)',
@@ -270,10 +254,10 @@ export function Hero() {
 
           {/* WVSU badge */}
           <div
-            className="absolute -right-6 top-1/2 px-3 py-2 rounded-xl text-xs font-mono"
+            className="absolute -right-6 top-1/2 px-3 py-2 text-xs font-mono"
             style={{
               background: 'var(--accent-dim)',
-              border: '1px solid rgba(212,82,10,0.15)',
+              border: '1px solid rgba(255,255,255,0.12)',
               color: 'var(--accent-light)',
             }}
           >

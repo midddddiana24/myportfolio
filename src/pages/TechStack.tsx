@@ -34,7 +34,7 @@ function TechCategorySection({ category, idx }: { category: TechCategory; idx: n
           {/* Label */}
           <ClipReveal direction="right">
             <div>
-              <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#c8f269', marginBottom:'0.5rem' }}>
+              <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#ffffff', marginBottom:'0.5rem' }}>
                 {String(idx + 1).padStart(2, '0')}
               </p>
               <h2 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.25rem', letterSpacing:'-0.03em', color:'#f0f0f0', marginBottom:'0.5rem' }}>
@@ -59,7 +59,7 @@ function TechCategorySection({ category, idx }: { category: TechCategory; idx: n
                   onMouseEnter={e => { e.currentTarget.style.background='#1a1a1a' }}
                   onMouseLeave={e => { e.currentTarget.style.background = idx % 2 === 0 ? '#0a0a0a' : '#111111' }}
                 >
-                  <Icon size={26} style={{ color: tech.color ?? '#c8f269', flexShrink:0 }} />
+                  <Icon size={26} className="tech-icon" style={{ flexShrink:0 }} />
                   <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.08em', textTransform:'uppercase', color:'#5a5a5a', textAlign:'center', lineHeight:1.3 }}>
                     {tech.name}
                   </span>
@@ -105,9 +105,9 @@ export default function TechStack() {
       {/* Marquee strip */}
       <div className="py-8 border-y overflow-hidden" style={{ borderColor:'#1f1f1f', background:'#111111' }}>
         <Marquee speed="normal" gap="3rem">
-          {allIcons.map(({ name, Icon, color }) => (
+          {allIcons.map(({ name, Icon }) => (
             <div key={name} className="flex items-center gap-2.5 flex-shrink-0">
-              <Icon size={18} style={{ color: color ?? '#c8f269' }} />
+              <Icon size={18} className="tech-icon" />
               <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'#2a2a2a', whiteSpace:'nowrap' }}>
                 {name}
               </span>
@@ -126,7 +126,7 @@ export default function TechStack() {
         <div className="rm-container">
           <ClipReveal direction="down">
             <div style={{ border:'1px solid #1f1f1f', padding:'2rem', display:'flex', alignItems:'flex-start', gap:'1.5rem' }}>
-              <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.1em', color:'#c8f269', flexShrink:0 }}>NOTE</span>
+              <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.1em', color:'#ffffff', flexShrink:0 }}>NOTE</span>
               <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a', lineHeight:1.65 }}>
                 These represent tools I actively use or have used in academic and personal projects.
                 I'm continuously learning and expanding this stack.

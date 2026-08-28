@@ -72,8 +72,8 @@ export function CustomCursor() {
 
   // Ring size / style by state
   const ringSize     = state === 'view' ? 72 : state === 'canvas' ? 56 : state === 'link' ? 52 : state === 'button' ? 44 : 40
-  const ringBg       = state === 'view' ? 'rgba(200,242,105,0.9)' : state === 'link' ? 'rgba(200,242,105,0.08)' : 'transparent'
-  const ringBorder   = state === 'view' ? 'none' : '1.5px solid #c8f269'
+  const ringBg       = state === 'view' ? 'rgba(255,255,255,0.92)' : state === 'link' ? 'rgba(255,255,255,0.06)' : 'transparent'
+  const ringBorder   = state === 'view' ? 'none' : '1.5px solid #ffffff'
   const dotVisible   = state === 'view' || state === 'link' ? 0 : 1
   const labelVisible = state === 'view' ? 1 : 0
 
@@ -83,10 +83,10 @@ export function CustomCursor() {
       <div ref={dotRef} style={{
         position: 'fixed', top: 0, left: 0, zIndex: 99999,
         width: 10, height: 10, borderRadius: '50%',
-        background: '#c8f269',
+        background: '#ffffff',
         opacity: dotVisible,
         pointerEvents: 'none',
-        boxShadow: '0 0 8px rgba(200,242,105,0.5)',
+        boxShadow: '0 0 8px rgba(255,255,255,0.35)',
         transition: 'opacity 0.2s',
         willChange: 'transform',
       }} />

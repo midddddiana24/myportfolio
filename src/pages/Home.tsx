@@ -18,7 +18,8 @@ import { SocialLinks }       from '@/components/ui/SocialLinks'
 import { StatCounter }       from '@/components/ui/StatCounter'
 import { projects }          from '@/data/projects'
 
-const HeroCanvas = lazy(() => import('@/components/3d/HeroCanvas').then(m => ({ default: m.HeroCanvas })))
+const TerrainCanvas = lazy(() => import('@/components/3d/TerrainCanvas').then(m => ({ default: m.TerrainCanvas })))
+const WireGlobe = lazy(() => import('@/components/3d/WireGlobe').then(m => ({ default: m.WireGlobe })))
 
 // ================================================================
 // Home v7 — rojvillacampa-exact design
@@ -64,14 +65,15 @@ function Hero() {
   return (
     <section className="relative min-h-[100svh] flex flex-col overflow-hidden pt-28" aria-label="Hero">
 
-      {/* 3D Background */}
-      <div className="absolute inset-0 z-0 opacity-40" aria-hidden="true">
-        <Suspense fallback={null}><HeroCanvas /></Suspense>
-      </div>
+      {/* Backdrop — wireframe terrain with a travelling scan. See TerrainCanvas. */}
+      <Suspense fallback={<div className="terrain-fallback" aria-hidden="true" />}>
+        <TerrainCanvas />
+      </Suspense>
 
-      {/* Dark overlay */}
-      <div className="absolute inset-0 z-[1]" aria-hidden="true"
-        style={{ background:'linear-gradient(135deg, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.75) 50%, rgba(10,10,10,0.5) 100%)' }} />
+      {/* Legibility scrim, weighted left where the display type sits.
+          Must stay pointer-events:none or it eats the terrain drag. */}
+      <div className="absolute inset-0 z-[1] pointer-events-none" aria-hidden="true"
+        style={{ background:'linear-gradient(100deg, rgba(10,10,10,0.94) 0%, rgba(10,10,10,0.70) 38%, rgba(10,10,10,0.26) 70%, rgba(10,10,10,0.10) 100%)' }} />
 
       <div className="rm-container relative z-10 flex flex-col flex-1">
         {/* Two-column layout */}
@@ -142,7 +144,7 @@ function Hero() {
                   fontSize: 'clamp(3.5rem, 10vw, 8rem)',
                   lineHeight: 0.95,
                   letterSpacing: '-0.04em',
-                  color: '#c8f269',
+                  color: '#ffffff',
                   display: 'block',
                 }}
               >
@@ -177,7 +179,7 @@ function Hero() {
               {/* Lime glow orb */}
               <div style={{
                 width:'200px', height:'200px', borderRadius:'50%',
-                background:'radial-gradient(circle, rgba(200,242,105,0.18) 0%, rgba(200,242,105,0.04) 50%, transparent 70%)',
+                background:'radial-gradient(circle, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 50%, transparent 70%)',
                 filter:'blur(20px)',
                 position:'absolute',
               }} />
@@ -187,7 +189,7 @@ function Hero() {
                 fontWeight:700,
                 fontSize:'7rem',
                 letterSpacing:'-0.05em',
-                color:'rgba(200,242,105,0.08)',
+                color:'rgba(255,255,255,0.06)',
                 userSelect:'none',
                 lineHeight:1,
               }}>
@@ -196,12 +198,12 @@ function Hero() {
               {/* Decorative border */}
               <div style={{
                 position:'absolute', inset:'2rem',
-                border:'1px solid rgba(200,242,105,0.12)',
+                border:'1px solid rgba(255,255,255,0.10)',
                 borderRadius:0,
               }} />
               <div style={{
                 position:'absolute', inset:'0',
-                border:'1px solid rgba(200,242,105,0.05)',
+                border:'1px solid rgba(255,255,255,0.05)',
                 borderRadius:0,
               }} />
               {/* Corner dots */}
@@ -210,7 +212,7 @@ function Hero() {
                   position:'absolute',
                   left: x === -1 ? '2rem' : 'calc(100% - 2rem - 4px)',
                   top:  y === -1 ? '2rem' : 'calc(100% - 2rem - 4px)',
-                  width:'4px', height:'4px', background:'#c8f269',
+                  width:'4px', height:'4px', background:'#ffffff',
                   borderRadius:0,
                 }} />
               ))}
@@ -372,7 +374,7 @@ function WorkSection() {
 
               <div className="relative z-10 p-8 flex flex-col justify-between" style={{ minHeight:'360px' }}>
                 <div className="flex items-start justify-between">
-                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#c8f269' }}>
+                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#ffffff' }}>
                     Featured · Capstone
                   </span>
                   <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'#5a5a5a' }}>
@@ -430,7 +432,7 @@ function WorkSection() {
                   </span>
                   <div className="min-w-0">
                     <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(1rem,2.5vw,1.375rem)', letterSpacing:'-0.02em', color:'#f0f0f0', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', transition:'color 0.2s' }}
-                      className="group-hover:text-[#c8f269]">
+                      className="group-hover:text-[#ffffff]">
                       {project.title}
                     </h3>
                     <div className="flex flex-wrap gap-2 mt-1 hidden sm:flex">
@@ -446,7 +448,7 @@ function WorkSection() {
                   </span>
                   <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', color:'#2a2a2a' }}>{project.date}</span>
                   <ArrowUpRight size={16} style={{ color:'#2a2a2a', transition:'color 0.2s, transform 0.2s' }}
-                    className="group-hover:text-[#c8f269] group-hover:rotate-12" />
+                    className="group-hover:text-[#ffffff] group-hover:rotate-12" />
                 </div>
               </Link>
             </div>
@@ -474,36 +476,39 @@ const skillGroups = [
 ]
 
 const toolsGrid = [
-  { name:'React',      Icon:SiReact,      color:'#61dafb' },
-  { name:'Vue.js',     Icon:SiVuedotjs,   color:'#42b883' },
+  { name:'React',      Icon:SiReact,      color:'#8a8a8a' },
+  { name:'Vue.js',     Icon:SiVuedotjs,   color:'#8a8a8a' },
   { name:'Next.js',    Icon:SiNextdotjs,  color:'#f0f0f0' },
-  { name:'TypeScript', Icon:SiTypescript, color:'#3178c6' },
-  { name:'JavaScript', Icon:SiJavascript, color:'#f7df1e' },
-  { name:'Tailwind',   Icon:SiTailwindcss,color:'#06b6d4' },
-  { name:'HTML5',      Icon:SiHtml5,      color:'#e34f26' },
-  { name:'CSS',        Icon:SiCss,        color:'#1572b6' },
-  { name:'Node.js',    Icon:SiNodedotjs,  color:'#339933' },
-  { name:'Laravel',    Icon:SiLaravel,    color:'#ff2d20' },
-  { name:'PHP',        Icon:SiPhp,        color:'#777bb4' },
+  { name:'TypeScript', Icon:SiTypescript, color:'#8a8a8a' },
+  { name:'JavaScript', Icon:SiJavascript, color:'#8a8a8a' },
+  { name:'Tailwind',   Icon:SiTailwindcss,color:'#8a8a8a' },
+  { name:'HTML5',      Icon:SiHtml5,      color:'#8a8a8a' },
+  { name:'CSS',        Icon:SiCss,        color:'#8a8a8a' },
+  { name:'Node.js',    Icon:SiNodedotjs,  color:'#8a8a8a' },
+  { name:'Laravel',    Icon:SiLaravel,    color:'#8a8a8a' },
+  { name:'PHP',        Icon:SiPhp,        color:'#8a8a8a' },
   { name:'Express',    Icon:SiExpress,    color:'#f0f0f0' },
-  { name:'MySQL',      Icon:SiMysql,      color:'#4479a1' },
-  { name:'MongoDB',    Icon:SiMongodb,    color:'#47a248' },
-  { name:'PostgreSQL', Icon:SiPostgresql, color:'#336791' },
-  { name:'Supabase',   Icon:SiSupabase,   color:'#3ecf8e' },
-  { name:'Firebase',   Icon:SiFirebase,   color:'#ffca28' },
-  { name:'Git',        Icon:SiGit,        color:'#f05032' },
-  { name:'Docker',     Icon:SiDocker,     color:'#2496ed' },
-  { name:'Kali Linux', Icon:SiLinux,      color:'#557c94' },
-  { name:'Postman',    Icon:SiPostman,    color:'#ff6c37' },
-  { name:'OpenAI',     Icon:Bot,          color:'#10a37f' },
-  { name:'AI/LLMs',   Icon:Brain,        color:'#c8f269' },
-  { name:'REST APIs',  Icon:Workflow,     color:'#c8f269' },
+  { name:'MySQL',      Icon:SiMysql,      color:'#8a8a8a' },
+  { name:'MongoDB',    Icon:SiMongodb,    color:'#8a8a8a' },
+  { name:'PostgreSQL', Icon:SiPostgresql, color:'#8a8a8a' },
+  { name:'Supabase',   Icon:SiSupabase,   color:'#8a8a8a' },
+  { name:'Firebase',   Icon:SiFirebase,   color:'#8a8a8a' },
+  { name:'Git',        Icon:SiGit,        color:'#8a8a8a' },
+  { name:'Docker',     Icon:SiDocker,     color:'#8a8a8a' },
+  { name:'Kali Linux', Icon:SiLinux,      color:'#8a8a8a' },
+  { name:'Postman',    Icon:SiPostman,    color:'#8a8a8a' },
+  { name:'OpenAI',     Icon:Bot,          color:'#8a8a8a' },
+  { name:'AI/LLMs',   Icon:Brain,        color:'#ffffff' },
+  { name:'REST APIs',  Icon:Workflow,     color:'#ffffff' },
 ]
 
 function SkillsSection() {
   return (
-    <section className="rm-section overflow-hidden" style={{ background:'#0a0a0a' }}>
-      <div className="rm-container">
+    <section className="rm-section relative overflow-hidden" style={{ background:'#0a0a0a' }}>
+      {/* Scroll-driven wireframe globe. See WireGlobe. */}
+      <Suspense fallback={null}><WireGlobe /></Suspense>
+
+      <div className="rm-container relative z-10">
         <div className="flex items-center gap-4 mb-16">
           <span className="eyebrow">/ Expertise</span>
           <div className="rule flex-1" />
@@ -612,10 +617,10 @@ function ContactSection() {
                 className="block relative mb-10 group"
                 style={{ width:'fit-content' }}>
                 <span style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(1.25rem,3vw,2rem)', letterSpacing:'-0.03em', color:'#f0f0f0', transition:'color 0.3s' }}
-                  className="group-hover:text-[#c8f269]">
+                  className="group-hover:text-[#ffffff]">
                   your.email@example.com
                 </span>
-                <div className="email-line" style={{ position:'absolute', bottom:'-4px', left:0, right:0, height:'1px', background:'#c8f269', transform:'scaleX(0)' }} />
+                <div className="email-line" style={{ position:'absolute', bottom:'-4px', left:0, right:0, height:'1px', background:'#ffffff', transform:'scaleX(0)' }} />
               </a>
             </MagneticButton>
           </ClipReveal>

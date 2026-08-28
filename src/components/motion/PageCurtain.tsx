@@ -41,7 +41,7 @@ export function PageCurtain() {
 
   return (
     <div ref={panelRef} style={{
-      position:'fixed', inset:0, zIndex:9997, background:'#c8f269',
+      position:'fixed', inset:0, zIndex:9997, background:'#ffffff',
       display:'none', alignItems:'center', justifyContent:'center', pointerEvents:'none',
     }} aria-hidden="true">
       <div ref={labelRef} style={{

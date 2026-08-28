@@ -25,7 +25,7 @@ export function SocialLinks({ className, size=16, showLabels=false, direction='r
               border:'1px solid #1f1f1f', background:'transparent',
               color:'#5a5a5a', borderRadius:0, transition:'border-color 0.2s, color 0.2s',
             }}
-            onMouseEnter={e=>{ e.currentTarget.style.borderColor='#c8f269'; e.currentTarget.style.color='#c8f269' }}
+            onMouseEnter={e=>{ e.currentTarget.style.borderColor='#ffffff'; e.currentTarget.style.color='#ffffff' }}
             onMouseLeave={e=>{ e.currentTarget.style.borderColor='#1f1f1f'; e.currentTarget.style.color='#5a5a5a' }}>
             <Icon size={size} />
             {showLabels && (

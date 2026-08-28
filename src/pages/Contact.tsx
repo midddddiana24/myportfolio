@@ -20,7 +20,7 @@ const init: Form = { name:'', email:'', subject:'', message:'' }
 
 function field(err?: boolean): React.CSSProperties {
   return {
-    background:'#111111', border:`1px solid ${err?'#ef4444':'#1f1f1f'}`, color:'#f0f0f0',
+    background:'#111111', border:`1px solid ${err?'#ffffff':'#1f1f1f'}`, color:'#f0f0f0',
     borderRadius:0, padding:'0.875rem 1rem', width:'100%',
     fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', outline:'none',
     transition:'border-color 0.2s', cursor:'none',
@@ -84,7 +84,7 @@ export default function Contact() {
                 <MagneticButton strength={0.2}>
                   <a href={`mailto:${contactEmail}`}
                     style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(0.9rem,2vw,1.25rem)', letterSpacing:'-0.02em', color:'#f0f0f0', display:'block', paddingBottom:'0.25rem', borderBottom:'1px solid #1f1f1f', marginBottom:'2rem', transition:'color 0.2s, border-color 0.2s' }}
-                    onMouseEnter={e=>{ e.currentTarget.style.color='#c8f269'; e.currentTarget.style.borderColor='#c8f269' }}
+                    onMouseEnter={e=>{ e.currentTarget.style.color='#ffffff'; e.currentTarget.style.borderColor='#ffffff' }}
                     onMouseLeave={e=>{ e.currentTarget.style.color='#f0f0f0'; e.currentTarget.style.borderColor='#1f1f1f' }}>
                     {contactEmail}
                   </a>
@@ -102,7 +102,7 @@ export default function Contact() {
                         <a href={link.url} target="_blank" rel="noopener noreferrer"
                           style={{ width:'40px', height:'40px', border:'1px solid #1f1f1f', display:'flex', alignItems:'center', justifyContent:'center', color:'#5a5a5a', background:'transparent', transition:'border-color 0.2s, color 0.2s', borderRadius:0 }}
                           aria-label={link.label}
-                          onMouseEnter={e=>{e.currentTarget.style.borderColor='#c8f269'; e.currentTarget.style.color='#c8f269'}}
+                          onMouseEnter={e=>{e.currentTarget.style.borderColor='#ffffff'; e.currentTarget.style.color='#ffffff'}}
                           onMouseLeave={e=>{e.currentTarget.style.borderColor='#1f1f1f'; e.currentTarget.style.color='#5a5a5a'}}>
                           <Icon size={16} />
                         </a>
@@ -120,7 +120,7 @@ export default function Contact() {
                   {status === 'success' ? (
                     <motion.div key="ok" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
                       style={{ textAlign:'center', padding:'3rem 0', display:'flex', flexDirection:'column', alignItems:'center', gap:'1rem' }}>
-                      <CheckCircle size={36} style={{ color:'#c8f269' }} />
+                      <CheckCircle size={36} style={{ color:'#ffffff' }} />
                       <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.25rem', color:'#f0f0f0' }}>Message Sent!</h3>
                       <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a' }}>I'll reply within 24–48 hours.</p>
                       <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', color:'#2a2a2a', padding:'0.5rem 1rem', border:'1px solid #1f1f1f' }}>Connect EmailJS in .env to enable real sending</p>
@@ -138,9 +138,9 @@ export default function Contact() {
                               value={form[f.id === 'name' ? 'name' : 'email']}
                               onChange={onChange}
                               style={field(!!errors[f.id === 'name' ? 'name' : 'email'])}
-                              onFocus={e=>{ e.target.style.borderColor='#c8f269' }}
-                              onBlur={e=>{ e.target.style.borderColor=errors[f.id === 'name' ? 'name' : 'email']?'#ef4444':'#1f1f1f' }} />
-                            {errors[f.id === 'name' ? 'name' : 'email'] && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ef4444', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors[f.id === 'name' ? 'name' : 'email']}</p>}
+                              onFocus={e=>{ e.target.style.borderColor='#ffffff' }}
+                              onBlur={e=>{ e.target.style.borderColor=errors[f.id === 'name' ? 'name' : 'email']?'#ffffff':'#1f1f1f' }} />
+                            {errors[f.id === 'name' ? 'name' : 'email'] && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ffffff', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors[f.id === 'name' ? 'name' : 'email']}</p>}
                           </div>
                         ))}
                       </div>
@@ -149,22 +149,22 @@ export default function Contact() {
                         <label htmlFor="subject" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a' }}>Subject</label>
                         <input id="subject" name="subject" type="text" placeholder="Project inquiry" value={form.subject} onChange={onChange}
                           style={field(!!errors.subject)}
-                          onFocus={e=>{ e.target.style.borderColor='#c8f269' }}
-                          onBlur={e=>{ e.target.style.borderColor=errors.subject?'#ef4444':'#1f1f1f' }} />
-                        {errors.subject && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ef4444', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors.subject}</p>}
+                          onFocus={e=>{ e.target.style.borderColor='#ffffff' }}
+                          onBlur={e=>{ e.target.style.borderColor=errors.subject?'#ffffff':'#1f1f1f' }} />
+                        {errors.subject && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ffffff', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors.subject}</p>}
                       </div>
 
                       <div style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>
                         <label htmlFor="message" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a' }}>Message</label>
                         <textarea id="message" name="message" rows={5} placeholder="Tell me about your project…" value={form.message} onChange={onChange}
                           style={{ ...field(!!errors.message), resize:'vertical', minHeight:'120px', cursor:'none' }}
-                          onFocus={e=>{ e.target.style.borderColor='#c8f269' }}
-                          onBlur={e=>{ e.target.style.borderColor=errors.message?'#ef4444':'#1f1f1f' }} />
-                        {errors.message && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ef4444', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors.message}</p>}
+                          onFocus={e=>{ e.target.style.borderColor='#ffffff' }}
+                          onBlur={e=>{ e.target.style.borderColor=errors.message?'#ffffff':'#1f1f1f' }} />
+                        {errors.message && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ffffff', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors.message}</p>}
                       </div>
 
                       {status === 'error' && (
-                        <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ef4444', padding:'0.75rem', border:'1px solid rgba(239,68,68,0.2)', background:'rgba(239,68,68,0.05)', display:'flex', gap:'0.5rem', alignItems:'center' }}>
+                        <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ffffff', padding:'0.75rem', border:'1px solid rgba(255,255,255,0.18)', background:'rgba(255,255,255,0.05)', display:'flex', gap:'0.5rem', alignItems:'center' }}>
                           <AlertCircle size={12}/>Failed to send. Check EmailJS config.
                         </p>
                       )}

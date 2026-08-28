@@ -9,7 +9,7 @@ export function ThemeToggle({ className, size = 'md' }: { className?: string; si
   return (
     <button
       onClick={toggleTheme}
-      className={cn('inline-flex items-center justify-center rounded-lg border transition-all duration-150', size === 'sm' ? 'w-8 h-8' : 'w-9 h-9', className)}
+      className={cn('inline-flex items-center justify-center border transition-all duration-150', size === 'sm' ? 'w-8 h-8' : 'w-9 h-9', className)}
       style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--text-2)' }}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >

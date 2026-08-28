@@ -55,7 +55,7 @@ export default function Services() {
                   {/* Title + icon */}
                   <div style={{ display:'flex', alignItems:'flex-start', gap:'1rem' }}>
                     <div style={{ width:'40px', height:'40px', border:'1px solid #1f1f1f', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                      <Icon size={18} style={{ color:'#c8f269' }} />
+                      <Icon size={18} style={{ color:'#ffffff' }} />
                     </div>
                     <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.125rem', letterSpacing:'-0.02em', color:'#f0f0f0', lineHeight:1.2 }}>
                       {service.title}
@@ -79,7 +79,7 @@ export default function Services() {
                     <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a', marginBottom:'0.5rem' }}>
                       Deliverable
                     </p>
-                    <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.8125rem', color:'#c8f269', lineHeight:1.5 }}>
+                    <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.8125rem', color:'#ffffff', lineHeight:1.5 }}>
                       {service.deliverable}
                     </p>
                   </div>
@@ -94,10 +94,10 @@ export default function Services() {
       <section className="py-16" style={{ background:'#0a0a0a' }}>
         <div className="rm-container">
           <ClipReveal direction="down">
-            <div style={{ border:'1px solid rgba(200,242,105,0.15)', padding:'2rem', background:'rgba(200,242,105,0.03)', display:'flex', alignItems:'flex-start', gap:'1.5rem' }}>
-              <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#4ade80', flexShrink:0, marginTop:'0.35rem', animation:'pulse 2s ease-in-out infinite' }} />
+            <div style={{ border:'1px solid rgba(255,255,255,0.12)', padding:'2rem', background:'rgba(255,255,255,0.03)', display:'flex', alignItems:'flex-start', gap:'1.5rem' }}>
+              <div style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#ffffff', flexShrink:0, marginTop:'0.35rem', animation:'pulse 2s ease-in-out infinite' }} />
               <div>
-                <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#c8f269', marginBottom:'0.5rem' }}>
+                <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#ffffff', marginBottom:'0.5rem' }}>
                   Availability Note
                 </p>
                 <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a', lineHeight:1.65 }}>

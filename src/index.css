@@ -1,8 +1,9 @@
 /* ================================================================
-   RM Portfolio v7 — rojvillacampa-inspired Design System
-   Color: Near-black + Electric Lime Green
+   RM Portfolio v8 — Monochrome Editorial Design System
+   Color: Near-black + Pure White. NO chromatic accent.
    Font: Space Grotesk (body) + DM Mono (labels/eyebrows)
    Rule: NO border-radius on cards. Brutalist editorial.
+   Images: grayscale by default, full colour on hover.
    ================================================================ */
 
 @tailwind base;
@@ -14,9 +15,9 @@
   --bg-base:      #0a0a0a;
   --bg-surface:   #111111;
   --border:       #1f1f1f;
-  --accent:       #c8f269;
-  --accent-dim:   rgba(200, 242, 105, 0.08);
-  --accent-glow:  rgba(200, 242, 105, 0.20);
+  --accent:       #ffffff;
+  --accent-dim:   rgba(255, 255, 255, 0.06);
+  --accent-glow:  rgba(255, 255, 255, 0.16);
   --text-primary: #f0f0f0;
   --text-muted:   #5a5a5a;
   --text-subtle:  #1e1e1e;
@@ -28,7 +29,7 @@
   --card-hover:   #161616;
   --border-dim:   #161616;
   --border-strong: #2a2a2a;
-  --accent-h:     #d4f47a;
+  --accent-h:     #e4e4e4;
   --text-1:       var(--text-primary);
   --text-2:       #8a8a8a;
   --text-3:       var(--text-muted);
@@ -36,6 +37,15 @@
   --shadow-sm:    0 1px 4px rgba(0,0,0,0.5);
   --shadow-md:    0 4px 20px rgba(0,0,0,0.6);
   --shadow-lg:    0 8px 40px rgba(0,0,0,0.7);
+  --shadow-elevated: 0 12px 44px rgba(0,0,0,0.78);
+
+  /* These four were referenced by components but never defined, so the
+     declarations using them were invalid and silently dropped — the hero
+     lede fell back to inheriting --text-primary, flattening the ramp.
+     Values reuse existing steps rather than inventing new greys. */
+  --text-secondary: var(--text-2);      /* #8a8a8a — body tier below primary */
+  --accent-light:   #c8c8c8;            /* softened accent, won't fight pure white */
+  --gradient-hero:  radial-gradient(ellipse 80% 55% at 50% 0%, rgba(255,255,255,0.055) 0%, transparent 72%);
 }
 
 /* ── Noise Grain Overlay ────────────────────────────────────────── */
@@ -84,7 +94,7 @@ code, pre, kbd, .font-mono {
   font-family: 'DM Mono', ui-monospace, monospace;
 }
 
-::selection { background: rgba(200,242,105,0.2); color: #c8f269; }
+::selection { background: rgba(255,255,255,0.22); color: #ffffff; }
 :focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 
 ::-webkit-scrollbar       { width: 4px; }
@@ -158,7 +168,7 @@ html.lenis, html.lenis body { height: auto; }
   border: 1px solid var(--accent);
   border-radius: 0;
 }
-.btn-primary:hover { background: #d4f47a; }
+.btn-primary:hover { background: var(--accent-h); }
 
 .btn-ghost {
   display: inline-flex; align-items: center; gap: 0.5rem;
@@ -187,9 +197,9 @@ html.lenis, html.lenis body { height: auto; }
   white-space: nowrap;
 }
 .rm-tag-accent {
-  border-color: rgba(200,242,105,0.3);
+  border-color: rgba(255,255,255,0.32);
   color: var(--accent);
-  background: rgba(200,242,105,0.06);
+  background: rgba(255,255,255,0.06);
 }
 
 /* ── Nav link ───────────────────────────────────────────────────── */
@@ -228,7 +238,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 .project-row::after {
   content: ''; position: absolute; inset: 0;
-  background: rgba(200,242,105,0.03);
+  background: rgba(255,255,255,0.035);
   opacity: 0; transition: opacity 0.3s;
   pointer-events: none;
 }
@@ -416,7 +426,8 @@ html.lenis, html.lenis body { height: auto; }
 .scroll-line-anim { animation: scrollDrop 1.8s ease-in-out infinite; }
 
 /* ── Availability dot pulse ─────────────────────────────────────── */
-.avail-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse 2s ease-in-out infinite; }
+.avail-dot { width: 6px; height: 6px; border-radius: 50%; background: #ffffff; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.85); } }
 
 /* ── Horizontal scroll ──────────────────────────────────────────── */
 .hs-section { overflow: hidden; position: relative; }
@@ -429,7 +440,7 @@ html.lenis, html.lenis body { height: auto; }
 
 /* ── Glow on accent element ─────────────────────────────────────── */
 .accent-glow {
-  box-shadow: 0 0 60px rgba(200,242,105,0.15), 0 0 120px rgba(200,242,105,0.08);
+  box-shadow: 0 0 60px rgba(255,255,255,0.10), 0 0 120px rgba(255,255,255,0.05);
 }
 
 /* ── rm-divider ─────────────────────────────────────────────────── */
@@ -451,3 +462,104 @@ html.lenis, html.lenis body { height: auto; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .will-change-t { will-change: transform; }
+
+/* ── Tech icons ─────────────────────────────────────────────────── */
+/* Brand colour is deliberately ignored: in a monochrome system the
+   icon silhouette does the identifying, so all logos sit at one
+   neutral and only the hovered one resolves to white. */
+.tech-icon { color: #8a8a8a; transition: color 0.2s ease; flex-shrink: 0; }
+.tech-card:hover .tech-icon,
+.tool-card:hover .tech-icon { color: var(--accent); }
+
+/* ── Imagery ────────────────────────────────────────────────────── */
+/* Photographic/illustrated art is desaturated to sit inside the
+   palette; the colour reveal on hover is the one place hue is allowed. */
+.img-mono {
+  filter: grayscale(1) contrast(1.08) brightness(0.95);
+  transition: filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.img-mono:hover { filter: grayscale(0) contrast(1) brightness(1); }
+
+/* ── Hero terrain (3D) ──────────────────────────────────────────── */
+/* The canvas is the hero backdrop. pointer-events stays enabled so the
+   scene can be grabbed in empty areas; the content above sits in a
+   higher stacking context, so links and buttons still take their own
+   clicks. The scrim over it must stay pointer-events:none. */
+.terrain-wrap { position: absolute; inset: 0; z-index: 0; }
+.terrain-wrap canvas { display: block; }
+
+/* Vignette so the grid dissolves at the frame edge instead of being cut */
+.terrain-wrap::after {
+  content: '';
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 78% 62% at 44% 48%, transparent 0%, rgba(10,10,10,0.40) 62%, rgba(10,10,10,0.85) 100%),
+    linear-gradient(to bottom, #0a0a0a 0%, transparent 20%, transparent 74%, #0a0a0a 100%);
+}
+
+/* Stands in for the canvas when WebGL is missing or the context is lost:
+   same idea — a receding grid — with no GPU involved. */
+/* ── Expertise globe ────────────────────────────────────────────── */
+/* Sits off the right edge and behind the content, so the skill list
+   stays the thing you read. Hidden below lg: at phone widths it would
+   crowd the type rather than support it. */
+.globe-wrap {
+  position: absolute;
+  top: 50%;
+  right: -6%;
+  transform: translateY(-50%);
+  width: min(44rem, 56vw);
+  aspect-ratio: 1 / 1;
+  z-index: 0;
+  pointer-events: none;
+  display: none;
+}
+@media (min-width: 1024px) {
+  .globe-wrap { display: block; }
+}
+
+.terrain-fallback {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  overflow: hidden;
+  background-image:
+    linear-gradient(to right,  rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 46px 46px;
+  transform: perspective(340px) rotateX(57deg) scale(1.8);
+  transform-origin: 50% 100%;
+  -webkit-mask-image: radial-gradient(ellipse 68% 54% at 50% 60%, #000 0%, transparent 76%);
+          mask-image: radial-gradient(ellipse 68% 54% at 50% 60%, #000 0%, transparent 76%);
+}
+
+/* Portrait frame — clip reveal on scroll into view */
+.portrait-frame { position: relative; overflow: hidden; background: var(--bg-surface); }
+.portrait-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* Certificate preview thumb */
+.cert-thumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+.cert-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top center;
+  filter: grayscale(1) contrast(1.1) brightness(0.88);
+  transition: filter 0.45s ease, transform 0.65s cubic-bezier(0.22,1,0.36,1);
+}
+.cert-card:hover .cert-thumb img {
+  filter: grayscale(1) contrast(1.15) brightness(1.05);
+  transform: scale(1.03);
+}
+
+/* ── Placeholders ───────────────────────────────────────────────── */
+/* Tailwind's preflight sets input::placeholder to #9ca3af, a cool-tinted
+   gray. On a strict monochrome page that blue cast reads as a bug, so it
+   is overridden here — matching preflight's specificity so source order
+   decides, rather than reaching for !important. */
+input::placeholder,
+textarea::placeholder,
+select::placeholder { color: #4a4a4a; opacity: 1; }

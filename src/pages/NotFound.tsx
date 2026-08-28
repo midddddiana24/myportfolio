@@ -27,23 +27,23 @@ function BrokenGeo() {
   return (
     <>
       <ambientLight intensity={0.3} />
-      <pointLight position={[4,4,4]} color="#c8f269" intensity={4} />
-      <pointLight position={[-3,-2,3]} color="#d4f47a" intensity={2} />
+      <pointLight position={[4,4,4]} color="#ffffff" intensity={4} />
+      <pointLight position={[-3,-2,3]} color="#e4e4e4" intensity={2} />
 
       <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.6}>
         <group>
           <mesh ref={g1} position={[-0.4, 0.3, 0]}>
             <tetrahedronGeometry args={[1.1, 0]} />
-            <meshStandardMaterial color="#c8f269" metalness={0.8} roughness={0.1} transparent opacity={0.9} />
+            <meshStandardMaterial color="#ffffff" metalness={0.8} roughness={0.1} transparent opacity={0.9} />
           </mesh>
           <mesh ref={g1}>
             <tetrahedronGeometry args={[1.1, 0]} />
-            <meshBasicMaterial wireframe color="#c8f269" transparent opacity={0.15} />
+            <meshBasicMaterial wireframe color="#ffffff" transparent opacity={0.15} />
           </mesh>
 
           <mesh ref={g2} position={[0.6, -0.4, 0.2]}>
             <octahedronGeometry args={[0.65, 0]} />
-            <meshStandardMaterial color="#d4f47a" metalness={0.9} roughness={0.1} transparent opacity={0.8} />
+            <meshStandardMaterial color="#e4e4e4" metalness={0.9} roughness={0.1} transparent opacity={0.8} />
           </mesh>
 
           <mesh ref={g3} position={[-0.2, -0.5, -0.3]}>
@@ -54,7 +54,7 @@ function BrokenGeo() {
           {/* Ghost wireframe of original */}
           <mesh>
             <icosahedronGeometry args={[1.5, 1]} />
-            <meshBasicMaterial wireframe color="#c8f269" transparent opacity={0.04} />
+            <meshBasicMaterial wireframe color="#ffffff" transparent opacity={0.04} />
           </mesh>
         </group>
       </Float>
@@ -79,7 +79,7 @@ export default function NotFound() {
           transition={{ duration:0.6, delay:0.2, ease:[0.22,1,0.36,1] }}
           style={{ textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', gap:'1rem' }}>
 
-          <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.2em', textTransform:'uppercase', color:'#c8f269' }}>
+          <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.2em', textTransform:'uppercase', color:'#ffffff' }}>
             Error 404
           </p>
 

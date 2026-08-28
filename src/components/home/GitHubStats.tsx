@@ -14,8 +14,8 @@ interface GitHubUser   { public_repos:number; followers:number; following:number
 interface GitHubRepo   { id:number; name:string; description:string|null; stargazers_count:number; forks_count:number; language:string|null; html_url:string }
 
 const langColors: Record<string,string> = {
-  TypeScript:'#3178c6', JavaScript:'#f7df1e', PHP:'#777bb4',
-  Python:'#3572A5', Vue:'#42b883', HTML:'#e34f26', CSS:'#1572b6',
+  TypeScript:'#8a8a8a', JavaScript:'#8a8a8a', PHP:'#8a8a8a',
+  Python:'#8a8a8a', Vue:'#8a8a8a', HTML:'#8a8a8a', CSS:'#8a8a8a',
 }
 
 export function GitHubStats() {
@@ -54,7 +54,7 @@ export function GitHubStats() {
 
         {loading ? (
           <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', paddingBottom:'2rem' }}>
-            <div style={{ width:14, height:14, border:'1px solid #1f1f1f', borderTopColor:'#c8f269', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
+            <div style={{ width:14, height:14, border:'1px solid #1f1f1f', borderTopColor:'#ffffff', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
             <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#2a2a2a' }}>
               Fetching GitHub data…
             </span>
@@ -70,7 +70,7 @@ export function GitHubStats() {
                 ].map((s, i) => (
                   <ClipReveal key={s.label} direction="down" delay={i*0.07}>
                     <div style={{ background:'#111111', padding:'2rem 1.5rem' }}>
-                      <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:800, fontSize:'2.5rem', letterSpacing:'-0.05em', color:'#c8f269', lineHeight:1 }}>
+                      <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:800, fontSize:'2.5rem', letterSpacing:'-0.05em', color:'#ffffff', lineHeight:1 }}>
                         {s.value}
                       </p>
                       <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a', marginTop:'0.5rem' }}>
@@ -94,7 +94,7 @@ export function GitHubStats() {
                         </h3>
                         <a href={repo.html_url} target="_blank" rel="noopener noreferrer"
                           style={{ color:'#2a2a2a', flexShrink:0, transition:'color 0.2s' }}
-                          onMouseEnter={e=>{e.currentTarget.style.color='#c8f269'}}
+                          onMouseEnter={e=>{e.currentTarget.style.color='#ffffff'}}
                           onMouseLeave={e=>{e.currentTarget.style.color='#2a2a2a'}}>
                           <ExternalLink size={13}/>
                         </a>

@@ -54,10 +54,10 @@ export function ServicesPreview() {
               >
                 {/* Icon */}
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300"
+                  className="w-12 h-12 flex items-center justify-center mb-4 transition-colors duration-300"
                   style={{
                     background: 'var(--accent-dim)',
-                    border: '1px solid rgba(124,58,237,0.2)',
+                    border: '1px solid rgba(255,255,255,0.18)',
                   }}
                 >
                   <Icon

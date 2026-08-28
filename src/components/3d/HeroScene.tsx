@@ -29,7 +29,7 @@ function AnimatedSphere() {
         args={[1.6, 128, 128]}
       >
         <MeshDistortMaterial
-          color="#7c3aed"
+          color="#ffffff"
           attach="material"
           distort={0.35}
           speed={2.5}
@@ -57,7 +57,7 @@ function InnerRing() {
   return (
     <mesh ref={ref}>
       <torusGeometry args={[2.4, 0.015, 16, 120]} />
-      <meshBasicMaterial color="#a78bfa" transparent opacity={0.35} />
+      <meshBasicMaterial color="#c8c8c8" transparent opacity={0.35} />
     </mesh>
   )
 }
@@ -75,7 +75,7 @@ function OuterRing() {
   return (
     <mesh ref={ref}>
       <torusGeometry args={[3.2, 0.008, 16, 120]} />
-      <meshBasicMaterial color="#7c3aed" transparent opacity={0.2} />
+      <meshBasicMaterial color="#ffffff" transparent opacity={0.2} />
     </mesh>
   )
 }
@@ -95,7 +95,7 @@ export function HeroScene() {
         <div
           className="w-48 h-48 rounded-full"
           style={{
-            background: 'radial-gradient(circle, rgba(124,58,237,0.4) 0%, rgba(124,58,237,0.05) 70%)',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 70%)',
           }}
         />
       </div>
@@ -116,14 +116,14 @@ export function HeroScene() {
         <directionalLight
           position={[5, 5, 5]}
           intensity={1.2}
-          color="#a78bfa"
+          color="#c8c8c8"
         />
         <directionalLight
           position={[-5, -3, 2]}
           intensity={0.5}
-          color="#6366f1"
+          color="#ffffff"
         />
-        <pointLight position={[0, 0, 4]} intensity={0.8} color="#7c3aed" />
+        <pointLight position={[0, 0, 4]} intensity={0.8} color="#ffffff" />
 
         {/* 3D elements */}
         <AnimatedSphere />

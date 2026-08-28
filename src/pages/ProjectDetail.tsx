@@ -44,10 +44,10 @@ export default function ProjectDetail() {
 
           {/* Category + status */}
           <div style={{ display:'flex', flexWrap:'wrap', gap:'0.625rem', marginBottom:'1.5rem' }}>
-            <span style={{ ...mono, fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'0.3rem 0.75rem', border:'1px solid rgba(200,242,105,0.2)', color:'#c8f269', background:'rgba(200,242,105,0.04)' }}>
+            <span style={{ ...mono, fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'0.3rem 0.75rem', border:'1px solid rgba(255,255,255,0.18)', color:'#ffffff', background:'rgba(255,255,255,0.04)' }}>
               {project.category === 'capstone' ? 'Capstone' : project.category === 'school' ? 'School' : 'Personal'}
             </span>
-            <span style={{ ...mono, fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'0.3rem 0.75rem', border:'1px solid #1f1f1f', color: project.status === 'completed' ? '#4ade80' : project.status === 'in-progress' ? '#fbbf24' : '#5a5a5a' }}>
+            <span style={{ ...mono, fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'0.3rem 0.75rem', border:'1px solid #1f1f1f', color: project.status === 'completed' ? '#ffffff' : project.status === 'in-progress' ? '#8a8a8a' : '#5a5a5a' }}>
               {project.status === 'in-progress' ? '● In Progress' : project.status}
             </span>
           </div>
@@ -119,7 +119,7 @@ export default function ProjectDetail() {
         <div className="rm-container">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <ClipReveal direction="down">
-              <p style={{ ...mono, fontSize:'0.6875rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#c8f269', marginBottom:'1rem' }}>Technologies</p>
+              <p style={{ ...mono, fontSize:'0.6875rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#ffffff', marginBottom:'1rem' }}>Technologies</p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:'0.5rem' }}>
                 {project.technologies.map(t => <span key={t} className="rm-tag">{t}</span>)}
               </div>
@@ -144,7 +144,7 @@ export default function ProjectDetail() {
               {project.problem && (
                 <ClipReveal direction="down">
                   <div style={{ background:'#0a0a0a', padding:'2rem' }}>
-                    <Target size={18} style={{ color:'#ef4444', marginBottom:'1rem' }} />
+                    <Target size={18} style={{ color:'#ffffff', marginBottom:'1rem' }} />
                     <p style={{ ...mono, fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a', marginBottom:'0.75rem' }}>The Problem</p>
                     <p style={{ ...sans, fontSize:'0.9375rem', color:'#5a5a5a', lineHeight:1.65 }}>{project.problem}</p>
                   </div>
@@ -153,7 +153,7 @@ export default function ProjectDetail() {
               {project.solution && (
                 <ClipReveal direction="down" delay={0.08}>
                   <div style={{ background:'#0a0a0a', padding:'2rem' }}>
-                    <Lightbulb size={18} style={{ color:'#c8f269', marginBottom:'1rem' }} />
+                    <Lightbulb size={18} style={{ color:'#ffffff', marginBottom:'1rem' }} />
                     <p style={{ ...mono, fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a', marginBottom:'0.75rem' }}>The Solution</p>
                     <p style={{ ...sans, fontSize:'0.9375rem', color:'#5a5a5a', lineHeight:1.65 }}>{project.solution}</p>
                   </div>
@@ -162,12 +162,12 @@ export default function ProjectDetail() {
               {project.features && project.features.length > 0 && (
                 <ClipReveal direction="down" delay={0.16}>
                   <div style={{ background:'#0a0a0a', padding:'2rem' }}>
-                    <CheckCircle size={18} style={{ color:'#4ade80', marginBottom:'1rem' }} />
+                    <CheckCircle size={18} style={{ color:'#ffffff', marginBottom:'1rem' }} />
                     <p style={{ ...mono, fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a', marginBottom:'0.75rem' }}>Key Features</p>
                     <ul style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>
                       {project.features.map(f => (
                         <li key={f} style={{ ...sans, fontSize:'0.875rem', color:'#5a5a5a', display:'flex', gap:'0.5rem', alignItems:'flex-start' }}>
-                          <span style={{ color:'#c8f269', flexShrink:0, marginTop:'0.2rem' }}>—</span>{f}
+                          <span style={{ color:'#ffffff', flexShrink:0, marginTop:'0.2rem' }}>—</span>{f}
                         </li>
                       ))}
                     </ul>
@@ -184,7 +184,7 @@ export default function ProjectDetail() {
         <section className="py-16 border-t" style={{ borderColor:'#1f1f1f', background:'#111111' }}>
           <div className="rm-container">
             <ClipReveal direction="down">
-              <p style={{ ...mono, fontSize:'0.6875rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#c8f269', marginBottom:'1.25rem' }}>What I Learned</p>
+              <p style={{ ...mono, fontSize:'0.6875rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#ffffff', marginBottom:'1.25rem' }}>What I Learned</p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:'0.625rem' }}>
                 {project.learningOutcomes.map(o => (
                   <span key={o} style={{ ...sans, fontSize:'0.875rem', color:'#5a5a5a', padding:'0.5rem 1rem', border:'1px solid #1f1f1f' }}>{o}</span>

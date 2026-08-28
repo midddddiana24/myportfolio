@@ -10,8 +10,8 @@ import { projects, projectCategories } from '@/data/projects'
 import type { CategoryKey } from '@/data/projects'
 import { DUR_SLOW } from '@/lib/gsap'
 
-const catColors: Record<string,string> = { school:'rgba(99,102,241,0.1)', capstone:'rgba(200,242,105,0.08)', personal:'rgba(34,197,94,0.08)' }
-const catText:   Record<string,string> = { school:'#818cf8', capstone:'#c8f269', personal:'#4ade80' }
+const catColors: Record<string,string> = { school:'rgba(255,255,255,0.04)', capstone:'rgba(255,255,255,0.10)', personal:'rgba(255,255,255,0.06)' }
+const catText:   Record<string,string> = { school:'#8a8a8a', capstone:'#ffffff', personal:'#c8c8c8' }
 
 export default function Projects() {
   const [active, setActive] = useState<CategoryKey>('all')
@@ -84,8 +84,8 @@ export default function Projects() {
                             View <ArrowUpRight size={12} />
                           </Link>
                         </MagneticButton>
-                        {p.githubUrl && <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color:'#5a5a5a', transition:'color 0.2s' }} onMouseEnter={e=>{e.currentTarget.style.color='#c8f269'}} onMouseLeave={e=>{e.currentTarget.style.color='#5a5a5a'}}><Github size={15}/></a>}
-                        {p.liveDemoUrl && <a href={p.liveDemoUrl} target="_blank" rel="noopener noreferrer" style={{ color:'#5a5a5a', transition:'color 0.2s' }} onMouseEnter={e=>{e.currentTarget.style.color='#c8f269'}} onMouseLeave={e=>{e.currentTarget.style.color='#5a5a5a'}}><ExternalLink size={15}/></a>}
+                        {p.githubUrl && <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color:'#5a5a5a', transition:'color 0.2s' }} onMouseEnter={e=>{e.currentTarget.style.color='#ffffff'}} onMouseLeave={e=>{e.currentTarget.style.color='#5a5a5a'}}><Github size={15}/></a>}
+                        {p.liveDemoUrl && <a href={p.liveDemoUrl} target="_blank" rel="noopener noreferrer" style={{ color:'#5a5a5a', transition:'color 0.2s' }} onMouseEnter={e=>{e.currentTarget.style.color='#ffffff'}} onMouseLeave={e=>{e.currentTarget.style.color='#5a5a5a'}}><ExternalLink size={15}/></a>}
                       </div>
                     </div>
                   </div>

@@ -11,7 +11,7 @@ function FireworkCanvas() {
 
     interface P { x:number; y:number; vx:number; vy:number; alpha:number; size:number; color:string }
     const particles: P[] = []
-    const colors = ['#c8f269','#d4f47a','#f0f0f0','#b8e050','#e8ff9a']
+    const colors = ['#ffffff','#e4e4e4','#f0f0f0','#8a8a8a','#c8c8c8']
 
     for (let b = 0; b < 6; b++) {
       const bx = Math.random() * canvas.width, by = Math.random() * canvas.height * 0.6 + 50
@@ -52,7 +52,7 @@ export function EasterEgg() {
             style={{ position:'relative', zIndex:1, textAlign:'center', padding:'3rem 3.5rem', background:'#111111', border:'1px solid #1f1f1f', maxWidth:'400px' }}>
             <p style={{ fontSize:'3rem', marginBottom:'1rem' }}>🎉</p>
             <h2 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.75rem', letterSpacing:'-0.04em', color:'#f0f0f0', marginBottom:'0.5rem' }}>You found it!</h2>
-            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#c8f269', marginBottom:'1rem' }}>↑ ↑ ↓ ↓ ← → ← → B A</p>
+            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#ffffff', marginBottom:'1rem' }}>↑ ↑ ↓ ↓ ← → ← → B A</p>
             <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a', lineHeight:1.6 }}>
               Props to curious developers who explore. I appreciate you. 🚀
             </p>

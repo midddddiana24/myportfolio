@@ -42,7 +42,7 @@ export function Navbar() {
                 <li key={item.href}>
                   <MagneticButton strength={0.25} as="div">
                     <NavLink to={item.href} end={item.href === '/'} className="nav-link"
-                      style={({ isActive }) => ({ color: isActive ? '#c8f269' : undefined })}>
+                      style={({ isActive }) => ({ color: isActive ? '#ffffff' : undefined })}>
                       {item.label}
                     </NavLink>
                   </MagneticButton>
@@ -96,7 +96,7 @@ export function Navbar() {
                       transition={{ delay: i*0.05 + 0.08 }}>
                       <NavLink to={item.href} end={item.href === '/'}
                         className="block px-3 py-3 nav-link text-xs"
-                        style={({ isActive }) => ({ color: isActive ? '#c8f269' : undefined })}>
+                        style={({ isActive }) => ({ color: isActive ? '#ffffff' : undefined })}>
                         {item.label}
                       </NavLink>
                     </motion.li>

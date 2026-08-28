@@ -50,7 +50,7 @@ interface FloatingShapeProps {
 
 export function FloatingShape({
   type = 'octahedron',
-  color = '#CF4500',
+  color = '#ffffff',
   size = 120,
   className,
 }: FloatingShapeProps) {

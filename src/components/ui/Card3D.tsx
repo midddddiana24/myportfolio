@@ -49,7 +49,7 @@ export function Card3D({
 
       // Dynamic shadow follows tilt
       card.style.boxShadow = [
-        `${-dx * 18}px ${-dy * 18}px 40px rgba(207,69,0,0.14)`,
+        `${-dx * 18}px ${-dy * 18}px 40px rgba(255,255,255,0.10)`,
         `0 ${lift * 2}px ${lift * 4}px rgba(0,0,0,0.25)`,
       ].join(', ')
 

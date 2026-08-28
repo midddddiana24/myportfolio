@@ -46,7 +46,7 @@ export function ParticleCanvas() {
       })
     }
 
-    const accentR = 200, accentG = 242, accentB = 105  // lime #c8f269
+    const accentR = 255, accentG = 255, accentB = 255  // pure white
 
     const draw = () => {
       ctx.clearRect(0, 0, w, h)
