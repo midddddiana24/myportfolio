@@ -1,5 +1,6 @@
 import { useRef, useEffect, type ReactNode } from 'react'
 import { gsap, ScrollTrigger, EASE_POWER4, DUR_SLOW } from '@/lib/gsap'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 // ================================================================
 // ClipReveal — clip-path wipe reveal for images, sections, blocks
@@ -37,13 +38,20 @@ export function ClipReveal({
   once = true,
 }: ClipRevealProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const reduced = useReducedMotion()
+  const { from, to } = getClip(direction)
 
   useEffect(() => {
+    // Reduced motion is handled in the render below by not clipping at all.
+    // It must NOT be handled by bailing out here: the clip lived in the JSX
+    // style, so returning early left every wrapped block clipped to zero
+    // height forever. ClipReveal wraps most of the content on About,
+    // Contact, Home, Projects, ProjectDetail, Services and TechStack, so
+    // that one early return blanked nearly the whole site for anyone who
+    // asks their OS to reduce motion.
+    if (reduced) return
     const el = ref.current
     if (!el) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    const { from, to } = getClip(direction)
 
     const anim = gsap.fromTo(
       el,
@@ -67,10 +75,14 @@ export function ClipReveal({
         .filter(st => st.trigger === el)
         .forEach(st => st.kill())
     }
-  }, [direction, duration, delay, once])
+  }, [direction, duration, delay, once, reduced, from, to])
 
   return (
-    <div ref={ref} className={className} style={{ ...style, clipPath: 'inset(100% 0 0 0)' }}>
+    // `from`, not a hardcoded inset: the starting clip was always the 'up'
+    // variant regardless of `direction`, so a right/left/down reveal began
+    // clipped from the wrong edge and visibly jumped when GSAP took over.
+    <div ref={ref} className={className}
+      style={{ ...style, clipPath: reduced ? undefined : from }}>
       {children}
     </div>
   )
@@ -85,11 +97,14 @@ interface ParallaxProps {
 
 export function Parallax({ children, className, speed = 0.25 }: ParallaxProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const reduced = useReducedMotion()
 
   useEffect(() => {
+    // Safe to bail out here, unlike ClipReveal: nothing is hidden up front,
+    // so skipping the tween just leaves the element sitting still.
+    if (reduced) return
     const el = ref.current
     if (!el) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     const anim = gsap.to(el, {
       yPercent: -speed * 100,
@@ -102,11 +117,17 @@ export function Parallax({ children, className, speed = 0.25 }: ParallaxProps) {
       },
     })
 
-    return () => { anim.kill() }
-  }, [speed])
+    return () => {
+      anim.kill()
+      ScrollTrigger.getAll()
+        .filter(st => st.trigger === el)
+        .forEach(st => st.kill())
+    }
+  }, [speed, reduced])
 
   return (
-    <div ref={ref} className={className} style={{ willChange: 'transform' }}>
+    <div ref={ref} className={className}
+      style={reduced ? undefined : { willChange: 'transform' }}>
       {children}
     </div>
   )

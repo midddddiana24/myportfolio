@@ -7,13 +7,15 @@ import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { PageTransition }  from '@/components/layout/PageTransition'
 import { MagneticButton }  from '@/components/motion/MagneticButton'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 // ================================================================
-// 404 — 3D broken geometry, lime green + dark
+// 404 — 3D broken geometry. Monochrome since the black-and-white pass;
+// the comment here used to claim lime green.
 // ================================================================
 
 function BrokenGeo() {
-  const g1 = useRef<THREE.Mesh>(null)
+  const g1 = useRef<THREE.Group>(null)
   const g2 = useRef<THREE.Mesh>(null)
   const g3 = useRef<THREE.Mesh>(null)
 
@@ -32,14 +34,23 @@ function BrokenGeo() {
 
       <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.6}>
         <group>
-          <mesh ref={g1} position={[-0.4, 0.3, 0]}>
-            <tetrahedronGeometry args={[1.1, 0]} />
-            <meshStandardMaterial color="#ffffff" metalness={0.8} roughness={0.1} transparent opacity={0.9} />
-          </mesh>
-          <mesh ref={g1}>
-            <tetrahedronGeometry args={[1.1, 0]} />
-            <meshBasicMaterial wireframe color="#ffffff" transparent opacity={0.15} />
-          </mesh>
+          {/* `ref={g1}` was on both the solid tetrahedron and its wireframe
+              overlay. A ref can only hold one node, so the second render
+              overwrote the first: the solid shape sat frozen at its offset
+              while the wireframe — which has no position of its own — span
+              around the origin, drifting away from the twin it's meant to
+              outline. Grouping them puts both under one transform, which is
+              what the overlay needs anyway. */}
+          <group ref={g1} position={[-0.4, 0.3, 0]}>
+            <mesh>
+              <tetrahedronGeometry args={[1.1, 0]} />
+              <meshStandardMaterial color="#ffffff" metalness={0.8} roughness={0.1} transparent opacity={0.9} />
+            </mesh>
+            <mesh>
+              <tetrahedronGeometry args={[1.1, 0]} />
+              <meshBasicMaterial wireframe color="#ffffff" transparent opacity={0.15} />
+            </mesh>
+          </group>
 
           <mesh ref={g2} position={[0.6, -0.4, 0.2]}>
             <octahedronGeometry args={[0.65, 0]} />
@@ -63,13 +74,20 @@ function BrokenGeo() {
 }
 
 export default function NotFound() {
+  const reduced = useReducedMotion()
   return (
     <PageTransition className="pt-24">
       <div className="min-h-screen flex flex-col items-center justify-center gap-8 px-4">
 
         {/* 3D Scene */}
         <div style={{ width:'280px', height:'280px' }} aria-hidden="true">
+          {/* frameloop="demand" renders exactly one frame and then stops, so
+              under reduced motion the geometry becomes a still composition
+              rather than spinning. This catches Float's drift as well as the
+              useFrame rotations — both stop when the loop stops, which
+              gating them individually would not have achieved. */}
           <Canvas camera={{ position:[0,0,5], fov:45 }} dpr={[1,1.5]}
+            frameloop={reduced ? 'demand' : 'always'}
             gl={{ antialias:true, alpha:true }} style={{ background:'transparent' }}>
             <Suspense fallback={null}><BrokenGeo /></Suspense>
           </Canvas>

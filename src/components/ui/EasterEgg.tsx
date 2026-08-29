@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKonamiCode } from '@/hooks/useKonamiCode'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 function FireworkCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -41,12 +42,17 @@ function FireworkCanvas() {
 
 export function EasterEgg() {
   const activated = useKonamiCode()
+  const reduced   = useReducedMotion()
   return (
     <AnimatePresence>
       {activated && (
         <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
           style={{ position:'fixed', inset:0, zIndex:9990, background:'rgba(10,10,10,0.92)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-          <FireworkCanvas />
+          {/* The reward panel still appears — the person typed a ten-key
+              cheat code to get here and should get their payoff. It's the
+              420 particles flying outward under gravity that go, since a
+              deliberate reveal is no reason to override a stated need. */}
+          {!reduced && <FireworkCanvas />}
           <motion.div initial={{ scale:0.8, y:24 }} animate={{ scale:1, y:0 }} exit={{ scale:0.85, y:16 }}
             transition={{ type:'spring', stiffness:260, damping:22 }}
             style={{ position:'relative', zIndex:1, textAlign:'center', padding:'3rem 3.5rem', background:'#111111', border:'1px solid #1f1f1f', maxWidth:'400px' }}>

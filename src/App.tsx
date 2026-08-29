@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, MotionConfig } from 'framer-motion'
 import { lazy, Suspense, useState } from 'react'
 import { Navbar }         from '@/components/layout/Navbar'
 import { Footer }         from '@/components/layout/Footer'
@@ -54,27 +54,37 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {!loaded && <Preloader onComplete={() => setLoaded(true)} />}
-      {!isTouch  && <CustomCursor />}
-      <EasterEgg />
-      <ParticleCanvas />
+      {/* reducedMotion="user" makes every framer-motion animation on the
+          site honour the OS setting from one place. Eleven components
+          animate purely through framer-motion; patching each one would be
+          eleven chances to forget. Framer keeps opacity and colour fades
+          and drops transforms, which is the recommended trade — content
+          still arrives, it just doesn't fly in. GSAP and raw
+          requestAnimationFrame are outside its reach, so those components
+          check useReducedMotion() themselves. */}
+      <MotionConfig reducedMotion="user">
+        {!loaded && <Preloader onComplete={() => setLoaded(true)} />}
+        {!isTouch  && <CustomCursor />}
+        <EasterEgg />
+        <ParticleCanvas />
 
-      <SmoothScroll>
-        <div className="min-h-screen flex flex-col relative z-[1]"
-          style={{ background:'transparent', color:'#f0f0f0' }}>
-          <ScrollProgress />
-          <PageCurtain />
-          <Navbar />
-          <div className="flex-1">
-            <Suspense fallback={<PageLoader />}>
-              <AnimatedRoutes />
-            </Suspense>
+        <SmoothScroll>
+          <div className="min-h-screen flex flex-col relative z-[1]"
+            style={{ background:'transparent', color:'#f0f0f0' }}>
+            <ScrollProgress />
+            <PageCurtain />
+            <Navbar />
+            <div className="flex-1">
+              <Suspense fallback={<PageLoader />}>
+                <AnimatedRoutes />
+              </Suspense>
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
-      </SmoothScroll>
+        </SmoothScroll>
 
-      <ScrollToTop />
+        <ScrollToTop />
+      </MotionConfig>
     </BrowserRouter>
   )
 }

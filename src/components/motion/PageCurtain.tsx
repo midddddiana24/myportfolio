@@ -1,14 +1,23 @@
 import { useEffect, useRef } from 'react'
 import { useLocation }       from 'react-router-dom'
 import { gsap, EASE_POWER4, DUR_NORMAL, DUR_FAST } from '@/lib/gsap'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
-// Lime green curtain page transition
+// Full-bleed white curtain wipe on route change. (Was lime; the panel is
+// #ffffff since the monochrome pass — the old comment said otherwise.)
 export function PageCurtain() {
   const panelRef = useRef<HTMLDivElement>(null)
   const labelRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
+  const reduced  = useReducedMotion()
 
   useEffect(() => {
+    // Nothing subtle to scale back here: this sweeps an opaque white panel
+    // across the entire viewport and back, twice the size of any other
+    // animation on the site. Under reduced motion the panel simply never
+    // shows — it starts display:none and stays there, so navigation is
+    // instant.
+    if (reduced) return
     const panel = panelRef.current
     const label = labelRef.current
     if (!panel || !label) return
@@ -31,7 +40,7 @@ export function PageCurtain() {
     tl.set(panel, { display:'none' })
 
     return () => { tl.kill() }
-  }, [location.pathname])
+  }, [location.pathname, reduced])
 
   const labels: Record<string,string> = {
     '/':'/home', '/about':'/about', '/tech-stack':'/stack',

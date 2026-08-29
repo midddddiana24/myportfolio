@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from '@/lib/gsap'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 // ================================================================
 // CustomCursor v2 — Dot + Ring with VIEW state on project cards
 // Ring uses GSAP quickTo for maximum perf
+//
+// Owns the `custom-cursor` class on <html>. The global `cursor: none`
+// rule in index.css is scoped to that class, so hiding the system
+// cursor and drawing a replacement are now the same decision — see the
+// comment on that rule for the bug this prevents.
 // ================================================================
 
 type CursorState = 'default' | 'link' | 'button' | 'view' | 'canvas'
@@ -14,8 +20,19 @@ export function CustomCursor() {
   const labelRef  = useRef<HTMLSpanElement>(null)
   const [state, setState] = useState<CursorState>('default')
   const stateRef  = useRef<CursorState>('default')
-  
+  const reduced   = useReducedMotion()
+
+  // Claim the class only while we're really drawing a cursor. Runs as its
+  // own effect so it stays correct if `reduced` flips mid-session.
   useEffect(() => {
+    if (reduced) return
+    const root = document.documentElement
+    root.classList.add('custom-cursor')
+    return () => root.classList.remove('custom-cursor')
+  }, [reduced])
+
+  useEffect(() => {
+    if (reduced) return
     const dot  = dotRef.current
     const ring = ringRef.current
     if (!dot || !ring) return
@@ -68,7 +85,13 @@ export function CustomCursor() {
       document.removeEventListener('mouseenter', onEnter)
       window.removeEventListener('click', onClick)
     }
-  }, [])
+  }, [reduced])
+
+  // A ring that trails the pointer by 0.45s is the definition of gratuitous
+  // motion, so under reduced motion we render nothing and let the real
+  // system cursor do its job. The effect above leaves the class off, which
+  // is what un-hides it.
+  if (reduced) return null
 
   // Ring size / style by state
   const ringSize     = state === 'view' ? 72 : state === 'canvas' ? 56 : state === 'link' ? 52 : state === 'button' ? 44 : 40

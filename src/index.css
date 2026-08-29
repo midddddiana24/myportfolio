@@ -106,9 +106,21 @@ code, pre, kbd, .font-mono {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
-/* ── Hide system cursor on desktop ─────────────────────────────── */
+/* ── Hide system cursor — ONLY while CustomCursor is actually mounted ──
+   The `custom-cursor` class is added to <html> by CustomCursor itself and
+   removed when it unmounts, so the CSS and the component can never
+   disagree. They used to: this rule fired on any `pointer: fine` device,
+   but App.tsx skips CustomCursor whenever the device reports touch
+   support. A touchscreen laptop is both — touch capable, trackpad fine —
+   so the system cursor was hidden with nothing drawn in its place, and
+   the pointer simply vanished. Same trap under reduced motion, where a
+   lagging ring shouldn't render at all. Tying it to the class fixes
+   every one of those cases at once. */
 @media (pointer: fine) {
-  *, *::before, *::after { cursor: none !important; }
+  html.custom-cursor,
+  html.custom-cursor *,
+  html.custom-cursor *::before,
+  html.custom-cursor *::after { cursor: none !important; }
 }
 @media (pointer: coarse) {
   a, button, [role="button"] { cursor: pointer !important; }
@@ -348,7 +360,6 @@ html.lenis, html.lenis body { height: auto; }
   border: 1px solid transparent;
   border-radius: 0;
   transition: all 0.15s;
-  cursor: none;
   color: var(--text-muted);
   background: transparent;
 }
@@ -413,7 +424,6 @@ html.lenis, html.lenis body { height: auto; }
   border-radius: 50%;
   background: var(--border);
   transition: all 0.3s;
-  cursor: none;
 }
 .side-dot.active { background: var(--accent); transform: scale(1.4); }
 
@@ -453,7 +463,7 @@ html.lenis, html.lenis body { height: auto; }
   display: flex; align-items: center; justify-content: center;
   background: transparent; border-radius: 0;
   color: var(--text-muted);
-  transition: all 0.2s; cursor: none;
+  transition: all 0.2s;
 }
 .stt-btn:hover { border-color: var(--accent); color: var(--accent); }
 

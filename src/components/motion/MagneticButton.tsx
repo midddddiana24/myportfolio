@@ -1,5 +1,6 @@
 import { useRef, type ReactNode } from 'react'
 import { gsap } from '@/lib/gsap'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 // ================================================================
 // MagneticButton — Cursor magnetically attracted to button center
@@ -33,6 +34,7 @@ export function MagneticButton({
 }: MagneticButtonProps) {
   const ref  = useRef<HTMLElement>(null)
   const rafRef = useRef<number>(0)
+  const reduced = useReducedMotion()
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const el   = ref.current
@@ -67,9 +69,13 @@ export function MagneticButton({
   const props: Record<string, unknown> = {
     ref,
     className,
-    style: { display: 'inline-block', willChange: 'transform', ...style },
-    onMouseMove: handleMouseMove,
-    onMouseLeave: handleMouseLeave,
+    style: { display: 'inline-block', ...(reduced ? {} : { willChange: 'transform' }), ...style },
+    // Under reduced motion the element stays put: no handlers attached, so
+    // no transform is ever written and nothing needs resetting. Dropping
+    // willChange too, since promoting a layer that will never animate just
+    // costs memory.
+    onMouseMove:  reduced ? undefined : handleMouseMove,
+    onMouseLeave: reduced ? undefined : handleMouseLeave,
     onClick,
     'aria-label': ariaLabel,
   }
