@@ -41,12 +41,25 @@ function FireworkCanvas() {
 }
 
 export function EasterEgg() {
-  const activated = useKonamiCode()
+  const [activated, dismiss] = useKonamiCode()
   const reduced   = useReducedMotion()
+
+  // Escape closes it. A full-screen overlay with no dismissable control is a
+  // trap even when it times out — five seconds is a long time to be stuck
+  // looking at something you can't leave.
+  useEffect(() => {
+    if (!activated) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') dismiss() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [activated, dismiss])
+
   return (
     <AnimatePresence>
       {activated && (
         <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
+          role="status" aria-live="polite" aria-label="Easter egg unlocked"
+          onClick={dismiss}
           style={{ position:'fixed', inset:0, zIndex:9990, background:'rgba(10,10,10,0.92)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', justifyContent:'center' }}>
           {/* The reward panel still appears — the person typed a ten-key
               cheat code to get here and should get their payoff. It's the
@@ -56,13 +69,16 @@ export function EasterEgg() {
           <motion.div initial={{ scale:0.8, y:24 }} animate={{ scale:1, y:0 }} exit={{ scale:0.85, y:16 }}
             transition={{ type:'spring', stiffness:260, damping:22 }}
             style={{ position:'relative', zIndex:1, textAlign:'center', padding:'3rem 3.5rem', background:'#111111', border:'1px solid #1f1f1f', maxWidth:'400px' }}>
-            <p style={{ fontSize:'3rem', marginBottom:'1rem' }}>🎉</p>
+            {/* Decorative: the heading already says "You found it!", so
+                announcing "party popper" first adds nothing. */}
+            <p aria-hidden="true" style={{ fontSize:'3rem', marginBottom:'1rem' }}>🎉</p>
             <h2 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.75rem', letterSpacing:'-0.04em', color:'#f0f0f0', marginBottom:'0.5rem' }}>You found it!</h2>
-            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#ffffff', marginBottom:'1rem' }}>↑ ↑ ↓ ↓ ← → ← → B A</p>
+            <p aria-label="Up up down down left right left right B A"
+              style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#ffffff', marginBottom:'1rem' }}>↑ ↑ ↓ ↓ ← → ← → B A</p>
             <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a', lineHeight:1.6 }}>
               Props to curious developers who explore. I appreciate you. 🚀
             </p>
-            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', color:'#2a2a2a', marginTop:'1.5rem' }}>Auto-closes in 5s</p>
+            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', color:'#2a2a2a', marginTop:'1.5rem' }}>Press Esc to close · auto-closes in 5s</p>
           </motion.div>
         </motion.div>
       )}

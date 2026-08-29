@@ -6,6 +6,7 @@ import { PageTransition } from '@/components/layout/PageTransition'
 import { ClipReveal }     from '@/components/motion/ClipReveal'
 import { TextReveal }     from '@/components/motion/TextReveal'
 import { MagneticButton } from '@/components/motion/MagneticButton'
+import { SafeImage }      from '@/components/ui/SafeImage'
 import { projects, projectCategories } from '@/data/projects'
 import type { CategoryKey } from '@/data/projects'
 import { DUR_SLOW } from '@/lib/gsap'
@@ -57,7 +58,7 @@ export default function Projects() {
                   <div className="project-row" data-cursor="view">
                     {p.image && !p.image.includes('placeholder') && (
                       <div className="project-thumb">
-                        <img src={p.image} alt="" className="w-full h-full object-cover" />
+                        <SafeImage src={p.image} alt="" className="w-full h-full object-cover" />
                         <div style={{ position:'absolute', inset:0, background:'rgba(10,10,10,0.65)' }} />
                       </div>
                     )}

@@ -9,7 +9,7 @@ import { CustomCursor }   from '@/components/ui/CustomCursor'
 import { EasterEgg }      from '@/components/ui/EasterEgg'
 import { Preloader }      from '@/components/ui/Preloader'
 import { ParticleCanvas } from '@/components/3d/ParticleCanvas'
-import { SmoothScroll }   from '@/components/motion/SmoothScroll'
+import { SmoothScroll, getLenis } from '@/components/motion/SmoothScroll'
 import { PageCurtain }    from '@/components/motion/PageCurtain'
 
 const Home          = lazy(() => import('@/pages/Home'))
@@ -26,6 +26,33 @@ function PageLoader() {
     <div className="min-h-screen flex items-center justify-center" role="status">
       <div style={{ width:24, height:24, border:'1px solid #1f1f1f', borderTopColor:'#ffffff', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
     </div>
+  )
+}
+
+// The first thing in the tab order: lets a keyboard user jump the navbar
+// instead of tabbing through every link on every page. Handled in JS rather
+// than left to the plain `href="#main"` because a bare hash jump moves the
+// native scroll position, which Lenis owns — the page would then snap back
+// and fight the user. Focus is moved with preventScroll and Lenis is asked
+// to scroll instead; when Lenis is absent (reduced motion) getLenis()
+// returns null and the native path is correct anyway.
+function SkipLink() {
+  return (
+    <a
+      href="#main"
+      className="skip-link"
+      onClick={e => {
+        const el = document.getElementById('main')
+        if (!el) return          // let the browser handle the hash as a fallback
+        e.preventDefault()
+        el.focus({ preventScroll: true })
+        const lenis = getLenis()
+        if (lenis) lenis.scrollTo(el, { offset: -96 })
+        else el.scrollIntoView({ block: 'start' })
+      }}
+    >
+      Skip to content
+    </a>
   )
 }
 
@@ -63,6 +90,7 @@ export default function App() {
           requestAnimationFrame are outside its reach, so those components
           check useReducedMotion() themselves. */}
       <MotionConfig reducedMotion="user">
+        <SkipLink />
         {!loaded && <Preloader onComplete={() => setLoaded(true)} />}
         {!isTouch  && <CustomCursor />}
         <EasterEgg />

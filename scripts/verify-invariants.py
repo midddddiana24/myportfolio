@@ -238,6 +238,164 @@ for p in sorted(live):
              f"— the reveal can be skipped, leaving it hidden forever")
 note("no JS-only reveal leaves content permanently hidden")
 
+# ------------------------------------------- 10. heading hierarchy
+# Headings arrive two ways: a literal <hN> or <TextReveal as="hN">. A grep for
+# only the former reported "most pages have no h1", which was wrong.
+#
+# Source order is NOT DOM order across a file: TechStack defines
+# TechCategorySection (an h2) above its default export (the h1), so a
+# whole-file scan "found" an h2 before the h1 and flagged a page that is
+# actually correct. So compare levels only WITHIN one function body, where a
+# linear JSX return does put them in DOM order.
+HEADING = re.compile(r'<h([1-6])\b|as=["\']h([1-6])["\']')
+FUNC    = re.compile(r"^(?:export\s+default\s+)?function\s+(\w+)", re.M)
+pages   = sorted(p for p in live if os.sep + "pages" + os.sep in p)
+if not pages:
+    fail("heading check found no page files — path assumption is wrong")
+
+for p in pages:
+    body = strip(open(p, encoding="utf-8").read())
+    heads = [(m.start(), int(m.group(1) or m.group(2)))
+             for m in HEADING.finditer(body)]
+    if not heads:
+        fail(f"{rel(p)} renders no heading at all")
+        continue
+
+    funcs = [(m.start(), m.group(1)) for m in FUNC.finditer(body)]
+    def owner(pos):
+        cur = "<module>"
+        for s, n in funcs:
+            if s < pos: cur = n
+            else: break
+        return cur
+
+    groups = {}
+    for pos, lvl in heads:
+        groups.setdefault(owner(pos), []).append(lvl)
+    for fname, lvls in groups.items():
+        for a, b in zip(lvls, lvls[1:]):
+            if b > a + 1:
+                fail(f"{rel(p)}: heading jumps h{a} → h{b} inside {fname}() "
+                     f"— skipped level(s), screen-reader outline breaks")
+
+    # One h1 per rendered page. ProjectDetail legitimately has two, in two
+    # mutually exclusive branches (a "not found" early return and the real
+    # article) — and each branch renders its own <PageTransition>. So the
+    # ceiling is the number of PageTransition instances, not a flat 1. That
+    # is what catches the opposite bug: Home's headline was once three
+    # separate <h1> elements, one per word, inside a single render.
+    n_h1  = sum(1 for _, lvl in heads if lvl == 1)
+    n_pt  = len(re.findall(r"<PageTransition\b", body)) or 1
+    if n_h1 < 1:
+        fail(f"{rel(p)} has no h1")
+    elif n_h1 > n_pt:
+        fail(f"{rel(p)} renders {n_h1} h1s but only {n_pt} PageTransition "
+             f"branch(es) — a single page must have exactly one h1")
+note(f"heading hierarchy: {len(pages)} pages, one h1 each, no skipped levels")
+
+# ------------------------------- 11. cursor:none must stay scoped
+# `cursor: none` is only correct while CustomCursor is mounted to draw a
+# replacement. CustomCursor signals that by putting .custom-cursor on <html>,
+# so every such declaration must sit behind that class. Three inline
+# `cursor:'none'` styles in JSX bypassed the CSS entirely and hid the pointer
+# on touchscreen laptops, where App.tsx's isTouch gate skips CustomCursor but
+# the trackpad still reports `pointer: fine`. Inline styles are the sneaky
+# case: scoping the stylesheet does nothing about them.
+for p in sorted(live):
+    body = strip(open(p, encoding="utf-8").read())
+    for mm in re.finditer(r"cursor\s*:\s*['\"]none['\"]", body):
+        ln = body.count("\n", 0, mm.start()) + 1
+        fail(f"{rel(p)}:{ln} sets cursor:'none' inline — unscoped from "
+             f".custom-cursor, so it hides the pointer even when no custom "
+             f"cursor is drawn. Let the stylesheet handle it.")
+
+css_raw = open(os.path.join(ROOT, "src", "index.css"), encoding="utf-8").read()
+css_nc  = strip(css_raw, css=True)
+n_scoped = 0
+for mm in re.finditer(r"cursor\s*:\s*none", css_nc):
+    open_brace = css_nc.rfind("{", 0, mm.start())
+    prev_bound = max(css_nc.rfind("}", 0, open_brace),
+                     css_nc.rfind("{", 0, open_brace))
+    selector = css_nc[prev_bound + 1:open_brace].strip()
+    if "custom-cursor" not in selector:
+        fail(f"index.css: `cursor: none` under selector '{selector[:60]}' is "
+             f"not scoped to .custom-cursor")
+    else:
+        n_scoped += 1
+if not n_scoped:
+    fail("index.css has no scoped `cursor: none` — CustomCursor needs it to "
+         "hide the system pointer; the check may be looking in the wrong place")
+note(f"cursor:none — 0 inline, {n_scoped} scoped to .custom-cursor")
+
+# ------------------------------------------ 12. skip link is reachable
+# A skip link hidden with display:none or visibility:hidden is dropped from
+# the tab order, which makes the one control that exists solely for keyboard
+# users unreachable by keyboard — worse than not having it, because an audit
+# sees the markup and assumes it works.
+if ".skip-link" not in css_nc:
+    fail("no .skip-link rule in index.css")
+else:
+    block = css_nc[css_nc.index(".skip-link"):]
+    block = block[:block.index("}") + 1]
+    for bad in ("display:none", "display: none",
+                "visibility:hidden", "visibility: hidden"):
+        if bad in block:
+            fail(f"`.skip-link` uses {bad} — removes it from the tab order, "
+                 f"so keyboard users cannot reach it. Clip it instead.")
+    if "clip-path" not in block and "clip" not in block:
+        fail(".skip-link is not clipped — it will be visible on the page")
+
+app_src = strip(open(os.path.join(ROOT, "src", "App.tsx"), encoding="utf-8").read())
+if 'className="skip-link"' not in app_src:
+    fail("App.tsx has no skip-link markup")
+# Look only at App()'s own body, not the whole file. Grepping the file for
+# className="skip-link" passed even with <SkipLink /> deleted from the tree,
+# because the string still sat in the SkipLink function definition above —
+# the check was asserting the code EXISTS, not that it RENDERS. Slicing from
+# App's declaration means a deleted render call actually fails.
+_i = app_src.find("export default function App")
+app_body = app_src[_i:] if _i != -1 else app_src
+if not (re.search(r"<SkipLink\b", app_body) or
+        'className="skip-link"' in app_body):
+    fail("App.tsx defines a skip link but never renders it inside App()")
+pt = strip(open(os.path.join(ROOT, "src", "components", "layout",
+                             "PageTransition.tsx"), encoding="utf-8").read())
+if 'id="main"' not in pt:
+    fail("PageTransition.tsx lost id=\"main\" — the skip link's target")
+if "tabIndex={-1}" not in pt:
+    fail("PageTransition.tsx's <main> is missing tabIndex={-1}, so focus "
+         "cannot be moved to it and the skip link jumps without moving focus")
+note("skip link present, clipped (not display:none), target #main focusable")
+
+# ------------------------------- 13. icon-only controls need a name
+# A <button>/<a> whose only child is an icon component has no accessible name
+# at all — lucide renders a bare <svg>, so it is announced as just "button".
+# The mobile drawer's close button and the featured project's GitHub link were
+# both in this state. Line numbers come from the ORIGINAL text: computing them
+# from the comment-stripped copy reported a location ~17 lines off, which sent
+# me to the wrong element entirely.
+CTRL = re.compile(r"<(button|a)\b([^>]*?)>(.*?)</\1>", re.S)
+n_named = 0
+for p in sorted(live):
+    raw  = open(p, encoding="utf-8").read()
+    body = strip(raw)
+    for mm in CTRL.finditer(body):
+        tag, attrs, inner = mm.group(1), mm.group(2), mm.group(3)
+        if re.search(r"aria-label|aria-labelledby|\btitle=", attrs):
+            n_named += 1
+            continue
+        # Anything left after removing nested tags is rendered text, including
+        # {expr} — which is how most labels arrive ({item.label}, {faq.question}).
+        if re.sub(r"<[^>]*>", "", inner).strip():
+            continue
+        snippet = " ".join(inner.split())[:48]
+        anchor  = body[mm.start():mm.start() + 60].split("\n")[0]
+        idx     = raw.find(anchor.strip()[:40])
+        ln      = raw.count("\n", 0, idx) + 1 if idx != -1 else 0
+        fail(f"{rel(p)}:{ln} <{tag}> contains only an icon ({snippet}) and has "
+             f"no aria-label — screen readers announce it with no name")
+note(f"icon-only controls: all labelled ({n_named} explicit aria-labels in live files)")
+
 print("=" * 68)
 for n in notes: print("  ·", n)
 print("=" * 68)

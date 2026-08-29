@@ -97,6 +97,52 @@ code, pre, kbd, .font-mono {
 ::selection { background: rgba(255,255,255,0.22); color: #ffffff; }
 :focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 
+/* ── Skip link (WCAG 2.4.1 Bypass Blocks) ────────────────────────
+   Hidden by clipping, never `display:none` or `visibility:hidden` —
+   those remove the element from the tab order, so the one control
+   that exists purely for keyboard users would be unreachable by
+   keyboard. It sits above the navbar's z-50 so it can't appear
+   behind it, and inverts to white-on-black because every focus ring
+   on this site is white and would vanish against the page. */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  background: #ffffff;
+  color: #0a0a0a;
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.skip-link:focus {
+  width: auto;
+  height: auto;
+  margin: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  overflow: visible;
+  clip-path: none;
+  /* Dark ring: the global white :focus-visible outline is invisible
+     against this link's own white background. */
+  outline: 1px solid #0a0a0a;
+  outline-offset: -5px;
+}
+
+/* The skip link focuses <main> programmatically. Suppressing the ring on
+   that one container is deliberate: a box drawn around the entire page
+   reads as a rendering glitch rather than a focus position, and the
+   heading that follows already tells the user where they landed. No other
+   element strips its outline. */
+#main:focus,
+#main:focus-visible { outline: none; }
+
 ::-webkit-scrollbar       { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }

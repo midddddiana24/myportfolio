@@ -1,4 +1,4 @@
-import { useRef, useEffect, lazy, Suspense } from 'react'
+import { useRef, useEffect, useState, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, ArrowRight, ArrowDown, Github } from 'lucide-react'
 import {
@@ -15,6 +15,7 @@ import { ClipReveal }        from '@/components/motion/ClipReveal'
 import { Marquee }           from '@/components/motion/Marquee'
 import { PageTransition }    from '@/components/layout/PageTransition'
 import { SocialLinks }       from '@/components/ui/SocialLinks'
+import { SafeImage }         from '@/components/ui/SafeImage'
 import { StatCounter }       from '@/components/ui/StatCounter'
 import { projects }          from '@/data/projects'
 
@@ -27,6 +28,71 @@ const WireGlobe = lazy(() => import('@/components/3d/WireGlobe').then(m => ({ de
 // ================================================================
 
 // ── HERO ──────────────────────────────────────────────────────────
+// Shared typography for the hero headline. Was copy-pasted three times,
+// once per line, which is how the three lines drifted apart — the last one
+// is #ffffff against #f0f0f0 for emphasis, but nothing made that legible as
+// intentional rather than a typo.
+const CV_URL = '/assets/resume-placeholder.pdf'
+
+/**
+ * "Download CV" is the second-most prominent button on the site, and the file
+ * it points at isn't in the repo yet — so a recruiter clicking it landed on a
+ * 404. Rather than fabricate a CV or quietly drop the CTA, probe for the file
+ * and offer a real alternative when it's absent. Drop the actual PDF at
+ * CV_URL and this becomes a normal download with no code change.
+ *
+ * The content-type test matters as much as `res.ok`: an SPA host (Vercel,
+ * Netlify) rewrites unknown paths to index.html and answers 200, so a status
+ * check alone would report a missing PDF as present.
+ */
+function CVButton() {
+  const [missing, setMissing] = useState(false)
+
+  useEffect(() => {
+    let alive = true
+    fetch(CV_URL, { method: 'HEAD' })
+      .then(res => {
+        const type = res.headers.get('content-type') ?? ''
+        if (alive) setMissing(!res.ok || !type.toLowerCase().includes('pdf'))
+      })
+      .catch(() => { if (alive) setMissing(true) })
+    return () => { alive = false }
+  }, [])
+
+  if (missing) {
+    return (
+      <MagneticButton strength={0.3}>
+        <Link to="/contact" className="btn-ghost">
+          Request CV
+        </Link>
+      </MagneticButton>
+    )
+  }
+  return (
+    <MagneticButton strength={0.3}>
+      <a href={CV_URL} className="btn-ghost" download>
+        Download CV
+      </a>
+    </MagneticButton>
+  )
+}
+
+const HEADLINE_TYPE = {
+  fontFamily: "'Space Grotesk', sans-serif",
+  fontWeight: 700,
+  fontSize: 'clamp(3.5rem, 10vw, 8rem)',
+  lineHeight: 0.95,
+  letterSpacing: '-0.04em',
+} as const
+
+// Each line reveals on its own stagger; the brightest step lands on the
+// last word so emphasis follows the grayscale ramp.
+const HEADLINE_LINES = [
+  { text: 'Building',     delay: 1.9,  color: '#f0f0f0' },
+  { text: 'digital',      delay: 2.05, color: '#f0f0f0' },
+  { text: 'experiences.', delay: 2.2,  color: '#ffffff' },
+]
+
 function Hero() {
   const tagRef    = useRef<HTMLDivElement>(null)
   const subtextRef= useRef<HTMLParagraphElement>(null)
@@ -88,68 +154,32 @@ function Hero() {
               </span>
             </div>
 
-            {/* Headline — char-by-char reveal */}
+            {/* Headline — char-by-char reveal.
+                One <h1> for the whole sentence. This was three separate
+                <h1> elements, one per line, so a screen reader announced
+                "Building", "digital", "experiences." as three unrelated
+                top-level headings and the homepage had no single title —
+                also the one heading search results lean on hardest. The
+                lines are spans now: the h1 owns the sentence and the
+                typography, each span owns its own stagger. */}
             <div>
-              <TextReveal
-                as="h1"
-                trigger="load"
-                splitBy="chars"
-                delay={1.9}
-                duration={0.8}
-                stagger={0.025}
-                skewY={4}
-                style={{
-                  fontFamily:"'Space Grotesk', sans-serif",
-                  fontWeight: 700,
-                  fontSize: 'clamp(3.5rem, 10vw, 8rem)',
-                  lineHeight: 0.95,
-                  letterSpacing: '-0.04em',
-                  color: '#f0f0f0',
-                  display: 'block',
-                }}
-              >
-                Building
-              </TextReveal>
-              <TextReveal
-                as="h1"
-                trigger="load"
-                splitBy="chars"
-                delay={2.05}
-                duration={0.8}
-                stagger={0.025}
-                skewY={4}
-                style={{
-                  fontFamily:"'Space Grotesk', sans-serif",
-                  fontWeight: 700,
-                  fontSize: 'clamp(3.5rem, 10vw, 8rem)',
-                  lineHeight: 0.95,
-                  letterSpacing: '-0.04em',
-                  color: '#f0f0f0',
-                  display: 'block',
-                }}
-              >
-                digital
-              </TextReveal>
-              <TextReveal
-                as="h1"
-                trigger="load"
-                splitBy="chars"
-                delay={2.2}
-                duration={0.8}
-                stagger={0.025}
-                skewY={4}
-                style={{
-                  fontFamily:"'Space Grotesk', sans-serif",
-                  fontWeight: 700,
-                  fontSize: 'clamp(3.5rem, 10vw, 8rem)',
-                  lineHeight: 0.95,
-                  letterSpacing: '-0.04em',
-                  color: '#ffffff',
-                  display: 'block',
-                }}
-              >
-                experiences.
-              </TextReveal>
+              <h1 style={{ ...HEADLINE_TYPE, margin: 0 }}>
+                {HEADLINE_LINES.map(line => (
+                  <TextReveal
+                    key={line.text}
+                    as="span"
+                    trigger="load"
+                    splitBy="chars"
+                    delay={line.delay}
+                    duration={0.8}
+                    stagger={0.025}
+                    skewY={4}
+                    style={{ display: 'block', color: line.color }}
+                  >
+                    {line.text}
+                  </TextReveal>
+                ))}
+              </h1>
             </div>
 
             {/* Subtext */}
@@ -165,11 +195,7 @@ function Hero() {
                   View My Work
                 </Link>
               </MagneticButton>
-              <MagneticButton strength={0.3}>
-                <a href="/assets/resume-placeholder.pdf" className="btn-ghost">
-                  Download CV
-                </a>
-              </MagneticButton>
+              <CVButton />
             </div>
           </div>
 
@@ -333,7 +359,7 @@ function WorkSection() {
               {/* Image reveal on hover */}
               {featuredProj.image && !featuredProj.image.includes('placeholder') && (
                 <div className="project-thumb">
-                  <img src={featuredProj.image} alt={featuredProj.title} className="w-full h-full object-cover" />
+                  <SafeImage src={featuredProj.image} alt={featuredProj.title} className="w-full h-full object-cover" />
                 </div>
               )}
 
@@ -365,7 +391,8 @@ function WorkSection() {
                     </MagneticButton>
                     {featuredProj.githubUrl && (
                       <MagneticButton strength={0.3}>
-                        <a href={featuredProj.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding:'0.75rem' }}>
+                        <a href={featuredProj.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding:'0.75rem' }}
+                          aria-label={`View ${featuredProj.title} source on GitHub (opens in a new tab)`}>
                           <Github size={16} />
                         </a>
                       </MagneticButton>
@@ -384,7 +411,7 @@ function WorkSection() {
               {/* Hover thumbnail */}
               {project.image && !project.image.includes('placeholder') && (
                 <div className="project-thumb" aria-hidden="true">
-                  <img src={project.image} alt="" className="w-full h-full object-cover" />
+                  <SafeImage src={project.image} alt="" className="w-full h-full object-cover" />
                   <div style={{ position:'absolute', inset:0, background:'rgba(10,10,10,0.6)' }} />
                 </div>
               )}

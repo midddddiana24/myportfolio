@@ -18,12 +18,17 @@ type Status = 'idle'|'sending'|'success'|'error'
 interface Form { name:string; email:string; subject:string; message:string }
 const init: Form = { name:'', email:'', subject:'', message:'' }
 
+// No `cursor:'none'` in here. CustomCursor hides the pointer through
+// `html.custom-cursor *` (with !important), which already covers these fields.
+// Setting it inline also hid the I-beam on touchscreen laptops, where App.tsx's
+// isTouch gate skips CustomCursor but the trackpad still reports a fine pointer —
+// so the inputs had no visible caret cursor at all.
 function field(err?: boolean): React.CSSProperties {
   return {
     background:'#111111', border:`1px solid ${err?'#ffffff':'#1f1f1f'}`, color:'#f0f0f0',
     borderRadius:0, padding:'0.875rem 1rem', width:'100%',
     fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', outline:'none',
-    transition:'border-color 0.2s', cursor:'none',
+    transition:'border-color 0.2s',
   }
 }
 
@@ -119,9 +124,14 @@ export default function Contact() {
                 <AnimatePresence mode="wait">
                   {status === 'success' ? (
                     <motion.div key="ok" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
+                      role="status" aria-live="polite"
                       style={{ textAlign:'center', padding:'3rem 0', display:'flex', flexDirection:'column', alignItems:'center', gap:'1rem' }}>
                       <CheckCircle size={36} style={{ color:'#ffffff' }} />
-                      <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.25rem', color:'#f0f0f0' }}>Message Sent!</h3>
+                      {/* h2, not h3: the only other heading on this page is the h1,
+                          so h3 skipped a level. role="status" above it means the
+                          confirmation is announced — submitting replaces the whole
+                          form, which a screen reader would otherwise pass silently. */}
+                      <h2 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.25rem', color:'#f0f0f0' }}>Message Sent!</h2>
                       <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a' }}>I'll reply within 24–48 hours.</p>
                       <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', color:'#2a2a2a', padding:'0.5rem 1rem', border:'1px solid #1f1f1f' }}>Connect EmailJS in .env to enable real sending</p>
                       <button onClick={()=>{setForm(init);setErrors({});setStatus('idle')}} className="btn-ghost" style={{ marginTop:'0.5rem', fontSize:'0.75rem' }}>Send Another</button>
@@ -157,7 +167,7 @@ export default function Contact() {
                       <div style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>
                         <label htmlFor="message" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a' }}>Message</label>
                         <textarea id="message" name="message" rows={5} placeholder="Tell me about your project…" value={form.message} onChange={onChange}
-                          style={{ ...field(!!errors.message), resize:'vertical', minHeight:'120px', cursor:'none' }}
+                          style={{ ...field(!!errors.message), resize:'vertical', minHeight:'120px' }}
                           onFocus={e=>{ e.target.style.borderColor='#ffffff' }}
                           onBlur={e=>{ e.target.style.borderColor=errors.message?'#ffffff':'#1f1f1f' }} />
                         {errors.message && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ffffff', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors.message}</p>}

@@ -57,9 +57,13 @@ export default function Services() {
                     <div style={{ width:'40px', height:'40px', border:'1px solid #1f1f1f', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                       <Icon size={18} style={{ color:'#ffffff' }} />
                     </div>
-                    <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.125rem', letterSpacing:'-0.02em', color:'#f0f0f0', lineHeight:1.2 }}>
+                    {/* h2, not h3: these service titles are the first subsections
+                        under the page h1 ("What I build."), so h3 skipped a level.
+                        Same level as the FAQ heading further down, which is correct
+                        — both are top-level sections of this page. */}
+                    <h2 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.125rem', letterSpacing:'-0.02em', color:'#f0f0f0', lineHeight:1.2 }}>
                       {service.title}
-                    </h3>
+                    </h2>
                   </div>
 
                   {/* Description + use cases */}
@@ -130,7 +134,11 @@ export default function Services() {
                   <div style={{ borderBottom:'1px solid #1f1f1f' }}>
                     <button
                       onClick={() => setOpen(open === i ? null : i)}
-                      style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'1.25rem 0', gap:'1rem', background:'transparent', border:'none', textAlign:'left', cursor:'none' }}
+                      /* No `cursor:'none'` here: CustomCursor hides the pointer via
+                         `html.custom-cursor *` (with !important), which already covers
+                         this button. Declaring it inline also hid the cursor on
+                         touchscreen laptops, where CustomCursor never mounts. */
+                      style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'1.25rem 0', gap:'1rem', background:'transparent', border:'none', textAlign:'left' }}
                       aria-expanded={open === i}>
                       <span style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:600, fontSize:'0.9375rem', letterSpacing:'-0.01em', color:'#f0f0f0' }}>
                         {faq.question}

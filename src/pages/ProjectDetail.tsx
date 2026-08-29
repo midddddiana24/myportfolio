@@ -4,11 +4,23 @@ import { PageTransition }  from '@/components/layout/PageTransition'
 import { TextReveal }      from '@/components/motion/TextReveal'
 import { ClipReveal }      from '@/components/motion/ClipReveal'
 import { MagneticButton }  from '@/components/motion/MagneticButton'
+import { SafeImage }       from '@/components/ui/SafeImage'
 import { projects }        from '@/data/projects'
 import { DUR_SLOW }        from '@/lib/gsap'
 
 const mono = { fontFamily:"'DM Mono', monospace" }
 const sans = { fontFamily:"'Space Grotesk', sans-serif" }
+
+// Shared by both branches below: shown when a project has no screenshot AND
+// when the referenced file fails to load. Previously only the first case was
+// handled, so a missing file fell through to the browser's broken-image glyph
+// instead of this panel.
+const screenshotPlaceholder = (
+  <div style={{ textAlign:'center', opacity:0.15 }}>
+    <p aria-hidden="true" style={{ fontSize:'3rem', marginBottom:'0.5rem' }}>🖥️</p>
+    <p style={{ ...mono, fontSize:'0.6875rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'#5a5a5a' }}>Screenshot Placeholder</p>
+  </div>
+)
 
 export default function ProjectDetail() {
   const { slug }   = useParams<{ slug: string }>()
@@ -102,11 +114,10 @@ export default function ProjectDetail() {
             <ClipReveal direction="left">
               <div style={{ border:'1px solid #1f1f1f', aspectRatio:'16/10', overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center', background:'#111111' }}>
                 {project.image && !project.image.includes('placeholder')
-                  ? <img src={project.image} alt={project.title} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
-                  : <div style={{ textAlign:'center', opacity:0.15 }}>
-                      <p style={{ fontSize:'3rem', marginBottom:'0.5rem' }}>🖥️</p>
-                      <p style={{ ...mono, fontSize:'0.6875rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'#5a5a5a' }}>Screenshot Placeholder</p>
-                    </div>
+                  ? <SafeImage src={project.image} alt={project.title}
+                      style={{ width:'100%', height:'100%', objectFit:'cover' }}
+                      fallback={screenshotPlaceholder} />
+                  : screenshotPlaceholder
                 }
               </div>
             </ClipReveal>
