@@ -173,51 +173,16 @@ function Hero() {
             </div>
           </div>
 
-          {/* RIGHT column — accent glow element */}
-          <div className="hidden lg:flex items-center justify-center relative" aria-hidden="true">
-            <div className="relative w-full aspect-square max-w-xs flex items-center justify-center">
-              {/* Lime glow orb */}
-              <div style={{
-                width:'200px', height:'200px', borderRadius:'50%',
-                background:'radial-gradient(circle, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 50%, transparent 70%)',
-                filter:'blur(20px)',
-                position:'absolute',
-              }} />
-              {/* RM monogram */}
-              <div style={{
-                fontFamily:"'Space Grotesk', sans-serif",
-                fontWeight:700,
-                fontSize:'7rem',
-                letterSpacing:'-0.05em',
-                color:'rgba(255,255,255,0.06)',
-                userSelect:'none',
-                lineHeight:1,
-              }}>
-                RM
-              </div>
-              {/* Decorative border */}
-              <div style={{
-                position:'absolute', inset:'2rem',
-                border:'1px solid rgba(255,255,255,0.10)',
-                borderRadius:0,
-              }} />
-              <div style={{
-                position:'absolute', inset:'0',
-                border:'1px solid rgba(255,255,255,0.05)',
-                borderRadius:0,
-              }} />
-              {/* Corner dots */}
-              {[[-1,-1],[1,-1],[-1,1],[1,1]].map(([x,y], i) => (
-                <div key={i} style={{
-                  position:'absolute',
-                  left: x === -1 ? '2rem' : 'calc(100% - 2rem - 4px)',
-                  top:  y === -1 ? '2rem' : 'calc(100% - 2rem - 4px)',
-                  width:'4px', height:'4px', background:'#ffffff',
-                  borderRadius:0,
-                }} />
-              ))}
-            </div>
-          </div>
+          {/* RIGHT column — intentionally empty.
+              It used to hold an "RM" monogram behind a glow orb, two nested
+              borders and four corner dots. That was there to give the right
+              side something to look at while the old photo backdrop was
+              knocked back to near-invisibility. The terrain now occupies
+              that space, and the scrim above is deliberately lightest on
+              this side (0.10 alpha) so it reads through. Stacking the
+              monogram back on top would put four decorative devices in
+              front of the one element that's actually the hero's subject. */}
+          <div className="hidden lg:block" aria-hidden="true" />
         </div>
 
         {/* Bottom bar */}

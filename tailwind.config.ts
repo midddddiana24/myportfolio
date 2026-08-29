@@ -19,6 +19,15 @@ const config: Config = {
         'text-muted':   '#5a5a5a',
         'text-subtle':  '#2a2a2a',
       },
+      // Tailwind's preflight paints every element's border-color with
+      // gray-200 (#e5e7eb) by default, so any `border`/`border-t` utility
+      // written without a colour renders a bright, faintly blue hairline —
+      // near-white against #0a0a0a. Pinning the default to the design
+      // system's border step fixes those at the root and means a border
+      // added later is correct without anyone having to remember.
+      borderColor: {
+        DEFAULT: '#1f1f1f',
+      },
       fontSize: {
         '2xs': ['0.625rem', { lineHeight: '1rem', letterSpacing: '0.1em' }],
       },

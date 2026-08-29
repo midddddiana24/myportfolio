@@ -20,7 +20,7 @@
   --accent-glow:  rgba(255, 255, 255, 0.16);
   --text-primary: #f0f0f0;
   --text-muted:   #5a5a5a;
-  --text-subtle:  #1e1e1e;
+  --text-subtle:  #2a2a2a;
 
   /* Keep Geist variables as aliases for components that use them */
   --bg:           var(--bg-base);
@@ -481,11 +481,11 @@ html.lenis, html.lenis body { height: auto; }
 .img-mono:hover { filter: grayscale(0) contrast(1) brightness(1); }
 
 /* ── Hero terrain (3D) ──────────────────────────────────────────── */
-/* The canvas is the hero backdrop. pointer-events stays enabled so the
-   scene can be grabbed in empty areas; the content above sits in a
-   higher stacking context, so links and buttons still take their own
-   clicks. The scrim over it must stay pointer-events:none. */
-.terrain-wrap { position: absolute; inset: 0; z-index: 0; }
+/* The canvas is the hero backdrop and never needs to be hit-tested: the
+   drag listener lives on window (see TerrainCanvas), not here, so this
+   layer can stay completely inert. That also means it can't swallow a
+   click in the outer margins where it isn't covered by the content. */
+.terrain-wrap { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .terrain-wrap canvas { display: block; }
 
 /* Vignette so the grid dissolves at the frame edge instead of being cut */
@@ -498,8 +498,6 @@ html.lenis, html.lenis body { height: auto; }
     linear-gradient(to bottom, #0a0a0a 0%, transparent 20%, transparent 74%, #0a0a0a 100%);
 }
 
-/* Stands in for the canvas when WebGL is missing or the context is lost:
-   same idea — a receding grid — with no GPU involved. */
 /* ── Expertise globe ────────────────────────────────────────────── */
 /* Sits off the right edge and behind the content, so the skill list
    stays the thing you read. Hidden below lg: at phone widths it would
@@ -519,6 +517,8 @@ html.lenis, html.lenis body { height: auto; }
   .globe-wrap { display: block; }
 }
 
+/* Stands in for the canvas when WebGL is missing or the context is lost:
+   same idea — a receding grid — with no GPU involved. */
 .terrain-fallback {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   overflow: hidden;
@@ -562,4 +562,4 @@ html.lenis, html.lenis body { height: auto; }
    decides, rather than reaching for !important. */
 input::placeholder,
 textarea::placeholder,
-select::placeholder { color: #4a4a4a; opacity: 1; }
+select::placeholder { color: #5a5a5a; opacity: 1; }

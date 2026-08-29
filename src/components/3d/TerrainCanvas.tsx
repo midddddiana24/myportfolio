@@ -262,6 +262,7 @@ export function TerrainCanvas() {
   const [ok, setOk]           = useState(true)
   const [reduced, setReduced] = useState(false)
   const [seg, setSeg]         = useState(72)
+  const [visible, setVisible] = useState(true)
 
   useEffect(() => {
     setOk(webglOK())
@@ -282,6 +283,23 @@ export function TerrainCanvas() {
       mqCoarse.removeEventListener('change', apply)
     }
   }, [])
+
+  // The hero is one viewport of a long page, so for most of a visit this
+  // canvas is off-screen. Rendering a 30k-vertex grid the whole time to
+  // draw something nobody can see is pure waste — stop the loop instead.
+  // Pausing is safe: three's clock only advances while frames are being
+  // drawn, so uTime resumes exactly where it stopped rather than jumping,
+  // and the delta clamp in useFrame absorbs the long first frame.
+  useEffect(() => {
+    const el = wrap.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([e]) => setVisible(e.isIntersecting),
+      { rootMargin: '10% 0px 10% 0px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [ok])
 
   // Drag is mouse-only: on touch the same gesture is a scroll, and
   // stealing it would break the page.
@@ -344,6 +362,7 @@ export function TerrainCanvas() {
     <div ref={wrap} className="terrain-wrap" aria-hidden="true">
       <Canvas
         dpr={[1, 1.6]}
+        frameloop={visible ? 'always' : 'never'}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 3.1, 15], fov: 48, near: 0.1, far: 140 }}
         onCreated={({ gl }) => {
