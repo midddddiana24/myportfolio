@@ -396,6 +396,175 @@ for p in sorted(live):
              f"no aria-label — screen readers announce it with no name")
 note(f"icon-only controls: all labelled ({n_named} explicit aria-labels in live files)")
 
+# ------------------------- 14. the hero h1 names the site's actual owner
+# The light hero was built from a screenshot of someone else's portfolio, and
+# the instruction was "put my name" — so the name in the reference (Roj
+# Justiniani Villacampa) came within one keystroke of being typed into the one
+# element search engines weight most heavily. Tie the h1 to the same string the
+# JSON-LD and the author meta already assert, so the three can never drift and
+# a name from a reference can never survive here.
+home_p = os.path.join(SRC, "pages", "Home.tsx")
+home   = strip(open(home_p, encoding="utf-8").read())
+html   = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+
+m = re.search(r"const NAME_LINES\s*=\s*\[([^\]]*)\]", home)
+jm = re.search(r'"@type"\s*:\s*"Person"\s*,\s*"name"\s*:\s*"([^"]+)"', html)
+am = re.search(r'<meta\s+name="author"\s+content="([^"]+)"', html)
+if not m:
+    fail("Home.tsx: NAME_LINES not found — the hero h1 is no longer checkable "
+         "against the site owner's name")
+elif not (jm and am):
+    fail("index.html: could not read the Person name from JSON-LD and/or the "
+         "author meta, so the hero h1 cannot be cross-checked")
+else:
+    parts = [a or b for a, b in re.findall(r"'([^']*)'|\"([^\"]*)\"", m.group(1))]
+    hero_name = " ".join(p for p in parts if p)
+    def norm(s): return re.sub(r"\s+", " ", s).strip().lower()
+    if norm(hero_name) != norm(jm.group(1)) or norm(hero_name) != norm(am.group(1)):
+        fail(f"hero h1 reads {hero_name!r} but JSON-LD says {jm.group(1)!r} and "
+             f"author meta says {am.group(1)!r} — the h1 must name the owner")
+    else:
+        note(f"hero h1 == JSON-LD == author meta ({hero_name})")
+
+# --------------- 15. the collage is decorative, and marked as such
+# Four <img> with empty alt are correct here — they are artwork, not
+# information about Roberto — but empty alt is only correct if the container is
+# also hidden from the accessibility tree. Half of that pairing is silent: an
+# alt="" with no aria-hidden reads as an authoring slip either way.
+cm = re.search(r'<div[^>]*className="hero-collage"[^>]*>', home)
+if not cm:
+    fail("Home.tsx: no .hero-collage container — the hero collage check is "
+         "pointing at markup that no longer exists")
+elif "aria-hidden" not in cm.group(0):
+    fail("Home.tsx: .hero-collage holds alt=\"\" images but is not "
+         "aria-hidden — decorative images need both halves of that pairing")
+
+# ------------- 16. hover-to-colour needs source files that HAVE colour
+# The whole interaction is `filter: grayscale(1)` lifted on hover, which can
+# only reveal colour a file actually contains. One of the four originals was
+# already greyscale, so its hover was a silent no-op — indistinguishable, from
+# the outside, from the feature being broken. That card now declares
+# `mark: true`; every other entry must be able to keep the promise.
+try:
+    from PIL import Image
+    COLLAGE_RE = re.compile(
+        r"\{\s*src:\s*'([^']+)'[^}]*?mark:\s*(true|false)", re.S)
+    entries = COLLAGE_RE.findall(home)
+    if not entries:
+        fail("Home.tsx: COLLAGE entries not parseable — the hover-to-colour "
+             "source check cannot run")
+    for src, mark in entries:
+        p = os.path.join(PUB, src.lstrip("/"))
+        if not os.path.isfile(p):
+            continue                       # covered by the asset check above
+        with Image.open(p) as im:
+            # .tobytes() rather than .getdata(): getdata is deprecated in
+            # Pillow 11 and its replacement does not exist in older versions,
+            # so this is the form that runs on whatever Pillow is installed.
+            raw = im.convert("RGB").resize((64, 64)).tobytes()
+        px = [raw[i:i+3] for i in range(0, len(raw), 3)]
+        spread = sum(max(q) - min(q) for q in px) / len(px)
+        if mark == "false" and spread < 8:
+            fail(f"{src} is effectively greyscale (channel spread {spread:.1f}) "
+                 f"but is not marked `mark: true` — its hover-to-colour reveal "
+                 f"does nothing, which reads as a broken interaction")
+        if mark == "true" and spread >= 8:
+            fail(f"{src} carries real colour (channel spread {spread:.1f}) but "
+                 f"is flagged `mark: true`, which suppresses the reveal")
+    note(f"collage: {len(entries)} entries, colour sources match their mark flags")
+except ImportError:
+    note("collage colour check SKIPPED — Pillow not installed")
+
+# --------------------- 17. the light theme stays inside the hero
+# One light panel on an otherwise near-black site. A `background: var(--paper)`
+# that escapes its scope does not degrade gracefully — it whites out a section
+# whose text is all #f0f0f0 on the assumption of a dark ground.
+LIGHT_SCOPES = ("hero-", "navbar-light", "btn-ink", "link-ink", "social-ink")
+BLOCK = re.compile(r"([^{}]+)\{([^{}]*)\}")
+for mm in BLOCK.finditer(css_nc):
+    sel, body_ = mm.group(1).strip(), mm.group(2)
+    if sel.startswith("@") or sel.startswith(":root"):
+        continue
+    if re.search(r"background(?:-color)?\s*:[^;]*var\(--paper", body_) \
+       and not any(s in sel for s in LIGHT_SCOPES):
+        fail(f"index.css: '{sel[:60]}' paints var(--paper) but is not scoped to "
+             f"the light hero — light ground leaking onto a dark page")
+
+n_light = len(re.findall(r'className="hero-light"', home))
+if n_light != 1:
+    fail(f"expected exactly one .hero-light panel in Home.tsx, found {n_light}")
+
+# ------------- 18. every colour in the light scope clears AA on its ground
+# These ratios were computed by hand once (#5a5a5a on #f8f8f8 = 6.50:1 pass;
+# #c8c8c8 = 1.58:1, rules and borders only) and hand arithmetic does not
+# survive the next edit. The reference design's own inactive nav labels are
+# roughly #c8c8c8 on white — copying them faithfully would have shipped 1.58:1,
+# so this is exactly the check that has to be mechanical.
+def _hex_rgb(h):
+    h = h.lstrip("#")
+    if len(h) == 3: h = "".join(c * 2 for c in h)
+    return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+def _lum(rgb):
+    def ch(v):
+        v /= 255
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+    r, g, b = (ch(v) for v in rgb)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+def _ratio(a, b):
+    la, lb = _lum(a), _lum(b)
+    hi, lo = max(la, lb), min(la, lb)
+    return (hi + 0.05) / (lo + 0.05)
+
+# :root tokens, so `color: var(--ink-soft)` can be resolved to a real value.
+root_m = re.search(r":root\s*\{([^}]*)\}", css_nc)
+TOKENS = {}
+if root_m:
+    for k, v in re.findall(r"(--[a-zA-Z0-9-]+)\s*:\s*(#[0-9a-fA-F]{3,6})\s*;",
+                           root_m.group(1)):
+        TOKENS[k] = _hex_rgb(v)
+
+def _resolve(decl):
+    """A single declaration value → rgb, or None if not a flat colour."""
+    v = re.search(r"var\(\s*(--[a-zA-Z0-9-]+)", decl)
+    if v:
+        return TOKENS.get(v.group(1))
+    h = re.search(r"#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b", decl)
+    return _hex_rgb(h.group(1)) if h else None
+
+if not TOKENS.get("--paper") or not TOKENS.get("--ink"):
+    fail("index.css: --paper/--ink not readable from :root, so the light-hero "
+         "contrast check cannot run")
+else:
+    n_checked = 0
+    for mm in BLOCK.finditer(css_nc):
+        sel, body_ = mm.group(1).strip(), mm.group(2)
+        if sel.startswith("@") or not any(s in sel for s in LIGHT_SCOPES):
+            continue
+        cm2 = re.search(r"(?:^|;)\s*color\s*:([^;]+)", body_)
+        if not cm2:
+            continue
+        fg = _resolve(cm2.group(1))
+        if not fg:
+            continue
+        # Ground: the block's own background when it declares a flat one —
+        # which is how .btn-ink:hover (paper on ink) reads correctly — else the
+        # ink bar for anything inside .hero-rule, else the paper panel.
+        bm = re.search(r"background(?:-color)?\s*:([^;]+)", body_)
+        bg = _resolve(bm.group(1)) if bm else None
+        if bg is None:
+            bg = TOKENS["--ink"] if "hero-rule" in sel else TOKENS["--paper"]
+        r = _ratio(fg, bg)
+        n_checked += 1
+        if r < 4.5:
+            fail(f"index.css: '{sel[:52]}' renders rgb{fg} on rgb{bg} = "
+                 f"{r:.2f}:1 — below AA 4.5:1 for text")
+    if not n_checked:
+        fail("light-hero contrast check inspected no declarations — the scope "
+             "list is out of date with the stylesheet")
+    note(f"light hero: {n_checked} text colours checked, all ≥ 4.5:1 on their ground")
+
 print("=" * 68)
 for n in notes: print("  ·", n)
 print("=" * 68)

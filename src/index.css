@@ -46,6 +46,26 @@
   --text-secondary: var(--text-2);      /* #8a8a8a — body tier below primary */
   --accent-light:   #c8c8c8;            /* softened accent, won't fight pure white */
   --gradient-hero:  radial-gradient(ellipse 80% 55% at 50% 0%, rgba(255,255,255,0.055) 0%, transparent 72%);
+
+  /* ── Light hero ───────────────────────────────────────────────────
+     The hero is this palette turned inside out, not a second palette:
+     --ink is literally --bg-base, and --ink-soft is --text-muted. The
+     one genuinely new value is --paper, because the ramp had no step
+     between #ffffff and #f0f0f0 and the hero needs both — a near-white
+     ground AND a pure-white nav pill that still reads as raised
+     against it. #f0f0f0 as the ground would have made the pill
+     disappear.
+
+     --hairline is for RULES AND BORDERS ONLY. It is 1.58:1 against
+     --paper, so any text set in it is unreadable and fails WCAG AA.
+     The reference sets its inactive nav labels in a light grey like
+     this; that part is not copied. --ink-soft is the lightest value
+     allowed to carry words on --paper, at 6.5:1. */
+  --paper:     #f8f8f8;
+  --paper-hi:  #ffffff;
+  --ink:       #0a0a0a;
+  --ink-soft:  #5a5a5a;
+  --hairline:  #c8c8c8;
 }
 
 /* ── Noise Grain Overlay ────────────────────────────────────────── */
@@ -619,3 +639,256 @@ html.lenis, html.lenis body { height: auto; }
 input::placeholder,
 textarea::placeholder,
 select::placeholder { color: #5a5a5a; opacity: 1; }
+
+/* ================================================================
+   LIGHT HERO
+   The one light panel on a dark site. Everything here is scoped to
+   .hero-light so nothing leaks onto the pages below, which stay dark.
+   ================================================================ */
+
+.hero-light {
+  position: relative;
+  overflow: hidden;              /* clips the name as it shears out and the
+                                    card that bleeds off the bottom edge */
+  background: var(--paper);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+/* The global ring is `1px solid var(--accent)` — pure white, which is
+   invisible here. Same trap the skip link hit. */
+.hero-light :focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
+.hero-light ::selection     { background: rgba(10,10,10,0.14); color: var(--ink); }
+
+/* The collage lives inside the same container as the copy so that below lg it
+   can be a strip in the flow with the container's padding. That puts the cards
+   in the same stacking context as the name, where their z-index:1 would paint
+   them over type that has no z-index at all. Everything that must stay in
+   front is marked, rather than the cards being lifted out of the container and
+   the mobile strip losing its alignment. */
+.hero-front { position: relative; z-index: 2; }
+
+/* ── The name ────────────────────────────────────────────────────
+   Anton ships exactly one weight. The global `h1 { font-weight: 700 }`
+   would make the browser synthesise a heavier Anton by smearing the
+   glyphs sideways, which at 12rem is plainly visible as mush — so 400
+   is declared, not inherited. */
+.hero-name {
+  font-family: 'Anton', 'Space Grotesk', sans-serif;
+  font-weight: 400;
+  font-size: clamp(3.25rem, 13.5vw, 12rem);
+  line-height: 0.82;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0;
+}
+.hero-name-line {
+  display: block;
+  /* Masks the load reveal: each word starts at yPercent 108 — below the
+     baseline — and rises into view, which only reads as a reveal if the box
+     clips it on the way. line-height 0.82 puts the box edge tight against
+     the cap height, so a little top padding buys room for the ascenders and
+     the matching negative margin cancels the space it would otherwise add.
+     There is deliberately no bottom padding: that would open a gap under
+     the baseline where the incoming word would be visible before it should. */
+  overflow: hidden;
+  padding-top: 0.1em;
+  margin-top: -0.1em;
+  /* Each line is shifted independently on scroll. Promoting them up front
+     keeps the browser from re-rasterising 12rem of type every frame. */
+  will-change: transform;
+}
+.hero-name-word { display: block; will-change: transform; }
+
+/* Rule + role beneath the name. "JR." is a three-character line under two
+   seven-character ones; a full-width rule closing the block turns that
+   ragged edge into a masthead instead of an accident. It sits outside the
+   h1 on purpose — the heading should read "Roberto Mediana Jr." and
+   nothing else. */
+.hero-namerule {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+.hero-namerule::before {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--hairline);
+}
+
+/* ── Copy ────────────────────────────────────────────────────────── */
+.hero-lede {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: clamp(0.9375rem, 1.15vw, 1.0625rem);
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 34rem;
+}
+.hero-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Outlined CTA, inverting to solid ink on hover. Squared off, per the
+   no-radius rule the rest of the site follows. */
+.btn-ink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9375rem 1.75rem;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+.btn-ink:hover { background: var(--ink); color: var(--paper); }
+
+.link-ink {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 2px;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+.link-ink:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+.social-ink { color: var(--ink-soft); transition: color 0.25s ease; }
+.social-ink:hover { color: var(--ink); }
+
+/* ── The collage ─────────────────────────────────────────────────
+   Below lg this is a plain 4-across strip under the copy. Only at lg
+   does it become the scattered overlay — at phone widths, absolutely
+   positioned cards behind 12rem type is a pile-up, not a composition. */
+.hero-collage {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-top: 2.5rem;
+}
+
+.hero-figure {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: var(--paper-hi);
+  box-shadow: 0 16px 44px -14px rgba(10,10,10,0.30);
+  transition: box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-figure:hover { box-shadow: 0 26px 64px -16px rgba(10,10,10,0.38); }
+
+.hero-figure img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Desaturated AND lifted: brightness(1.12) floats the mid-tones up so
+     the black name stays legible where it crosses a card. Hover returns
+     the image to its true values, so the reveal reads as the photo
+     waking up rather than just gaining hue. */
+  filter: grayscale(1) contrast(0.92) brightness(1.12);
+  transition: filter 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-figure:hover img { filter: grayscale(0) contrast(1) brightness(1); }
+
+/* The God_dog emblem is a mark on a black ground, not a photograph: it is
+   already greyscale at source, so it cannot un-grey. Rather than leave one
+   card that silently ignores the hover, it is treated as what it is — the
+   single black rectangle in a white composition, contained rather than
+   cropped, so nothing of the mark is cut off. */
+.hero-figure--mark { background: var(--ink); aspect-ratio: 1 / 1; }
+.hero-figure--mark img { object-fit: contain; filter: none; }
+.hero-figure--mark:hover img { filter: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-figure img { transition: filter 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+  .hero-figure:hover img { transform: scale(1.04); }
+  .hero-figure--mark:hover img { transform: scale(1.04); }
+}
+
+@media (min-width: 1024px) {
+  .hero-collage { display: block; margin: 0; }
+  .hero-figure {
+    position: absolute;
+    z-index: 1;                  /* behind the name, which sits at z-index 2 */
+    /* GSAP writes the parallax offset into the inline transform, so the
+       resting rotation has to live here as a custom property it can
+       compose with rather than a transform this rule owns outright. */
+    transform: rotate(var(--rot, 0deg));
+    will-change: transform;
+  }
+  .hero-figure--1 { top: 13%;    left: 0;     width: 15rem; --rot: -3deg;   }
+  .hero-figure--2 { top: 7%;     right: 2%;   width: 14rem; --rot:  2.5deg; }
+  .hero-figure--3 { bottom: 15%; left: 5%;    width: 11rem; --rot:  4deg;   }
+  .hero-figure--4 { bottom: -3%; right: 9%;   width: 17rem; --rot: -2deg;   }
+}
+
+/* ── Closing bar ─────────────────────────────────────────────────
+   The hero has to hand off to a near-black section. Fading white into
+   black would read as a gradient nobody chose; instead the ink arrives
+   early as a deliberate full-bleed bar that the next section simply
+   continues, so the seam is a device rather than a collision. */
+.hero-rule {
+  position: relative;
+  z-index: 3;
+  background: var(--ink);
+  /* #8a8a8a on #0a0a0a is 5.74:1 — passes AA for the 10px labels in here.
+     --ink-soft (#5a5a5a) is the right grey on paper and only 2.2:1 on ink,
+     so .hero-label has to be lifted rather than inherited. The scroll arrow
+     is lucide's currentColor default, so it follows this without a prop. */
+  color: #8a8a8a;
+  border-top: 1px solid var(--ink);
+}
+.hero-rule .hero-label { color: #8a8a8a; }
+
+/* ── Navbar over the light hero ──────────────────────────────────
+   Every colour in the header is set for a dark ground: white logo, white
+   active link, #f0f0f0 on a #1f1f1f border. Over the white hero all of it
+   disappears. This inverts just the colours and leaves the drawer, the
+   focus trap and the aria wiring untouched. */
+.navbar-light .nav-link          { color: var(--ink-soft); }
+.navbar-light .nav-link:hover    { color: var(--ink); }
+.navbar-light .nav-link.active   { color: var(--ink); }
+.navbar-light .nav-link::after   { background: var(--ink); }
+.navbar-light .btn-ghost         { border-color: var(--hairline); color: var(--ink); }
+.navbar-light .btn-ghost:hover   { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+
+/* Past 80px both classes are on the header at once — the hero is a whole
+   viewport tall, so the blur engages long before the panel has scrolled away.
+   Without this the frosted bar would arrive as near-black behind ink text. */
+.navbar-light.navbar-blur {
+  background: rgba(248,248,248,0.85);
+  border-bottom-color: var(--hairline);
+}
+
+/* Mobile trigger. These were inline styles on the button, where .navbar-light
+   could not reach them. */
+.nav-burger {
+  width: 2.25rem; height: 2.25rem;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  transition: border-color 0.2s, color 0.2s;
+}
+.navbar-light .nav-burger { border-color: var(--hairline); color: var(--ink); }
+
+/* The mark is drawn in hardcoded #ffffff. It is entirely monochrome, so
+   inverting the rendered pixels is exact — and it keeps RMLogo's API
+   alone, which the drawer also uses on its dark panel. */
+.navbar-light .logo-invert       { filter: invert(1); }

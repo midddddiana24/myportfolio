@@ -11,19 +11,43 @@ import { navItems }        from '@/data/socials'
 // Navbar — Transparent → blur on scroll, DM Mono links, magnetic CTA
 // ================================================================
 
+// How far down the fixed header reaches. Used to decide when the light hero
+// panel has scrolled out from under it; see the `light` effect below.
+const HEADER_H = 76
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const [light, setLight]       = useState(false)
   const [open, setOpen]         = useState(false)
   const location = useLocation()
   const panelRef   = useRef<HTMLElement | null>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => { setOpen(false) }, [location])
+
+  // Two things tracked on one handler. `scrolled` is the blur. `light` exists
+  // because the home hero is now a white panel under a fixed header whose
+  // every colour — white logo, white active link, #f0f0f0 on a #1f1f1f
+  // border — assumes a dark ground and disappears against paper.
+  //
+  // The hero's height is measured rather than hard-coded, and `.hero-light`
+  // only exists on the home route, so this resolves to false everywhere else
+  // without needing to test the path. Re-subscribed per navigation: arriving
+  // at "/" from another page adds the panel without producing a scroll event.
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 80)
+    const fn = () => {
+      setScrolled(window.scrollY > 80)
+      const hero = document.querySelector('.hero-light')
+      setLight(!!hero && hero.getBoundingClientRect().bottom > HEADER_H)
+    }
+    fn()
     window.addEventListener('scroll', fn, { passive: true })
-    return () => window.removeEventListener('scroll', fn)
-  }, [])
+    window.addEventListener('resize', fn)
+    return () => {
+      window.removeEventListener('scroll', fn)
+      window.removeEventListener('resize', fn)
+    }
+  }, [location])
   useEffect(() => {
     // body overflow alone does NOT lock the page while Lenis is running: Lenis
     // drives window scroll itself, so the content kept moving behind the open
@@ -78,21 +102,27 @@ export function Navbar() {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'navbar-blur' : ''}`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'navbar-blur' : ''} ${light ? 'navbar-light' : ''}`}>
         <div className="rm-container">
           <nav className="flex items-center justify-between py-5" aria-label="Main navigation">
-            {/* Logo */}
+            {/* Logo. The mark is drawn entirely in white, so over the light
+                hero it is inverted wholesale rather than re-coloured — see
+                .navbar-light .logo-invert. */}
             <NavLink to="/" aria-label="Home">
-              <RMLogo showText size={28} />
+              <RMLogo showText size={28} className={light ? 'logo-invert' : undefined} />
             </NavLink>
 
-            {/* Desktop links — DM Mono uppercase */}
+            {/* Desktop links — DM Mono uppercase.
+                No inline colour for the active state: react-router appends an
+                `active` class when className is a string, and .nav-link.active
+                already sets it — so the one rule in .navbar-light is enough to
+                flip it. The inline style that used to be here hard-coded
+                #ffffff and would have overridden that. */}
             <ul className="hidden md:flex items-center gap-8" role="list">
               {navItems.map(item => (
                 <li key={item.href}>
                   <MagneticButton strength={0.25} as="div">
-                    <NavLink to={item.href} end={item.href === '/'} className="nav-link"
-                      style={({ isActive }) => ({ color: isActive ? '#ffffff' : undefined })}>
+                    <NavLink to={item.href} end={item.href === '/'} className="nav-link">
                       {item.label}
                     </NavLink>
                   </MagneticButton>
@@ -108,9 +138,9 @@ export function Navbar() {
                 </NavLink>
               </MagneticButton>
 
-              {/* Mobile menu */}
-              <button ref={triggerRef} onClick={() => setOpen(true)} className="md:hidden w-9 h-9 flex items-center justify-center border"
-                style={{ border:'1px solid #1f1f1f', background:'transparent', color:'#f0f0f0' }}
+              {/* Mobile menu. Colours moved out of the inline style and into
+                  .nav-burger so .navbar-light can reach them. */}
+              <button ref={triggerRef} onClick={() => setOpen(true)} className="md:hidden nav-burger"
                 aria-label="Open menu" aria-expanded={open} aria-haspopup="dialog">
                 <Menu size={16} />
               </button>
@@ -148,8 +178,7 @@ export function Navbar() {
                       initial={{ opacity:0, x:16 }} animate={{ opacity:1, x:0 }}
                       transition={{ delay: i*0.05 + 0.08 }}>
                       <NavLink to={item.href} end={item.href === '/'}
-                        className="block px-3 py-3 nav-link text-xs"
-                        style={({ isActive }) => ({ color: isActive ? '#ffffff' : undefined })}>
+                        className="block px-3 py-3 nav-link text-xs">
                         {item.label}
                       </NavLink>
                     </motion.li>

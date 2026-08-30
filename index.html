@@ -25,10 +25,21 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- Space Grotesk + DM Mono — exact fonts from the spec -->
+    <!--
+      Four faces, four jobs. One request, so they resolve in a single round trip.
+        Anton         — the name in the hero, and nothing else on the site.
+                        Ships a single weight; see .hero-name for why that
+                        matters (font-weight:700 would fake a bolder Anton).
+        DM Sans       — hero body copy. Chosen because it is the designed
+                        sibling of the DM Mono already in use, so the labels
+                        and the prose share a voice instead of being two
+                        unrelated sans faces sitting next to each other.
+        DM Mono       — eyebrows, labels, data.
+        Space Grotesk — everything on the dark pages below the hero.
+    -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
     <!-- JSON-LD -->
     <script type="application/ld+json">

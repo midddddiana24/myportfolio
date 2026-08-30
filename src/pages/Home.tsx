@@ -1,6 +1,6 @@
-import { useRef, useEffect, useState, lazy, Suspense } from 'react'
+import { useRef, useEffect, useState, lazy, Suspense, type ElementType } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, ArrowRight, ArrowDown, Github } from 'lucide-react'
+import { ArrowUpRight, ArrowRight, ArrowDown, Github, Linkedin, Facebook } from 'lucide-react'
 import {
   SiReact, SiVuedotjs, SiNextdotjs, SiTypescript, SiJavascript,
   SiTailwindcss, SiHtml5, SiCss, SiNodedotjs, SiLaravel, SiPhp,
@@ -8,6 +8,8 @@ import {
   SiFirebase, SiGit, SiDocker, SiPostman, SiLinux,
 } from 'react-icons/si'
 import { Brain, Workflow, Bot } from 'lucide-react'
+// ScrollTrigger is not imported by name: the `scrollTrigger:` configs below
+// only need the plugin *registered*, which @/lib/gsap does at module load.
 import { gsap, EASE_POWER4, DUR_SLOW, DUR_NORMAL } from '@/lib/gsap'
 import { TextReveal }        from '@/components/motion/TextReveal'
 import { MagneticButton }    from '@/components/motion/MagneticButton'
@@ -18,6 +20,7 @@ import { SocialLinks }       from '@/components/ui/SocialLinks'
 import { SafeImage }         from '@/components/ui/SafeImage'
 import { StatCounter }       from '@/components/ui/StatCounter'
 import { projects }          from '@/data/projects'
+import { socialLinks }       from '@/data/socials'
 
 const TerrainCanvas = lazy(() => import('@/components/3d/TerrainCanvas').then(m => ({ default: m.TerrainCanvas })))
 const WireGlobe = lazy(() => import('@/components/3d/WireGlobe').then(m => ({ default: m.WireGlobe })))
@@ -44,8 +47,13 @@ const CV_URL = '/assets/resume-placeholder.pdf'
  * The content-type test matters as much as `res.ok`: an SPA host (Vercel,
  * Netlify) rewrites unknown paths to index.html and answers 200, so a status
  * check alone would report a missing PDF as present.
+ *
+ * `variant` exists because the light hero and the dark sections need opposite
+ * treatments: `ghost` is the bordered button used on near-black, `ink` is a
+ * quiet underlined link so the outlined "Explore work" stays the only actual
+ * button in the hero composition.
  */
-function CVButton() {
+function CVButton({ variant = 'ghost' }: { variant?: 'ghost' | 'ink' }) {
   const [missing, setMissing] = useState(false)
 
   useEffect(() => {
@@ -58,6 +66,12 @@ function CVButton() {
       .catch(() => { if (alive) setMissing(true) })
     return () => { alive = false }
   }, [])
+
+  if (variant === 'ink') {
+    return missing
+      ? <Link to="/contact" className="link-ink">Request CV</Link>
+      : <a href={CV_URL} className="link-ink" download>Download CV</a>
+  }
 
   if (missing) {
     return (
@@ -77,157 +91,222 @@ function CVButton() {
   )
 }
 
-const HEADLINE_TYPE = {
-  fontFamily: "'Space Grotesk', sans-serif",
-  fontWeight: 700,
-  fontSize: 'clamp(3.5rem, 10vw, 8rem)',
-  lineHeight: 0.95,
-  letterSpacing: '-0.04em',
-} as const
+// ── HERO ──────────────────────────────────────────────────────────
+// One element per line so each can be sheared independently on scroll.
+// "Jr." gets its own line rather than riding along with "Mediana": a
+// ten-character third line would force the whole block a size down, and the
+// short line is what the closing rule beneath it is there to resolve.
+const NAME_LINES = ['Roberto', 'Mediana', 'Jr.'] as const
 
-// Each line reveals on its own stagger; the brightest step lands on the
-// last word so emphasis follows the grayscale ramp.
-const HEADLINE_LINES = [
-  { text: 'Building',     delay: 1.9,  color: '#f0f0f0' },
-  { text: 'digital',      delay: 2.05, color: '#f0f0f0' },
-  { text: 'experiences.', delay: 2.2,  color: '#ffffff' },
+// Scattered behind the name at lg, a plain four-across strip below it on
+// narrow screens. hero-04 is the God_dog emblem — a mark on a black ground,
+// not a photograph, and already greyscale at source, so it carries the
+// --mark treatment instead of pretending it can reveal a colour it doesn't
+// have.
+const COLLAGE = [
+  { src: '/assets/img/hero/hero-01.jpg', cls: 'hero-figure--1', mark: false },
+  { src: '/assets/img/hero/hero-02.jpg', cls: 'hero-figure--2', mark: false },
+  { src: '/assets/img/hero/hero-03.jpg', cls: 'hero-figure--3', mark: false },
+  { src: '/assets/img/hero/hero-04.jpg', cls: 'hero-figure--4', mark: true  },
 ]
 
+// How far each line travels as the hero scrolls out, as a percentage of its
+// own width — so the long lines throw further than the short one and the
+// block shears rather than sliding.
+const SHEAR = [-22, 22, -13]
+
+// socials.ts still holds the template's placeholder URLs. Sending a recruiter
+// to github.com/yourusername is worse than showing no icon at all, so only
+// filled-in entries render; the block appears by itself once they are real.
+const PLACEHOLDER_URL = /yourusername|yourprofile|your\.email|example\.com/i
+const REAL_SOCIALS = socialLinks.filter(s => !PLACEHOLDER_URL.test(s.url))
+const SOCIAL_ICONS: Record<string, ElementType> = { Github, Linkedin, Facebook }
+
 function Hero() {
-  const tagRef    = useRef<HTMLDivElement>(null)
-  const subtextRef= useRef<HTMLParagraphElement>(null)
-  const ctaRef    = useRef<HTMLDivElement>(null)
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const availRef  = useRef<HTMLDivElement>(null)
+  const rootRef  = useRef<HTMLElement>(null)
+  const lineRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const wordRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const figRefs  = useRef<(HTMLDivElement | null)[]>([])
+  const ledeRef  = useRef<HTMLDivElement>(null)
+  const barRef   = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ delay: 1.9 })
-      tl.fromTo(tagRef.current,
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: DUR_NORMAL, ease: EASE_POWER4 }
-      )
-      .fromTo(subtextRef.current,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: DUR_NORMAL, ease: EASE_POWER4 }, '-=0.3'
-      )
-      .fromTo(ctaRef.current,
-        { scale: 0.95, opacity: 0 },
-        { scale: 1, opacity: 1, duration: DUR_NORMAL, ease: 'back.out(1.7)' }, '-=0.35'
-      )
-      .fromTo(scrollRef.current,
-        { y: 12, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, ease: EASE_POWER4 }, '-=0.2'
-      )
-      .fromTo(availRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.6 }, '-=0.4'
-      )
-    })
+      // Every reveal below is a gsap `from`, never a `fromTo` paired with an
+      // opacity:0 in the markup. If this effect never runs — JS fails, the
+      // bundle 404s, reduced motion returns early — `from` leaves the hero
+      // fully visible, whereas the old CSS-hidden pattern would have left the
+      // whole thing blank.
+      gsap.timeline({ delay: 0.2 })
+        .from(wordRefs.current.filter(Boolean), {
+          yPercent: 108, duration: 1, ease: EASE_POWER4, stagger: 0.11,
+        })
+        .from(figRefs.current.filter(Boolean), {
+          scale: 0.9, opacity: 0, duration: DUR_SLOW, ease: EASE_POWER4, stagger: 0.09,
+        }, '-=0.72')
+        .from(ledeRef.current, {
+          y: 22, opacity: 0, duration: DUR_NORMAL, ease: EASE_POWER4,
+        }, '-=0.6')
+        .from(barRef.current, { opacity: 0, duration: 0.6 }, '-=0.35')
+
+      // ── The shear ────────────────────────────────────────────────
+      // Scrubbed, so the split tracks the scroll position rather than firing
+      // once and finishing on its own. Each line owns `xPercent` and nothing
+      // else touches it; the load reveal above animates the inner word span,
+      // which is why the two can overlap without fighting over one transform.
+      NAME_LINES.forEach((_, i) => {
+        const line = lineRefs.current[i]
+        if (!line) return
+        gsap.to(line, {
+          xPercent: SHEAR[i],
+          ease: 'none',
+          scrollTrigger: {
+            trigger: rootRef.current,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.6,
+          },
+        })
+      })
+
+      // Cards drift at their own rates so the collage comes apart rather than
+      // sliding as one plane. Vertical only — pointer parallax below owns x,
+      // and splitting the two axes keeps them from overwriting each other.
+      const DRIFT = [-70, 96, -120, 64]
+      figRefs.current.forEach((fig, i) => {
+        if (!fig) return
+        gsap.to(fig, {
+          y: DRIFT[i] ?? 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: rootRef.current,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.8,
+          },
+        })
+      })
+    }, rootRef)
+
     return () => ctx.revert()
   }, [])
 
+  // Pointer parallax on the cards. Desktop only: it needs a real pointer, and
+  // below lg the collage is a static strip in the flow where nudging the cards
+  // sideways would just break the grid. Writes x, never y — see DRIFT above.
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!window.matchMedia('(min-width: 1024px) and (pointer: fine)').matches) return
+
+    const setters = figRefs.current.map(fig =>
+      fig ? gsap.quickTo(fig, 'x', { duration: 0.9, ease: 'power3.out' }) : null
+    )
+    const DEPTH = [16, -22, 12, -14]
+
+    const onMove = (e: PointerEvent) => {
+      const nx = e.clientX / window.innerWidth - 0.5
+      setters.forEach((set, i) => set?.(nx * (DEPTH[i] ?? 0)))
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    return () => window.removeEventListener('pointermove', onMove)
+  }, [])
+
   return (
-    <section className="relative min-h-[100svh] flex flex-col overflow-hidden pt-28" aria-label="Hero">
+    <section ref={rootRef} className="hero-light" aria-label="Hero">
+      <div className="rm-container flex flex-1 flex-col justify-center pt-32 pb-12 lg:pt-40">
 
-      {/* Backdrop — wireframe terrain with a travelling scan. See TerrainCanvas. */}
-      <Suspense fallback={<div className="terrain-fallback" aria-hidden="true" />}>
-        <TerrainCanvas />
-      </Suspense>
-
-      {/* Legibility scrim, weighted left where the display type sits.
-          Must stay pointer-events:none or it eats the terrain drag. */}
-      <div className="absolute inset-0 z-[1] pointer-events-none" aria-hidden="true"
-        style={{ background:'linear-gradient(100deg, rgba(10,10,10,0.94) 0%, rgba(10,10,10,0.70) 38%, rgba(10,10,10,0.26) 70%, rgba(10,10,10,0.10) 100%)' }} />
-
-      <div className="rm-container relative z-10 flex flex-col flex-1">
-        {/* Two-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[60%_40%] gap-8 flex-1 items-center py-12 lg:py-0">
-
-          {/* LEFT column */}
-          <div className="flex flex-col gap-7">
-            {/* Eyebrow */}
-            <div ref={tagRef} style={{ opacity:0 }}>
-              <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#5a5a5a' }}>
-                Full-Stack Developer · Iloilo, Philippines
+        {/* The name. One <h1> holding all three lines, so it reads as the
+            single string "Roberto Mediana Jr." to a screen reader and to
+            search — the spans exist only so each line can shear on its own.
+            Two nested spans per line, not one: the outer takes xPercent from
+            the shear, the inner takes yPercent from the load reveal. A single
+            span would mean two tweens writing one transform. */}
+        <h1 className="hero-name hero-front">
+          {NAME_LINES.map((line, i) => (
+            <span key={line} className="hero-name-line"
+              ref={el => { lineRefs.current[i] = el }}>
+              <span className="hero-name-word"
+                ref={el => { wordRefs.current[i] = el }}>
+                {line}
               </span>
-            </div>
+            </span>
+          ))}
+        </h1>
 
-            {/* Headline — char-by-char reveal.
-                One <h1> for the whole sentence. This was three separate
-                <h1> elements, one per line, so a screen reader announced
-                "Building", "digital", "experiences." as three unrelated
-                top-level headings and the homepage had no single title —
-                also the one heading search results lean on hardest. The
-                lines are spans now: the h1 owns the sentence and the
-                typography, each span owns its own stagger. */}
-            <div>
-              <h1 style={{ ...HEADLINE_TYPE, margin: 0 }}>
-                {HEADLINE_LINES.map(line => (
-                  <TextReveal
-                    key={line.text}
-                    as="span"
-                    trigger="load"
-                    splitBy="chars"
-                    delay={line.delay}
-                    duration={0.8}
-                    stagger={0.025}
-                    skewY={4}
-                    style={{ display: 'block', color: line.color }}
-                  >
-                    {line.text}
-                  </TextReveal>
-                ))}
-              </h1>
-            </div>
-
-            {/* Subtext */}
-            <p ref={subtextRef} style={{ opacity:0, fontFamily:"'Space Grotesk', sans-serif", fontSize:'1.0625rem', color:'#5a5a5a', lineHeight:1.65, maxWidth:'480px' }}>
-              BSIT student at West Visayas State University – Janiuay Campus. Building practical
-              web applications and exploring the intersection of software and security.
-            </p>
-
-            {/* CTAs */}
-            <div ref={ctaRef} style={{ opacity:0, display:'flex', flexWrap:'wrap', gap:'1rem' }}>
-              <MagneticButton strength={0.3}>
-                <Link to="/projects" className="btn-primary">
-                  View My Work
-                </Link>
-              </MagneticButton>
-              <CVButton />
-            </div>
-          </div>
-
-          {/* RIGHT column — intentionally empty.
-              It used to hold an "RM" monogram behind a glow orb, two nested
-              borders and four corner dots. That was there to give the right
-              side something to look at while the old photo backdrop was
-              knocked back to near-invisibility. The terrain now occupies
-              that space, and the scrim above is deliberately lightest on
-              this side (0.10 alpha) so it reads through. Stacking the
-              monogram back on top would put four decorative devices in
-              front of the one element that's actually the hero's subject. */}
-          <div className="hidden lg:block" aria-hidden="true" />
+        <div className="hero-namerule hero-front">
+          <span className="hero-label">Full-Stack Developer · Iloilo, PH</span>
         </div>
 
-        {/* Bottom bar */}
-        <div className="flex items-center justify-between py-6 border-t" style={{ borderColor:'#1f1f1f' }}>
-          {/* Availability */}
-          <div ref={availRef} style={{ opacity:0, display:'flex', alignItems:'center', gap:'0.625rem' }}>
-            <div className="avail-dot" />
-            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'#5a5a5a' }}>
-              Available for freelance
-            </span>
+        <div ref={ledeRef} className="hero-front mt-12 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+          <div className="flex flex-col gap-7">
+            <p className="hero-lede">
+              BSIT student at West Visayas State University – Janiuay Campus.
+              I build practical web applications, and I test them the way
+              someone trying to break in would.
+            </p>
+            <div className="flex flex-wrap items-center gap-7">
+              <Link to="/projects" className="btn-ink">
+                Explore work <ArrowRight size={13} aria-hidden="true" />
+              </Link>
+              <CVButton variant="ink" />
+            </div>
           </div>
 
-          {/* Scroll indicator */}
-          <div ref={scrollRef} style={{ opacity:0, display:'flex', flexDirection:'column', alignItems:'center', gap:'0.5rem' }}>
-            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#5a5a5a' }}>
-              Scroll
-            </span>
+          {/* Renders itself out of existence while socials.ts still holds the
+              template's placeholder URLs — see REAL_SOCIALS. */}
+          {REAL_SOCIALS.length > 0 && (
+            <div className="flex flex-col gap-4 lg:items-end">
+              <span className="hero-label">Socials</span>
+              <div className="flex items-center gap-5">
+                {REAL_SOCIALS.map(s => {
+                  const Icon = SOCIAL_ICONS[s.icon] ?? ArrowUpRight
+                  return (
+                    <a key={s.platform} href={s.url} className="social-ink"
+                      target="_blank" rel="noopener noreferrer"
+                      aria-label={`${s.label} profile`}>
+                      <Icon size={18} />
+                    </a>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Decorative, and marked as such — four descriptions of artwork tell a
+            screen-reader user nothing about Roberto, and there is nothing
+            focusable inside. Below lg a four-across strip in the flow; at lg
+            the cards go absolute and scatter behind the name. It sits inside
+            the container so the mobile strip keeps the container's padding;
+            .hero-front on the type above is what keeps the name in front. */}
+        <div className="hero-collage" aria-hidden="true">
+          {COLLAGE.map((c, i) => (
+            <div key={c.src}
+              className={`hero-figure ${c.cls}${c.mark ? ' hero-figure--mark' : ''}`}
+              ref={el => { figRefs.current[i] = el }}>
+              {/* Colour source files, desaturated by CSS and restored on
+                  hover. Serving files already baked to greyscale — which is
+                  what /assets/img/hero-bg.jpg is — could never come back. */}
+              <img src={c.src} alt="" loading="eager" decoding="async" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* The hand-off into the dark page below: an ink bar the next section
+          simply continues, rather than a white-to-black gradient. */}
+      <div ref={barRef} className="hero-rule">
+        <div className="rm-container flex items-center justify-between py-5">
+          <div className="flex items-center gap-2.5">
+            <div className="avail-dot" />
+            <span className="hero-label">Available for freelance</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <span className="hero-label">Scroll</span>
             <div className="scroll-line-anim">
-              <ArrowDown size={14} color="#5a5a5a" />
+              <ArrowDown size={13} />
             </div>
           </div>
         </div>
@@ -240,7 +319,20 @@ function Hero() {
 function AboutSection() {
   return (
     <section className="rm-section relative overflow-hidden" style={{ background:'#0a0a0a' }}>
-      <div className="rm-container">
+      {/* The wireframe terrain, moved down from the hero — the hero is the
+          name now. This is the first dark section, so the ink bar closing the
+          hero hands straight into it, and the wrap's vignette fades to the
+          same #0a0a0a on all four edges so no seam is visible. Kept off the
+          Skills section deliberately: WireGlobe already lives there, and two
+          WebGL contexts competing in one viewport is what task #13 fixed. */}
+      <Suspense fallback={<div className="terrain-fallback" aria-hidden="true" />}>
+        <TerrainCanvas />
+      </Suspense>
+
+      {/* relative z-10 is load-bearing: .terrain-wrap is absolutely
+          positioned, so without it the canvas paints over this in-flow
+          content. Same reason SkillsSection's container carries it. */}
+      <div className="rm-container relative z-10">
         {/* Section header */}
         <div className="flex items-center gap-4 mb-16">
           <span className="eyebrow">/ About me</span>

@@ -3,13 +3,19 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
 // ================================================================
-// TerrainCanvas — the hero's thesis.
+// TerrainCanvas — the site's thesis, stated in one image.
 //
 // A topographic wireframe read as a network being mapped: hairline
 // grid, and a scan band that travels toward the horizon lifting and
 // igniting the vertices it crosses. The reference is traceroute /
 // a subnet sweep discovering hosts, which is Roberto's actual
 // subject matter (8 Cisco networking certs, web pentesting).
+//
+// Lives behind the About section, not the hero — the hero is now the
+// light panel carrying the name. Everything here is measured against
+// this component's own box (see the progress note in useFrame), so it
+// is placeable in any near-black full-width section; the wrapper's
+// vignette fades to #0a0a0a, which is the ground it expects.
 //
 // Monochrome only — see project design system. Colour never appears.
 // ================================================================
@@ -142,8 +148,9 @@ const FRAG = /* glsl */ `
 `
 
 /* ── Terrain ──────────────────────────────────────────────────── */
-function Terrain({ input, reduced, seg, size }: {
+function Terrain({ input, host, reduced, seg, size }: {
   input: React.MutableRefObject<TerrainInput>
+  host: React.RefObject<HTMLDivElement>
   reduced: boolean
   seg: number
   size: number
@@ -165,9 +172,18 @@ function Terrain({ input, reduced, seg, size }: {
     uOpacity:   { value: 0.5 },
   }), [size])
 
-  // Scroll progress is read straight off window each frame rather than
-  // via a listener — Lenis owns the scroll loop, and this stays correct
-  // no matter how it drives the page.
+  // Progress is measured against this canvas's own box, not against the top
+  // of the document: 0 while the section's top sits at or below the viewport
+  // top, 1 one viewport-height after it has passed. For a section that starts
+  // the page that is arithmetically identical to `scrollY / innerHeight` —
+  // which is what this used to read — so the hero behaviour is unchanged and
+  // the scene now also works somewhere down the page. It was `scrollY` alone
+  // that made this hero-only: further down, progress pinned at 1 and the
+  // terrain would have rendered permanently flattened and half-faded.
+  //
+  // Read straight off the element each frame rather than through a scroll
+  // listener: Lenis owns the scroll loop, and one rect read at a fixed point
+  // in the frame is what ScrollTrigger does too.
   const scroll = useRef(0)
   const half = size / 2
 
@@ -177,7 +193,9 @@ function Terrain({ input, reduced, seg, size }: {
     const g = group.current
     if (!g) return
 
-    const sp = Math.min(1, window.scrollY / Math.max(1, window.innerHeight))
+    const el = host.current
+    const top = el ? el.getBoundingClientRect().top : 0
+    const sp = Math.min(1, Math.max(0, -top / Math.max(1, window.innerHeight)))
     scroll.current += (sp - scroll.current) * 0.08
     const s = scroll.current
 
@@ -284,9 +302,9 @@ export function TerrainCanvas() {
     }
   }, [])
 
-  // The hero is one viewport of a long page, so for most of a visit this
-  // canvas is off-screen. Rendering a 30k-vertex grid the whole time to
-  // draw something nobody can see is pure waste — stop the loop instead.
+  // This canvas fills one section of a long page, so for most of a visit it is
+  // off-screen. Rendering a 30k-vertex grid the whole time to draw something
+  // nobody can see is pure waste — stop the loop instead.
   // Pausing is safe: three's clock only advances while frames are being
   // drawn, so uTime resumes exactly where it stopped rather than jumping,
   // and the delta clamp in useFrame absorbs the long first frame.
@@ -304,18 +322,28 @@ export function TerrainCanvas() {
   // Drag is mouse-only: on touch the same gesture is a scroll, and
   // stealing it would break the page.
   //
-  // pointerdown goes on the window, not the canvas wrapper. The wrapper
-  // sits behind the content container, which spans the full hero — so a
-  // listener there would only ever fire in the thin outer margins. We
-  // instead accept a drag anywhere in the hero and bail on interactive
+  // pointerdown goes on the window, not the canvas wrapper. The wrapper is
+  // pointer-events:none and sits behind a content container that spans the
+  // whole section — so a listener on it would never fire. We instead accept a
+  // drag that starts anywhere over the wrapper's box and bail on interactive
   // targets so links and buttons keep their own clicks.
   useEffect(() => {
     let last: { x: number; y: number } | null = null
 
-    const inHero = () => window.scrollY < window.innerHeight * 0.9
+    // Hit-tested against the wrapper rather than `scrollY < innerHeight`,
+    // which only described a canvas in the first viewport — and which also
+    // meant a drag in the top 90% of the page rotated the terrain whether or
+    // not the cursor was anywhere near it.
+    const overCanvas = (e: PointerEvent) => {
+      const el = wrap.current
+      if (!el) return false
+      const r = el.getBoundingClientRect()
+      return e.clientX >= r.left && e.clientX <= r.right
+          && e.clientY >= r.top  && e.clientY <= r.bottom
+    }
 
     const down = (e: PointerEvent) => {
-      if (e.pointerType !== 'mouse' || e.button !== 0 || !inHero()) return
+      if (e.pointerType !== 'mouse' || e.button !== 0 || !overCanvas(e)) return
       const t = e.target as HTMLElement | null
       if (t?.closest('a, button, input, textarea, select, [role="button"]')) return
       input.current.dragging = true
@@ -370,7 +398,7 @@ export function TerrainCanvas() {
         }}
       >
         <Suspense fallback={null}>
-          <Terrain input={input} reduced={reduced} seg={seg} size={78} />
+          <Terrain input={input} host={wrap} reduced={reduced} seg={seg} size={78} />
         </Suspense>
       </Canvas>
     </div>
