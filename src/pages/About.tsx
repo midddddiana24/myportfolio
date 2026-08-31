@@ -21,7 +21,7 @@ export default function About() {
     <PageTransition className="pt-28">
 
       {/* Hero */}
-      <section className="rm-section" style={{ background:'#0a0a0a' }}>
+      <section className="rm-section" style={{ background:'var(--bg-base)' }}>
         <div className="rm-container">
           <div className="flex items-center gap-4 mb-16">
             <span className="eyebrow">/ About</span>
@@ -34,31 +34,31 @@ export default function About() {
               <div style={{ position:'relative', width:'100%', maxWidth:'400px' }}>
                 <div
                   className="portrait-frame img-mono"
-                  style={{ width:'100%', aspectRatio:'3/4', border:'1px solid #1f1f1f' }}
+                  style={{ width:'100%', aspectRatio:'3/4', border:'1px solid var(--border)' }}
                 >
                   <img src="/assets/img/portrait.jpg" alt="Roberto Mediana Jr." loading="lazy" decoding="async" />
                 </div>
                 {/* Corner accent */}
-                <div style={{ position:'absolute', bottom:'-1rem', right:'-1rem', width:'4rem', height:'4rem', border:'1px solid #ffffff', borderRadius:0 }} />
-                <div style={{ position:'absolute', bottom:'-0.5rem', right:'-0.5rem', width:'2rem', height:'2rem', background:'#ffffff', borderRadius:0 }} />
+                <div style={{ position:'absolute', bottom:'-1rem', right:'-1rem', width:'4rem', height:'4rem', border:'1px solid var(--accent)', borderRadius:0 }} />
+                <div style={{ position:'absolute', bottom:'-0.5rem', right:'-0.5rem', width:'2rem', height:'2rem', background:'var(--accent)', borderRadius:0 }} />
               </div>
             </ClipReveal>
 
             {/* Text */}
             <div>
               <TextReveal as="h1" trigger="load" splitBy="words" delay={0.1} duration={DUR_SLOW} stagger={0.06} skewY={3}
-                style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2rem,5vw,3.5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1.1, marginBottom:'1.5rem' }}>
+                style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(2rem,5vw,3.5rem)', letterSpacing:'-0.015em', color:'var(--text-1)', lineHeight:1.1, marginBottom:'1.5rem' }}>
                 Roberto Mediana Jr.
               </TextReveal>
 
               <ClipReveal direction="down">
-                <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#ffffff', marginBottom:'1.25rem' }}>
+                <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--accent)', marginBottom:'1.25rem' }}>
                   BSIT Student · Full-Stack Developer · Web Pentester
                 </p>
-                <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a', lineHeight:1.75, marginBottom:'1.25rem' }}>
+                <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'1rem', color:'var(--text-muted)', lineHeight:1.75, marginBottom:'1.25rem' }}>
                   I'm an IT student with a genuine interest in how software is built, structured, and maintained. I work across both frontend and backend — writing clean interfaces and reliable server-side logic.
                 </p>
-                <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a', lineHeight:1.75, marginBottom:'2rem' }}>
+                <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'1rem', color:'var(--text-muted)', lineHeight:1.75, marginBottom:'2rem' }}>
                   From capstone systems to web security exercises, I approach every project as an opportunity to build something useful and learn something new.
                 </p>
               </ClipReveal>
@@ -75,7 +75,7 @@ export default function About() {
       </section>
 
       {/* Education */}
-      <section className="rm-section" style={{ background:'#111111' }}>
+      <section className="rm-section" style={{ background:'var(--bg-surface)' }}>
         <div className="rm-container">
           <div className="flex items-center gap-4 mb-16">
             <span className="eyebrow">/ Education</span>
@@ -83,28 +83,28 @@ export default function About() {
           </div>
 
           <ClipReveal direction="down">
-            <div style={{ border:'1px solid #1f1f1f', padding:'2.5rem' }}>
+            <div style={{ border:'1px solid var(--border)', padding:'2.5rem' }}>
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#ffffff', marginBottom:'0.75rem' }}>
+                  <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--accent)', marginBottom:'0.75rem' }}>
                     2021 – 2027 (Expected)
                   </p>
-                  <h2 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(1.25rem,3vw,1.75rem)', letterSpacing:'-0.03em', color:'#f0f0f0', marginBottom:'0.5rem' }}>
+                  <h2 style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(1.25rem,3vw,1.75rem)', letterSpacing:'0em', color:'var(--text-1)', marginBottom:'0.5rem' }}>
                     Bachelor of Science in Information Technology
                   </h2>
-                  <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a' }}>
+                  <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'1rem', color:'var(--text-muted)' }}>
                     West Visayas State University – Janiuay Campus
                   </p>
                 </div>
-                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'0.375rem 0.75rem', border:'1px solid rgba(255,255,255,0.18)', color:'#ffffff', background:'rgba(255,255,255,0.04)', borderRadius:0 }}>
+                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'0.375rem 0.75rem', border:'1px solid rgba(var(--figure-rgb), 0.18)', color:'var(--accent)', background:'rgba(var(--figure-rgb), 0.04)', borderRadius:0 }}>
                   In Progress
                 </span>
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-0 mt-8 border-t" style={{ borderColor:'#1f1f1f' }}>
+              <div className="grid grid-cols-3 gap-0 mt-8 border-t" style={{ borderColor:'var(--border)' }}>
                 {[{target:4,suffix:'th',label:'Year'},{target:2027,suffix:'',label:'Graduation'},{target:20,suffix:'+',label:'Technologies'}].map(s => (
-                  <div key={s.label} className="border-r p-6 last:border-r-0" style={{ borderColor:'#1f1f1f' }}>
+                  <div key={s.label} className="border-r p-6 last:border-r-0" style={{ borderColor:'var(--border)' }}>
                     <StatCounter target={s.target} suffix={s.suffix} label={s.label} duration={1600} />
                   </div>
                 ))}
@@ -115,7 +115,7 @@ export default function About() {
       </section>
 
       {/* Journey timeline */}
-      <section className="rm-section" style={{ background:'#0a0a0a' }}>
+      <section className="rm-section" style={{ background:'var(--bg-base)' }}>
         <div className="rm-container">
           <div className="flex items-center gap-4 mb-16">
             <span className="eyebrow">/ Journey</span>
@@ -123,21 +123,21 @@ export default function About() {
           </div>
 
           <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.07}
-            style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2rem,5vw,3.5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1.1, marginBottom:'3.5rem' }}>
+            style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(2rem,5vw,3.5rem)', letterSpacing:'-0.015em', color:'var(--text-1)', lineHeight:1.1, marginBottom:'3.5rem' }}>
             Currently Building
           </TextReveal>
 
-          <div className="border-t" style={{ borderColor:'#1f1f1f' }}>
+          <div className="border-t" style={{ borderColor:'var(--border)' }}>
             {journey.map((item, i) => (
               <ClipReveal key={item.title} direction="right" delay={i * 0.08}>
-                <div style={{ padding:'2rem 0', borderBottom:'1px solid #1f1f1f', display:'grid', gridTemplateColumns:'10rem 1fr', gap:'2rem' }}>
-                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'#ffffff', paddingTop:'0.125rem' }}>
+                <div style={{ padding:'2rem 0', borderBottom:'1px solid var(--border)', display:'grid', gridTemplateColumns:'10rem 1fr', gap:'2rem' }}>
+                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'var(--accent)', paddingTop:'0.125rem' }}>
                     {item.period}
                   </span>
                   <div>
-                    <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1rem', letterSpacing:'-0.02em', color:'#f0f0f0', marginBottom:'0.25rem' }}>{item.title}</h3>
-                    <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'#5a5a5a', marginBottom:'0.625rem' }}>{item.org}</p>
-                    <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a', lineHeight:1.6 }}>{item.desc}</p>
+                    <h3 style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'1rem', letterSpacing:'0.02em', color:'var(--text-1)', marginBottom:'0.25rem' }}>{item.title}</h3>
+                    <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--text-muted)', marginBottom:'0.625rem' }}>{item.org}</p>
+                    <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'0.9375rem', color:'var(--text-muted)', lineHeight:1.6 }}>{item.desc}</p>
                   </div>
                 </div>
               </ClipReveal>
@@ -147,7 +147,7 @@ export default function About() {
       </section>
 
       {/* Certifications */}
-      <section className="rm-section" style={{ background:'#111111' }}>
+      <section className="rm-section" style={{ background:'var(--bg-surface)' }}>
         <div className="rm-container">
           <div className="flex items-center gap-4 mb-16">
             <span className="eyebrow">/ Certifications</span>
@@ -156,16 +156,16 @@ export default function About() {
 
           {!certifications[0]?.image ? (
             <ClipReveal direction="down">
-              <div style={{ border:'1px solid #1f1f1f', padding:'4rem', textAlign:'center' }}>
-                <Award size={28} style={{ color:'#2a2a2a', margin:'0 auto 1rem' }} />
-                <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, color:'#f0f0f0', marginBottom:'0.5rem' }}>Certificates Coming Soon</p>
-                <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'#2a2a2a' }}>
+              <div style={{ border:'1px solid var(--border)', padding:'4rem', textAlign:'center' }}>
+                <Award size={28} style={{ color:'var(--text-subtle)', margin:'0 auto 1rem' }} />
+                <p style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', letterSpacing:'0.02em', fontWeight:400, color:'var(--text-1)', marginBottom:'0.5rem' }}>Certificates Coming Soon</p>
+                <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'var(--text-subtle)' }}>
                   Add to src/data/certifications.ts · Place images in public/assets/certs/
                 </p>
               </div>
             </ClipReveal>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background:'#1f1f1f' }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background:'var(--chip)' }}>
               {certifications.map((cert) => (
                 <ClipReveal key={cert.id} direction="down">
                   <a
@@ -173,28 +173,28 @@ export default function About() {
                     href={cert.credentialUrl || undefined}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ display:'flex', flexDirection:'column', height:'100%', background:'#111111', textDecoration:'none' }}
+                    style={{ display:'flex', flexDirection:'column', height:'100%', background:'var(--bg-surface)', textDecoration:'none' }}
                   >
                     <div className="cert-thumb">
                       {cert.image
                         ? <img src={cert.image} alt={`${cert.title} certificate`} loading="lazy" />
-                        : <Award size={24} style={{ color:'#2a2a2a', position:'absolute', inset:0, margin:'auto' }} />}
+                        : <Award size={24} style={{ color:'var(--text-subtle)', position:'absolute', inset:0, margin:'auto' }} />}
                     </div>
 
                     <div style={{ padding:'1.5rem', display:'flex', flexDirection:'column', gap:'0.5rem', flex:1 }}>
                       {cert.category && (
-                        <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5rem', letterSpacing:'0.16em', textTransform:'uppercase', color:'#5a5a5a' }}>
+                        <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5rem', letterSpacing:'0.16em', textTransform:'uppercase', color:'var(--text-muted)' }}>
                           {cert.category}
                         </span>
                       )}
-                      <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'0.9375rem', lineHeight:1.25, letterSpacing:'-0.02em', color:'#f0f0f0' }}>
+                      <p style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'0.9375rem', lineHeight:1.25, letterSpacing:'0.02em', color:'var(--text-1)' }}>
                         {cert.title}
                       </p>
-                      <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'#5a5a5a', marginTop:'auto' }}>
+                      <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--text-muted)', marginTop:'auto' }}>
                         {cert.issuer}{cert.date && ` · ${cert.date}`}
                       </p>
                       {cert.credentialUrl && (
-                        <span style={{ display:'inline-flex', alignItems:'center', gap:'0.3rem', fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.08em', textTransform:'uppercase', color:'#ffffff' }}>
+                        <span style={{ display:'inline-flex', alignItems:'center', gap:'0.3rem', fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.08em', textTransform:'uppercase', color:'var(--accent)' }}>
                           View certificate <ExternalLink size={10} />
                         </span>
                       )}

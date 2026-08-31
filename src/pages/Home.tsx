@@ -26,15 +26,25 @@ const TerrainCanvas = lazy(() => import('@/components/3d/TerrainCanvas').then(m 
 const WireGlobe = lazy(() => import('@/components/3d/WireGlobe').then(m => ({ default: m.WireGlobe })))
 
 // ================================================================
-// Home v7 — rojvillacampa-exact design
-// Lime accent · Space Grotesk · DM Mono · No border-radius
+// Home v9 — Paper & Ink editorial
+// Ink on paper · Anton headings · DM Sans body · DM Mono labels
+// No border-radius. No chromatic accent anywhere on the site.
+//
+// GROUND RHYTHM, reading down the page:
+//   Hero      white panel   — the name
+//   About 01  paper         — hosts the wireframe terrain
+//   Work 02   INK BAND      — dark punctuation
+//   Skills 03 paper         — hosts the wireframe globe
+//   Contact 04 INK BAND     — dark punctuation, closes the page
+//
+// The two bands are Work and Contact specifically, and NOT the two
+// sections carrying the 3D scenes. The terrain and the globe were both
+// re-cut to draw ink hairlines on paper; standing either of them on a
+// black band would mean keeping two versions of each shader and asking
+// every scene to know which ground it is on. Punctuating with the two
+// flat sections instead costs nothing and still alternates.
 // ================================================================
 
-// ── HERO ──────────────────────────────────────────────────────────
-// Shared typography for the hero headline. Was copy-pasted three times,
-// once per line, which is how the three lines drifted apart — the last one
-// is #ffffff against #f0f0f0 for emphasis, but nothing made that legible as
-// intentional rather than a typo.
 const CV_URL = '/assets/resume-placeholder.pdf'
 
 /**
@@ -318,11 +328,11 @@ function Hero() {
 // ── ABOUT — 01 ────────────────────────────────────────────────────
 function AboutSection() {
   return (
-    <section className="rm-section relative overflow-hidden" style={{ background:'#0a0a0a' }}>
+    <section className="rm-section relative overflow-hidden" style={{ background:'var(--bg-base)' }}>
       {/* The wireframe terrain, moved down from the hero — the hero is the
           name now. This is the first dark section, so the ink bar closing the
-          hero hands straight into it, and the wrap's vignette fades to the
-          same #0a0a0a on all four edges so no seam is visible. Kept off the
+          first section below the hero, and the wrap's vignette fades to the
+          same var(--bg-base) on all four edges so no seam is visible. Kept off the
           Skills section deliberately: WireGlobe already lives there, and two
           WebGL contexts competing in one viewport is what task #13 fixed. */}
       <Suspense fallback={<div className="terrain-fallback" aria-hidden="true" />}>
@@ -346,7 +356,7 @@ function AboutSection() {
             <div className="section-watermark absolute -left-4 -top-8 select-none" aria-hidden="true">01</div>
             <div className="relative z-10">
               <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.06}
-                style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2rem,5vw,3.5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1.1 }}>
+                style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(2rem,5vw,3.5rem)', letterSpacing:'-0.015em', color:'var(--text-1)', lineHeight:1.1 }}>
                 Building the web, one pixel at a time.
               </TextReveal>
             </div>
@@ -355,12 +365,12 @@ function AboutSection() {
           {/* Right: bio + stats */}
           <div>
             <ClipReveal direction="down">
-              <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a', lineHeight:1.75, marginBottom:'1.25rem' }}>
+              <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'1rem', color:'var(--text-muted)', lineHeight:1.75, marginBottom:'1.25rem' }}>
                 I'm an IT student with a genuine passion for building software that solves real problems.
                 I work across the full stack — from clean, responsive UIs to reliable server-side logic
                 and database architecture.
               </p>
-              <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a', lineHeight:1.75, marginBottom:'2rem' }}>
+              <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'1rem', color:'var(--text-muted)', lineHeight:1.75, marginBottom:'2rem' }}>
                 Currently pursuing my BSIT at West Visayas State University – Janiuay Campus and actively
                 building my capstone system while exploring web security and AI integrations.
               </p>
@@ -368,13 +378,13 @@ function AboutSection() {
 
             {/* Stat counters */}
             <ClipReveal direction="down" delay={0.15}>
-              <div className="grid grid-cols-3 gap-0 border-t border-l" style={{ borderColor:'#1f1f1f' }}>
+              <div className="grid grid-cols-3 gap-0 border-t border-l" style={{ borderColor:'var(--border)' }}>
                 {[
                   { target:4, suffix:'th', label:'Year of Study' },
                   { target:20, suffix:'+', label:'Technologies' },
                   { target:3, suffix:'+', label:'Projects Built' },
                 ].map(s => (
-                  <div key={s.label} className="border-b border-r p-5" style={{ borderColor:'#1f1f1f' }}>
+                  <div key={s.label} className="border-b border-r p-5" style={{ borderColor:'var(--border)' }}>
                     <StatCounter target={s.target} suffix={s.suffix} label={s.label} duration={1800}
                       className={undefined} />
                   </div>
@@ -423,7 +433,7 @@ function WorkSection() {
   const featuredProj = projects.find(p => p.featured) ?? projects[0]
 
   return (
-    <section className="rm-section" style={{ background:'#111111' }}>
+    <section className="rm-section ink-band">
       <div className="rm-container">
         {/* Header */}
         <div className="flex items-center gap-4 mb-4">
@@ -434,7 +444,7 @@ function WorkSection() {
 
         <div className="flex items-end justify-between mb-14">
           <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.08}
-            style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2.5rem,6vw,5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1 }}>
+            style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(2.5rem,6vw,5rem)', letterSpacing:'-0.015em', color:'var(--text-1)', lineHeight:1 }}>
             Things I've built.
           </TextReveal>
           <MagneticButton strength={0.3} className="hidden sm:inline-flex">
@@ -457,19 +467,19 @@ function WorkSection() {
 
               <div className="relative z-10 p-8 flex flex-col justify-between" style={{ minHeight:'360px' }}>
                 <div className="flex items-start justify-between">
-                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#ffffff' }}>
+                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--accent)' }}>
                     Featured · Capstone
                   </span>
-                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'#5a5a5a' }}>
+                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'var(--text-muted)' }}>
                     {featuredProj.date}
                   </span>
                 </div>
 
                 <div>
-                  <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(1.5rem,4vw,2.5rem)', letterSpacing:'-0.03em', color:'#f0f0f0', marginBottom:'0.75rem' }}>
+                  <h3 style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(1.5rem,4vw,2.5rem)', letterSpacing:'-0.01em', color:'var(--text-1)', marginBottom:'0.75rem' }}>
                     {featuredProj.title}
                   </h3>
-                  <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a', maxWidth:'520px', lineHeight:1.6, marginBottom:'1.25rem' }}>
+                  <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'0.9375rem', color:'var(--text-muted)', maxWidth:'520px', lineHeight:1.6, marginBottom:'1.25rem' }}>
                     {featuredProj.shortDescription}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-5">
@@ -497,26 +507,26 @@ function WorkSection() {
         )}
 
         {/* Project list rows */}
-        <div ref={listRef} className="border-t mt-2" style={{ borderColor:'#1f1f1f' }}>
+        <div ref={listRef} className="border-t mt-2" style={{ borderColor:'var(--border)' }}>
           {projects.map((project, i) => (
             <div key={project.id} className="project-row" data-cursor="view">
               {/* Hover thumbnail */}
               {project.image && !project.image.includes('placeholder') && (
                 <div className="project-thumb" aria-hidden="true">
                   <SafeImage src={project.image} alt="" className="w-full h-full object-cover" />
-                  <div style={{ position:'absolute', inset:0, background:'rgba(10,10,10,0.6)' }} />
+                  <div style={{ position:'absolute', inset:0, background:'rgba(var(--ground-rgb), 0.6)' }} />
                 </div>
               )}
 
               <Link to={`/projects/${project.slug}`} className="relative z-10 flex items-center justify-between p-6 md:p-8 gap-4 group">
                 {/* Left: number + title */}
                 <div className="flex items-center gap-6 min-w-0">
-                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', color:'#2a2a2a', letterSpacing:'0.05em', flexShrink:0 }}>
+                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', color:'var(--text-subtle)', letterSpacing:'0.05em', flexShrink:0 }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div className="min-w-0">
-                    <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(1rem,2.5vw,1.375rem)', letterSpacing:'-0.02em', color:'#f0f0f0', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', transition:'color 0.2s' }}
-                      className="group-hover:text-[#ffffff]">
+                    <h3 style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(1rem,2.5vw,1.375rem)', letterSpacing:'0em', color:'var(--text-2)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', transition:'color 0.2s' }}
+                      className="group-hover:text-[var(--accent)]">
                       {project.title}
                     </h3>
                     <div className="flex flex-wrap gap-2 mt-1 hidden sm:flex">
@@ -527,21 +537,21 @@ function WorkSection() {
 
                 {/* Right: category + year + arrow */}
                 <div className="flex items-center gap-6 flex-shrink-0">
-                  <span className="hidden md:block" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a' }}>
+                  <span className="hidden md:block" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text-muted)' }}>
                     {catLabels[project.category]}
                   </span>
-                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', color:'#2a2a2a' }}>{project.date}</span>
-                  <ArrowUpRight size={16} style={{ color:'#2a2a2a', transition:'color 0.2s, transform 0.2s' }}
-                    className="group-hover:text-[#ffffff] group-hover:rotate-12" />
+                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', color:'var(--text-subtle)' }}>{project.date}</span>
+                  <ArrowUpRight size={16} style={{ color:'var(--text-subtle)', transition:'color 0.2s, transform 0.2s' }}
+                    className="group-hover:text-[var(--accent)] group-hover:rotate-12" />
                 </div>
               </Link>
             </div>
           ))}
 
           {/* Growing message */}
-          <div className="py-8 px-6 flex items-center gap-4" style={{ borderBottom:'1px solid #1f1f1f' }}>
-            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', color:'#2a2a2a' }}>—</span>
-            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'#2a2a2a' }}>
+          <div className="py-8 px-6 flex items-center gap-4" style={{ borderBottom:'1px solid var(--border)' }}>
+            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', color:'var(--text-subtle)' }}>—</span>
+            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--text-subtle)' }}>
               More projects in progress — portfolio growing continuously
             </span>
           </div>
@@ -560,35 +570,35 @@ const skillGroups = [
 ]
 
 const toolsGrid = [
-  { name:'React',      Icon:SiReact,      color:'#8a8a8a' },
-  { name:'Vue.js',     Icon:SiVuedotjs,   color:'#8a8a8a' },
-  { name:'Next.js',    Icon:SiNextdotjs,  color:'#f0f0f0' },
-  { name:'TypeScript', Icon:SiTypescript, color:'#8a8a8a' },
-  { name:'JavaScript', Icon:SiJavascript, color:'#8a8a8a' },
-  { name:'Tailwind',   Icon:SiTailwindcss,color:'#8a8a8a' },
-  { name:'HTML5',      Icon:SiHtml5,      color:'#8a8a8a' },
-  { name:'CSS',        Icon:SiCss,        color:'#8a8a8a' },
-  { name:'Node.js',    Icon:SiNodedotjs,  color:'#8a8a8a' },
-  { name:'Laravel',    Icon:SiLaravel,    color:'#8a8a8a' },
-  { name:'PHP',        Icon:SiPhp,        color:'#8a8a8a' },
-  { name:'Express',    Icon:SiExpress,    color:'#f0f0f0' },
-  { name:'MySQL',      Icon:SiMysql,      color:'#8a8a8a' },
-  { name:'MongoDB',    Icon:SiMongodb,    color:'#8a8a8a' },
-  { name:'PostgreSQL', Icon:SiPostgresql, color:'#8a8a8a' },
-  { name:'Supabase',   Icon:SiSupabase,   color:'#8a8a8a' },
-  { name:'Firebase',   Icon:SiFirebase,   color:'#8a8a8a' },
-  { name:'Git',        Icon:SiGit,        color:'#8a8a8a' },
-  { name:'Docker',     Icon:SiDocker,     color:'#8a8a8a' },
-  { name:'Kali Linux', Icon:SiLinux,      color:'#8a8a8a' },
-  { name:'Postman',    Icon:SiPostman,    color:'#8a8a8a' },
-  { name:'OpenAI',     Icon:Bot,          color:'#8a8a8a' },
-  { name:'AI/LLMs',   Icon:Brain,        color:'#ffffff' },
-  { name:'REST APIs',  Icon:Workflow,     color:'#ffffff' },
+  { name:'React',      Icon:SiReact,      color:'var(--text-2)' },
+  { name:'Vue.js',     Icon:SiVuedotjs,   color:'var(--text-2)' },
+  { name:'Next.js',    Icon:SiNextdotjs,  color:'var(--text-1)' },
+  { name:'TypeScript', Icon:SiTypescript, color:'var(--text-2)' },
+  { name:'JavaScript', Icon:SiJavascript, color:'var(--text-2)' },
+  { name:'Tailwind',   Icon:SiTailwindcss,color:'var(--text-2)' },
+  { name:'HTML5',      Icon:SiHtml5,      color:'var(--text-2)' },
+  { name:'CSS',        Icon:SiCss,        color:'var(--text-2)' },
+  { name:'Node.js',    Icon:SiNodedotjs,  color:'var(--text-2)' },
+  { name:'Laravel',    Icon:SiLaravel,    color:'var(--text-2)' },
+  { name:'PHP',        Icon:SiPhp,        color:'var(--text-2)' },
+  { name:'Express',    Icon:SiExpress,    color:'var(--text-1)' },
+  { name:'MySQL',      Icon:SiMysql,      color:'var(--text-2)' },
+  { name:'MongoDB',    Icon:SiMongodb,    color:'var(--text-2)' },
+  { name:'PostgreSQL', Icon:SiPostgresql, color:'var(--text-2)' },
+  { name:'Supabase',   Icon:SiSupabase,   color:'var(--text-2)' },
+  { name:'Firebase',   Icon:SiFirebase,   color:'var(--text-2)' },
+  { name:'Git',        Icon:SiGit,        color:'var(--text-2)' },
+  { name:'Docker',     Icon:SiDocker,     color:'var(--text-2)' },
+  { name:'Kali Linux', Icon:SiLinux,      color:'var(--text-2)' },
+  { name:'Postman',    Icon:SiPostman,    color:'var(--text-2)' },
+  { name:'OpenAI',     Icon:Bot,          color:'var(--text-2)' },
+  { name:'AI/LLMs',   Icon:Brain,        color:'var(--accent)' },
+  { name:'REST APIs',  Icon:Workflow,     color:'var(--accent)' },
 ]
 
 function SkillsSection() {
   return (
-    <section className="rm-section relative overflow-hidden" style={{ background:'#0a0a0a' }}>
+    <section className="rm-section relative overflow-hidden" style={{ background:'var(--bg-base)' }}>
       {/* Scroll-driven wireframe globe. See WireGlobe. */}
       <Suspense fallback={null}><WireGlobe /></Suspense>
 
@@ -600,23 +610,23 @@ function SkillsSection() {
         </div>
 
         <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.07}
-          style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2.5rem,6vw,5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1, marginBottom:'4rem' }}>
+          style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(2.5rem,6vw,5rem)', letterSpacing:'-0.015em', color:'var(--text-1)', lineHeight:1, marginBottom:'4rem' }}>
           Tools of the trade.
         </TextReveal>
 
         {/* Skill group list */}
-        <div className="border-t mb-20" style={{ borderColor:'#1f1f1f' }}>
+        <div className="border-t mb-20" style={{ borderColor:'var(--border)' }}>
           {skillGroups.map((group, i) => (
             <ClipReveal key={group.cat} direction="right" delay={i * 0.07}>
-              <div className="py-6 border-b grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-4 items-start" style={{ borderColor:'#1f1f1f' }}>
-                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a' }}>
+              <div className="py-6 border-b grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-4 items-start" style={{ borderColor:'var(--border)' }}>
+                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text-muted)' }}>
                   {group.cat}
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {group.items.map(item => (
-                    <span key={item} style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:500, fontSize:'0.9375rem', color:'#f0f0f0', letterSpacing:'-0.01em' }}>
+                    <span key={item} style={{ fontFamily:"'DM Sans', sans-serif", fontWeight:500, fontSize:'0.9375rem', color:'var(--text-1)', letterSpacing:'-0.01em' }}>
                       {item}
-                      <span style={{ color:'#2a2a2a', marginLeft:'0.5rem' }}>·</span>
+                      <span style={{ color:'var(--text-subtle)', marginLeft:'0.5rem' }}>·</span>
                     </span>
                   ))}
                 </div>
@@ -631,7 +641,7 @@ function SkillsSection() {
             {toolsGrid.slice(0, 12).map(({ name, Icon, color }) => (
               <div key={name} className="flex items-center gap-2.5 px-1 flex-shrink-0">
                 <Icon size={20} style={{ color, flexShrink:0 }} />
-                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.75rem', letterSpacing:'0.06em', color:'#2a2a2a', textTransform:'uppercase', whiteSpace:'nowrap' }}>
+                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.75rem', letterSpacing:'0.06em', color:'var(--text-subtle)', textTransform:'uppercase', whiteSpace:'nowrap' }}>
                   {name}
                 </span>
               </div>
@@ -641,7 +651,7 @@ function SkillsSection() {
             {toolsGrid.slice(12).map(({ name, Icon, color }) => (
               <div key={name} className="flex items-center gap-2.5 px-1 flex-shrink-0">
                 <Icon size={20} style={{ color, flexShrink:0 }} />
-                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.75rem', letterSpacing:'0.06em', color:'#2a2a2a', textTransform:'uppercase', whiteSpace:'nowrap' }}>
+                <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.75rem', letterSpacing:'0.06em', color:'var(--text-subtle)', textTransform:'uppercase', whiteSpace:'nowrap' }}>
                   {name}
                 </span>
               </div>
@@ -672,7 +682,7 @@ function ContactSection() {
   }, [])
 
   return (
-    <section className="rm-section" style={{ background:'#111111' }}>
+    <section className="rm-section ink-band">
       <div className="rm-container">
         <div className="flex items-center gap-4 mb-16">
           <span className="eyebrow">/ Get in touch</span>
@@ -683,12 +693,12 @@ function ContactSection() {
         {/* Center-aligned contact */}
         <div className="max-w-2xl">
           <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.08}
-            style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2.5rem,6vw,5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1, marginBottom:'2rem' }}>
+            style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(2.5rem,6vw,5rem)', letterSpacing:'-0.015em', color:'var(--text-1)', lineHeight:1, marginBottom:'2rem' }}>
             Let's work together.
           </TextReveal>
 
           <ClipReveal direction="down" delay={0.2}>
-            <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a', lineHeight:1.7, marginBottom:'3rem', maxWidth:'480px' }}>
+            <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'1rem', color:'var(--text-muted)', lineHeight:1.7, marginBottom:'3rem', maxWidth:'480px' }}>
               I'm open to collaborations, academic partnerships, and freelance projects.
               Whether you have a project in mind or just want to talk tech — reach out.
             </p>
@@ -700,11 +710,11 @@ function ContactSection() {
               <a ref={emailRef} href="mailto:your.email@example.com"
                 className="block relative mb-10 group"
                 style={{ width:'fit-content' }}>
-                <span style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(1.25rem,3vw,2rem)', letterSpacing:'-0.03em', color:'#f0f0f0', transition:'color 0.3s' }}
-                  className="group-hover:text-[#ffffff]">
+                <span style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(1.25rem,3vw,2rem)', letterSpacing:'-0.01em', color:'var(--text-2)', transition:'color 0.3s' }}
+                  className="group-hover:text-[var(--accent)]">
                   your.email@example.com
                 </span>
-                <div className="email-line" style={{ position:'absolute', bottom:'-4px', left:0, right:0, height:'1px', background:'#ffffff', transform:'scaleX(0)' }} />
+                <div className="email-line" style={{ position:'absolute', bottom:'-4px', left:0, right:0, height:'1px', background:'var(--accent)', transform:'scaleX(0)' }} />
               </a>
             </MagneticButton>
           </ClipReveal>

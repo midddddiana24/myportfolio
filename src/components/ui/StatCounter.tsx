@@ -35,10 +35,10 @@ export function StatCounter({ target, suffix='', prefix='', duration=1800, label
 
   return (
     <div ref={ref} className={className}>
-      <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:800, fontSize:'2rem', lineHeight:1, letterSpacing:'-0.05em', color:'#f0f0f0' }}>
+      <p style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'2rem', lineHeight:1, letterSpacing:'-0.01em', color:'var(--text-1)' }}>
         {prefix}{count}{suffix}
       </p>
-      <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a', marginTop:'0.375rem' }}>
+      <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text-muted)', marginTop:'0.375rem' }}>
         {label}
       </p>
     </div>

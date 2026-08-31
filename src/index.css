@@ -1,7 +1,9 @@
 /* ================================================================
-   RM Portfolio v8 — Monochrome Editorial Design System
-   Color: Near-black + Pure White. NO chromatic accent.
-   Font: Space Grotesk (body) + DM Mono (labels/eyebrows)
+   RM Portfolio v9 — Paper & Ink Editorial Design System
+   Color: Paper #f8f8f8 + Ink #0a0a0a. NO chromatic accent.
+   Ground: LIGHT by default. `.ink-band` inverts a section back to
+           near-black by re-declaring the tokens, not by hardcoding.
+   Font: Anton (all headings) + DM Sans (body) + DM Mono (labels)
    Rule: NO border-radius on cards. Brutalist editorial.
    Images: grayscale by default, full colour on hover.
    ================================================================ */
@@ -10,8 +12,134 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── CSS Custom Properties ──────────────────────────────────────── */
+/* ── CSS Custom Properties ──────────────────────────────────────────
+   THE GROUND IS PAPER. Every name below kept its meaning and changed
+   its value: --bg is still "the page", --text-1 is still "the loudest
+   text", --accent is still "maximum emphasis". Because the whole
+   stylesheet and every inline style now read through these names,
+   inverting the site is this block plus .ink-band — not a sweep
+   through seventeen files. Anything that hardcodes a hex opts itself
+   out of both, which is why almost nothing does any more.
+
+   The values are the old dark ramp reflected, with the bottom of the
+   text scale corrected. Straight reflection would have carried two
+   failing pairs onto paper: #8a8a8a (secondary) reflects to about
+   #757575 — 4.3:1, just under AA — and #2a2a2a reflects to #e4e4e4 at
+   1.16:1, which would have made 27 micro-labels invisible. Paper has
+   less usable range below its ground than ink has above it, so the
+   quiet end is compressed to keep every tier that carries words at or
+   above 4.5:1. Hierarchy down there comes from size and tracking,
+   which those labels already have. */
 :root {
+  --bg-base:      #f8f8f8;   /* paper — was the hero's alone, now the site's */
+  --bg-surface:   #ffffff;   /* raised, i.e. brighter than the ground, exactly
+                                as #111111 was brighter than #0a0a0a */
+  --border:       #c8c8c8;
+  --accent:       #0a0a0a;   /* maximum emphasis is ink now, not white */
+  --accent-dim:   rgba(10, 10, 10, 0.05);
+  --accent-glow:  rgba(10, 10, 10, 0.13);
+  --text-primary: #0a0a0a;   /* 18.08:1 */
+  --text-muted:   #5a5a5a;   /* 6.50:1 — the one hex both ramps share, and
+                                the value the hero already called --ink-soft */
+  --text-subtle:  #6f6f6f;   /* 4.73:1. Was #2a2a2a, a 1.38:1 whisper that
+                                only worked because nothing had to be read
+                                in it. On paper it carries small labels. */
+
+  /* Keep Geist variables as aliases for components that use them */
+  --bg:           var(--bg-base);
+  --surface:      var(--bg-surface);
+  --card:         var(--bg-surface);
+  --card-hover:   #f1f1f1;   /* hover *darkens* on paper; #161616 lightened */
+  --border-dim:   #e4e4e4;
+  --border-strong: #9a9a9a;  /* not var(--text-subtle): #6f6f6f is a heavy
+                                rule on paper, and this is only ever the
+                                one-step-firmer border on card hover */
+  --chip:         #ededed;   /* a filled pill/badge ground. #1f1f1f did this on
+                                ink — one step up from the surface — and the
+                                border token is far too strong for it here:
+                                #c8c8c8 behind a label reads as a button. */
+  --accent-h:     #2a2a2a;   /* accent hover lifts off pure ink, as it used
+                                to settle off pure white */
+  --text-1:       var(--text-primary);
+  --text-2:       #4a4a4a;   /* 8.34:1 — the tier between primary and muted */
+  --text-3:       var(--text-muted);
+  --section-bg-alt: var(--bg-surface);
+  /* Black at half alpha is a bruise on white. These are the same shapes at
+     the alphas the hero's own card shadows proved out. */
+  --shadow-sm:    0 1px 3px rgba(10,10,10,0.06);
+  --shadow-md:    0 4px 18px rgba(10,10,10,0.08);
+  --shadow-lg:    0 10px 36px rgba(10,10,10,0.10);
+  --shadow-elevated: 0 16px 48px -12px rgba(10,10,10,0.16);
+
+  /* These four were referenced by components but never defined, so the
+     declarations using them were invalid and silently dropped — the hero
+     lede fell back to inheriting --text-primary, flattening the ramp.
+     Values reuse existing steps rather than inventing new greys. */
+  --text-secondary: var(--text-2);
+  --accent-light:   var(--text-2);      /* softened accent, won't fight ink */
+  --gradient-hero:  radial-gradient(ellipse 80% 55% at 50% 0%, rgba(10,10,10,0.05) 0%, transparent 72%);
+
+  /* ── Paper/ink aliases ────────────────────────────────────────────
+     These five were the light hero's private palette while the rest of
+     the site was dark. Now that paper is the ground they are literally
+     the same values as the tokens above, so they are aliases rather
+     than a second set — one ramp, two vocabularies, and the hero's
+     stylesheet keeps working untouched.
+
+     --hairline is still for RULES AND BORDERS ONLY: 1.58:1 against
+     --paper, so text set in it fails WCAG AA badly. The reference site
+     sets its inactive nav labels in a light grey like this; that part
+     is still not copied. --ink-soft remains the lightest value allowed
+     to carry words on paper, at 6.50:1. */
+  --paper:     var(--bg-base);
+  --paper-hi:  var(--bg-surface);
+  --ink:       var(--accent);
+  --ink-soft:  var(--text-muted);
+  --hairline:  var(--border);
+
+  /* Bare channel triplets, for the handful of places that need the ground
+     or the figure colour *inside* an rgba() — vignettes, washes, the
+     frosted navbar, the WebGL fallback grid. var() substitutes before the
+     function is parsed, so `rgba(var(--ground-rgb), 0.4)` is legal, and it
+     means those gradients invert with everything else instead of being the
+     one set of hardcoded #0a0a0a left behind. */
+  --ground-rgb: 248, 248, 248;
+  --figure-rgb: 10, 10, 10;
+}
+
+/* ── Ink band ───────────────────────────────────────────────────────
+   The dark punctuation. rober asked for a mostly-white site "with dark
+   punctuation", and this is the whole mechanism: re-declare the same
+   token names with the old dark values, and every descendant — cards,
+   rules, tags, buttons, body copy, the inline styles in the pages —
+   inverts by inheritance. No component needs to know which ground it
+   is standing on.
+
+   The greys here are the original dark ramp, unchanged, because it was
+   already checked against #0a0a0a: #8a8a8a is 5.74:1 and #f0f0f0 is
+   16.1:1. The two that were never readable on black (#5a5a5a at 2.87:1,
+   #2a2a2a at 1.38:1) are deliberately NOT restored — they are raised to
+   #8a8a8a so a band can't reintroduce the contrast failures that the
+   light ramp just fixed. That is the one place this is not a faithful
+   round-trip, and it is on purpose. */
+/* Three selectors, one token set — and the reason there are three is worth
+   stating, because the difference between them is *painting*, not colour.
+
+   `.ink-band` is a section that paints itself dark. `.ink-scope` only borrows
+   the tokens without painting anything, which is what the fixed header needs
+   when it happens to be floating over a band. Splitting those two is what lets
+   the navbar adapt without a second palette: .navbar-blur's wash is
+   rgba(var(--ground-rgb), 0.85), so inside a scope it becomes a dark wash by
+   itself, and every nav link reading var(--text-*) flips with it.
+
+   `.hero-rule` is the hero's closing bar. It was already a dark strip drawn by
+   hand with literal hexes; listing it here is what let those literals go. It
+   paints its own background rather than joining .ink-band because the bar also
+   owns a matching border-top, and a shared painting rule would have had to
+   special-case that anyway. */
+.ink-band,
+.ink-scope,
+.hero-rule {
   --bg-base:      #0a0a0a;
   --bg-surface:   #111111;
   --border:       #1f1f1f;
@@ -19,54 +147,43 @@
   --accent-dim:   rgba(255, 255, 255, 0.06);
   --accent-glow:  rgba(255, 255, 255, 0.16);
   --text-primary: #f0f0f0;
-  --text-muted:   #5a5a5a;
-  --text-subtle:  #2a2a2a;
-
-  /* Keep Geist variables as aliases for components that use them */
-  --bg:           var(--bg-base);
-  --surface:      var(--bg-surface);
-  --card:         var(--bg-surface);
+  --text-muted:   #8a8a8a;   /* not #5a5a5a: 2.87:1 on ink fails AA */
+  --text-subtle:  #8a8a8a;   /* not #2a2a2a: 1.38:1 is not text */
   --card-hover:   #161616;
   --border-dim:   #161616;
   --border-strong: #2a2a2a;
+  --chip:         #1f1f1f;
   --accent-h:     #e4e4e4;
-  --text-1:       var(--text-primary);
-  --text-2:       #8a8a8a;
-  --text-3:       var(--text-muted);
-  --section-bg-alt: var(--bg-surface);
+  --text-2:       #c8c8c8;
   --shadow-sm:    0 1px 4px rgba(0,0,0,0.5);
   --shadow-md:    0 4px 20px rgba(0,0,0,0.6);
   --shadow-lg:    0 8px 40px rgba(0,0,0,0.7);
   --shadow-elevated: 0 12px 44px rgba(0,0,0,0.78);
-
-  /* These four were referenced by components but never defined, so the
-     declarations using them were invalid and silently dropped — the hero
-     lede fell back to inheriting --text-primary, flattening the ramp.
-     Values reuse existing steps rather than inventing new greys. */
-  --text-secondary: var(--text-2);      /* #8a8a8a — body tier below primary */
-  --accent-light:   #c8c8c8;            /* softened accent, won't fight pure white */
-  --gradient-hero:  radial-gradient(ellipse 80% 55% at 50% 0%, rgba(255,255,255,0.055) 0%, transparent 72%);
-
-  /* ── Light hero ───────────────────────────────────────────────────
-     The hero is this palette turned inside out, not a second palette:
-     --ink is literally --bg-base, and --ink-soft is --text-muted. The
-     one genuinely new value is --paper, because the ramp had no step
-     between #ffffff and #f0f0f0 and the hero needs both — a near-white
-     ground AND a pure-white nav pill that still reads as raised
-     against it. #f0f0f0 as the ground would have made the pill
-     disappear.
-
-     --hairline is for RULES AND BORDERS ONLY. It is 1.58:1 against
-     --paper, so any text set in it is unreadable and fails WCAG AA.
-     The reference sets its inactive nav labels in a light grey like
-     this; that part is not copied. --ink-soft is the lightest value
-     allowed to carry words on --paper, at 6.5:1. */
-  --paper:     #f8f8f8;
-  --paper-hi:  #ffffff;
-  --ink:       #0a0a0a;
-  --ink-soft:  #5a5a5a;
-  --hairline:  #c8c8c8;
+  --gradient-hero: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(255,255,255,0.055) 0%, transparent 72%);
+  --ground-rgb: 10, 10, 10;
+  --figure-rgb: 255, 255, 255;
 }
+
+/* Only the band paints. A scope that painted its own background would fill
+   the header with a black slab even before the blur kicks in. */
+.ink-band {
+  background: var(--bg-base);
+  color: var(--text-primary);
+}
+
+/* The global focus ring is var(--accent) — ink, invisible on a band.
+   Same trap the skip link and the light hero both hit.
+
+   .hero-rule is absent from the focus rule on purpose: the bar holds a status
+   dot, two labels and a decorative arrow, and not one focusable node, so a
+   ring there would be a selector that can never match. It IS in ::selection,
+   because both of those labels are selectable text and ink-on-ink selection
+   would blank them out. */
+.ink-band :focus-visible,
+.ink-scope :focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+.ink-band ::selection,
+.ink-scope ::selection,
+.hero-rule ::selection    { background: rgba(255, 255, 255, 0.22); color: #ffffff; }
 
 /* ── Noise Grain Overlay ────────────────────────────────────────── */
 body::before {
@@ -95,26 +212,46 @@ body {
   overflow-x: clip;
   background: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 1rem;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Headings ────────────────────────────────────────────────────
+   Anton everywhere, at every size — rober's call. Two things that
+   follow from it and are not optional:
+
+   Anton ships ONE weight. `font-weight: 700` makes the browser
+   synthesise a heavier face by smearing glyphs sideways; at 12rem
+   that is plainly mush, so 400 is declared here for all six levels
+   rather than only on .hero-name.
+
+   And tracking has to change with size. A single `-0.03em` closes up
+   an already-condensed face until the counters touch — fine at 12rem where the letters are enormous,
+   unreadable at 1rem. So it runs from negative at display sizes to
+   positive at label sizes. Uppercase throughout, because Anton is
+   drawn for it and because every label on this site is already
+   uppercase; mixed case here would read as an oversight. */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+  font-family: 'Anton', 'DM Sans', system-ui, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
   color: var(--text-primary);
 }
+h1 { line-height: 1.02; letter-spacing: -0.015em; }
+h2 { line-height: 1.05; letter-spacing: -0.005em; }
+h3 { line-height: 1.12; letter-spacing:  0.005em; }
+h4 { line-height: 1.18; letter-spacing:  0.015em; }
+h5 { line-height: 1.24; letter-spacing:  0.025em; }
+h6 { line-height: 1.30; letter-spacing:  0.035em; }
 
 code, pre, kbd, .font-mono {
   font-family: 'DM Mono', ui-monospace, monospace;
 }
 
-::selection { background: rgba(255,255,255,0.22); color: #ffffff; }
+::selection { background: rgba(var(--figure-rgb), 0.16); color: var(--accent); }
 :focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 
 /* ── Skip link (WCAG 2.4.1 Bypass Blocks) ────────────────────────
@@ -122,8 +259,9 @@ code, pre, kbd, .font-mono {
    those remove the element from the tab order, so the one control
    that exists purely for keyboard users would be unreachable by
    keyboard. It sits above the navbar's z-50 so it can't appear
-   behind it, and inverts to white-on-black because every focus ring
-   on this site is white and would vanish against the page. */
+   behind it, and inverts against whatever the page ground is: it was
+   white-on-black when the site was dark and is ink-on-paper now, via
+   the tokens, so it cannot end up invisible-on-its-own-colour again. */
 .skip-link {
   position: fixed;
   top: 0;
@@ -135,8 +273,8 @@ code, pre, kbd, .font-mono {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-  background: #ffffff;
-  color: #0a0a0a;
+  background: var(--accent);
+  color: var(--bg-base);
   font-family: 'DM Mono', ui-monospace, monospace;
   font-size: 0.6875rem;
   letter-spacing: 0.12em;
@@ -149,9 +287,9 @@ code, pre, kbd, .font-mono {
   padding: 0.75rem 1.25rem;
   overflow: visible;
   clip-path: none;
-  /* Dark ring: the global white :focus-visible outline is invisible
-     against this link's own white background. */
-  outline: 1px solid #0a0a0a;
+  /* Inverted ring: the global var(--accent) outline is the same colour as
+     this link's own background, so it would vanish. */
+  outline: 1px solid var(--bg-base);
   outline-offset: -5px;
 }
 
@@ -165,7 +303,7 @@ code, pre, kbd, .font-mono {
 
 ::-webkit-scrollbar       { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 @media (prefers-reduced-motion: reduce) {
@@ -239,8 +377,8 @@ html.lenis, html.lenis body { height: auto; }
   display: inline-flex; align-items: center; gap: 0.5rem;
   padding: 0.875rem 1.75rem;
   background: var(--accent);
-  color: #0a0a0a;
-  font-family: 'Space Grotesk', sans-serif;
+  color: var(--bg-base);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.875rem; font-weight: 600; letter-spacing: -0.01em;
   transition: all 0.2s;
   border: 1px solid var(--accent);
@@ -253,8 +391,8 @@ html.lenis, html.lenis body { height: auto; }
   padding: 0.875rem 1.75rem;
   background: transparent;
   color: var(--text-primary);
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.875rem; font-weight: 600; letter-spacing: -0.01em;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6875rem; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase;
   transition: all 0.2s;
   border: 1px solid var(--border);
   border-radius: 0;
@@ -275,9 +413,9 @@ html.lenis, html.lenis body { height: auto; }
   white-space: nowrap;
 }
 .rm-tag-accent {
-  border-color: rgba(255,255,255,0.32);
+  border-color: var(--accent);
   color: var(--accent);
-  background: rgba(255,255,255,0.06);
+  background: var(--accent-dim);
 }
 
 /* ── Nav link ───────────────────────────────────────────────────── */
@@ -302,7 +440,7 @@ html.lenis, html.lenis body { height: auto; }
 
 /* ── Glass navbar ───────────────────────────────────────────────── */
 .navbar-blur {
-  background: rgba(10,10,10,0.85);
+  background: rgba(var(--ground-rgb), 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
@@ -316,7 +454,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 .project-row::after {
   content: ''; position: absolute; inset: 0;
-  background: rgba(255,255,255,0.035);
+  background: rgba(var(--figure-rgb), 0.035);
   opacity: 0; transition: opacity 0.3s;
   pointer-events: none;
 }
@@ -391,15 +529,19 @@ html.lenis, html.lenis body { height: auto; }
   white-space: nowrap;
 }
 
-/* Huge watermark number */
+/* Huge watermark number. Anton like every other display element — and
+   font-weight 400 for the reason given above the h1..h6 block: at 18rem a
+   synthesised bold is not subtle. text-transform is pointless on digits but
+   costs nothing and keeps the rule honest if the content ever changes. */
 .section-watermark {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
+  font-family: 'Anton', 'DM Sans', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
   font-size: clamp(8rem, 20vw, 18rem);
   line-height: 1;
   letter-spacing: -0.05em;
-  color: var(--text-subtle);
-  opacity: 0.06;
+  color: var(--accent);
+  opacity: 0.05;
   user-select: none;
   pointer-events: none;
 }
@@ -502,7 +644,7 @@ html.lenis, html.lenis body { height: auto; }
 .scroll-line-anim { animation: scrollDrop 1.8s ease-in-out infinite; }
 
 /* ── Availability dot pulse ─────────────────────────────────────── */
-.avail-dot { width: 6px; height: 6px; border-radius: 50%; background: #ffffff; animation: pulse 2s ease-in-out infinite; }
+.avail-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease-in-out infinite; }
 @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.85); } }
 
 /* ── Horizontal scroll ──────────────────────────────────────────── */
@@ -511,12 +653,12 @@ html.lenis, html.lenis body { height: auto; }
 
 /* ── t-eyebrow alias ────────────────────────────────────────────── */
 .t-eyebrow { font-family: 'DM Mono', monospace; font-size: 0.6875rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
-.t-display { font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
-.t-body    { font-family: 'Space Grotesk', sans-serif; font-weight: 400; line-height: 1.65; color: var(--text-muted); }
+.t-display { font-family: 'Anton', 'DM Sans', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1.05; }
+.t-body    { font-family: 'DM Sans', sans-serif; font-weight: 400; line-height: 1.65; color: var(--text-muted); }
 
 /* ── Glow on accent element ─────────────────────────────────────── */
 .accent-glow {
-  box-shadow: 0 0 60px rgba(255,255,255,0.10), 0 0 120px rgba(255,255,255,0.05);
+  box-shadow: 0 0 60px rgba(10,10,10,0.09), 0 0 120px rgba(10,10,10,0.05);
 }
 
 /* ── rm-divider ─────────────────────────────────────────────────── */
@@ -543,7 +685,7 @@ html.lenis, html.lenis body { height: auto; }
 /* Brand colour is deliberately ignored: in a monochrome system the
    icon silhouette does the identifying, so all logos sit at one
    neutral and only the hovered one resolves to white. */
-.tech-icon { color: #8a8a8a; transition: color 0.2s ease; flex-shrink: 0; }
+.tech-icon { color: var(--text-2); transition: color 0.2s ease; flex-shrink: 0; }
 .tech-card:hover .tech-icon,
 .tool-card:hover .tech-icon { color: var(--accent); }
 
@@ -551,7 +693,7 @@ html.lenis, html.lenis body { height: auto; }
 /* Photographic/illustrated art is desaturated to sit inside the
    palette; the colour reveal on hover is the one place hue is allowed. */
 .img-mono {
-  filter: grayscale(1) contrast(1.08) brightness(0.95);
+  filter: grayscale(1) contrast(0.96) brightness(1.06);
   transition: filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .img-mono:hover { filter: grayscale(0) contrast(1) brightness(1); }
@@ -570,8 +712,8 @@ html.lenis, html.lenis body { height: auto; }
   position: absolute; inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 78% 62% at 44% 48%, transparent 0%, rgba(10,10,10,0.40) 62%, rgba(10,10,10,0.85) 100%),
-    linear-gradient(to bottom, #0a0a0a 0%, transparent 20%, transparent 74%, #0a0a0a 100%);
+    radial-gradient(ellipse 78% 62% at 44% 48%, transparent 0%, rgba(var(--ground-rgb), 0.40) 62%, rgba(var(--ground-rgb), 0.88) 100%),
+    linear-gradient(to bottom, rgb(var(--ground-rgb)) 0%, transparent 20%, transparent 74%, rgb(var(--ground-rgb)) 100%);
 }
 
 /* ── Expertise globe ────────────────────────────────────────────── */
@@ -599,8 +741,8 @@ html.lenis, html.lenis body { height: auto; }
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   overflow: hidden;
   background-image:
-    linear-gradient(to right,  rgba(255,255,255,0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
+    linear-gradient(to right,  rgba(var(--figure-rgb), 0.10) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(var(--figure-rgb), 0.10) 1px, transparent 1px);
   background-size: 46px 46px;
   transform: perspective(340px) rotateX(57deg) scale(1.8);
   transform-origin: 50% 100%;
@@ -623,11 +765,11 @@ html.lenis, html.lenis body { height: auto; }
 .cert-thumb img {
   width: 100%; height: 100%;
   object-fit: cover; object-position: top center;
-  filter: grayscale(1) contrast(1.1) brightness(0.88);
+  filter: grayscale(1) contrast(1.02) brightness(1);
   transition: filter 0.45s ease, transform 0.65s cubic-bezier(0.22,1,0.36,1);
 }
 .cert-card:hover .cert-thumb img {
-  filter: grayscale(1) contrast(1.15) brightness(1.05);
+  filter: grayscale(1) contrast(1.12) brightness(0.98);
   transform: scale(1.03);
 }
 
@@ -638,7 +780,7 @@ html.lenis, html.lenis body { height: auto; }
    decides, rather than reaching for !important. */
 input::placeholder,
 textarea::placeholder,
-select::placeholder { color: #5a5a5a; opacity: 1; }
+select::placeholder { color: var(--text-muted); opacity: 1; }
 
 /* ================================================================
    LIGHT HERO
@@ -676,7 +818,7 @@ select::placeholder { color: #5a5a5a; opacity: 1; }
    glyphs sideways, which at 12rem is plainly visible as mush — so 400
    is declared, not inherited. */
 .hero-name {
-  font-family: 'Anton', 'Space Grotesk', sans-serif;
+  font-family: 'Anton', 'DM Sans', sans-serif;
   font-weight: 400;
   font-size: clamp(3.25rem, 13.5vw, 12rem);
   line-height: 0.82;
@@ -843,40 +985,49 @@ select::placeholder { color: #5a5a5a; opacity: 1; }
    black would read as a gradient nobody chose; instead the ink arrives
    early as a deliberate full-bleed bar that the next section simply
    continues, so the seam is a device rather than a collision. */
+/* This bar is a dark band that predates the .ink-band abstraction, so it is
+   now declared as one — see the shared token block up top, which .hero-rule
+   joined. Everything below is token-only as a result.
+
+   It used to say `background: var(--ink)` with `color: #8a8a8a`, and a second
+   rule re-stating that same literal for .hero-label. That mixture is the one
+   genuinely fragile shape in the stylesheet: a background that inverts with
+   the ground under a foreground that cannot. It measured 5.74:1 where it
+   stands and 3.45:1 if the same markup were ever nested in a band — a latent
+   AA failure with nothing to catch it. Reading the ink tokens instead pins
+   both ends to the same ground and produces identical pixels: --bg-base is
+   #0a0a0a here, --text-muted is #8a8a8a, and .hero-label's own
+   `color: var(--ink-soft)` now resolves to #8a8a8a on its own, which is why
+   the override for it is gone rather than replaced. */
 .hero-rule {
   position: relative;
   z-index: 3;
-  background: var(--ink);
-  /* #8a8a8a on #0a0a0a is 5.74:1 — passes AA for the 10px labels in here.
-     --ink-soft (#5a5a5a) is the right grey on paper and only 2.2:1 on ink,
-     so .hero-label has to be lifted rather than inherited. The scroll arrow
-     is lucide's currentColor default, so it follows this without a prop. */
-  color: #8a8a8a;
-  border-top: 1px solid var(--ink);
-}
-.hero-rule .hero-label { color: #8a8a8a; }
-
-/* ── Navbar over the light hero ──────────────────────────────────
-   Every colour in the header is set for a dark ground: white logo, white
-   active link, #f0f0f0 on a #1f1f1f border. Over the white hero all of it
-   disappears. This inverts just the colours and leaves the drawer, the
-   focus trap and the aria wiring untouched. */
-.navbar-light .nav-link          { color: var(--ink-soft); }
-.navbar-light .nav-link:hover    { color: var(--ink); }
-.navbar-light .nav-link.active   { color: var(--ink); }
-.navbar-light .nav-link::after   { background: var(--ink); }
-.navbar-light .btn-ghost         { border-color: var(--hairline); color: var(--ink); }
-.navbar-light .btn-ghost:hover   { border-color: var(--ink); background: var(--ink); color: var(--paper); }
-
-/* Past 80px both classes are on the header at once — the hero is a whole
-   viewport tall, so the blur engages long before the panel has scrolled away.
-   Without this the frosted bar would arrive as near-black behind ink text. */
-.navbar-light.navbar-blur {
-  background: rgba(248,248,248,0.85);
-  border-bottom-color: var(--hairline);
+  background: var(--bg-base);
+  color: var(--text-muted);
+  border-top: 1px solid var(--bg-base);
 }
 
-/* Mobile trigger. These were inline styles on the button, where .navbar-light
+/* ── Navbar ──────────────────────────────────────────────────────
+   `.navbar-light` used to live here: eight rules re-stating every header
+   colour in --ink/--paper terms so the fixed bar stayed legible over the
+   white hero panel. All eight are gone, and none of them was replaced.
+   Paper is the default ground now, so the base rules already resolve to
+   ink on light and the overrides said exactly what they were overriding.
+
+   What did NOT go away is the problem underneath them, only inverted: the
+   header is fixed, and it now floats over two .ink-band sections on Home.
+   Ink nav links on a black band are the same invisibility, so Navbar
+   toggles `.ink-scope` on the header by measuring which section is beneath
+   it. That is one class doing what eight rules did, and it covers any band
+   added later without touching this file — which the hero-specific version
+   could never have done.
+
+   The `.logo-invert { filter: invert(1) }` hack went with them. RMLogo
+   paints with currentColor now, so hue-flipping a white mark back to black
+   is not just unnecessary, it would invert an already-correct ink mark
+   into a white one and erase it. */
+
+/* Mobile trigger. These were inline styles on the button, where a class
    could not reach them. */
 .nav-burger {
   width: 2.25rem; height: 2.25rem;
@@ -886,9 +1037,7 @@ select::placeholder { color: #5a5a5a; opacity: 1; }
   color: var(--text-primary);
   transition: border-color 0.2s, color 0.2s;
 }
-.navbar-light .nav-burger { border-color: var(--hairline); color: var(--ink); }
 
 /* The mark is drawn in hardcoded #ffffff. It is entirely monochrome, so
    inverting the rendered pixels is exact — and it keeps RMLogo's API
    alone, which the drawer also uses on its dark panel. */
-.navbar-light .logo-invert       { filter: invert(1); }

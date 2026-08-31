@@ -24,7 +24,7 @@ const NotFound      = lazy(() => import('@/pages/NotFound'))
 function PageLoader() {
   return (
     <div className="min-h-screen flex items-center justify-center" role="status">
-      <div style={{ width:24, height:24, border:'1px solid #1f1f1f', borderTopColor:'#ffffff', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
+      <div style={{ width:24, height:24, border:'1px solid var(--border)', borderTopColor:'var(--accent)', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
     </div>
   )
 }
@@ -98,7 +98,7 @@ export default function App() {
 
         <SmoothScroll>
           <div className="min-h-screen flex flex-col relative z-[1]"
-            style={{ background:'transparent', color:'#f0f0f0' }}>
+            style={{ background:'transparent', color:'var(--text-1)' }}>
             <ScrollProgress />
             <PageCurtain />
             <Navbar />

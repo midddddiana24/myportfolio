@@ -3,8 +3,12 @@ import { useLocation }       from 'react-router-dom'
 import { gsap, EASE_POWER4, DUR_NORMAL, DUR_FAST } from '@/lib/gsap'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
-// Full-bleed white curtain wipe on route change. (Was lime; the panel is
-// #ffffff since the monochrome pass — the old comment said otherwise.)
+// Full-bleed INK curtain wipe on route change, with the route name reversed
+// out of it in paper. Both colours come from tokens (--accent / --bg-base), so
+// this flipped from a white panel to a black one with the ground and needs no
+// per-page handling. Which is the right way round: on a paper site the wipe
+// reads as a page being turned rather than as a flashbang, and a white curtain
+// over white pages would have been an invisible transition with floating text.
 export function PageCurtain() {
   const panelRef = useRef<HTMLDivElement>(null)
   const labelRef = useRef<HTMLDivElement>(null)
@@ -12,7 +16,7 @@ export function PageCurtain() {
   const reduced  = useReducedMotion()
 
   useEffect(() => {
-    // Nothing subtle to scale back here: this sweeps an opaque white panel
+    // Nothing subtle to scale back here: this sweeps an opaque panel
     // across the entire viewport and back, twice the size of any other
     // animation on the site. Under reduced motion the panel simply never
     // shows — it starts display:none and stays there, so navigation is
@@ -50,13 +54,13 @@ export function PageCurtain() {
 
   return (
     <div ref={panelRef} style={{
-      position:'fixed', inset:0, zIndex:9997, background:'#ffffff',
+      position:'fixed', inset:0, zIndex:9997, background:'var(--accent)',
       display:'none', alignItems:'center', justifyContent:'center', pointerEvents:'none',
     }} aria-hidden="true">
       <div ref={labelRef} style={{
         fontFamily:"'DM Mono', monospace", fontWeight:400,
         fontSize:'clamp(1.5rem,6vw,4rem)', letterSpacing:'0.08em',
-        textTransform:'uppercase', color:'#0a0a0a', opacity:0,
+        textTransform:'uppercase', color:'var(--bg-base)', opacity:0,
       }}>
         {lbl}
       </div>

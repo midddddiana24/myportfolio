@@ -11,13 +11,13 @@ import { navItems }        from '@/data/socials'
 // Navbar — Transparent → blur on scroll, DM Mono links, magnetic CTA
 // ================================================================
 
-// How far down the fixed header reaches. Used to decide when the light hero
-// panel has scrolled out from under it; see the `light` effect below.
+// How far down the fixed header reaches. Used to work out which section is
+// currently underneath it; see the `overInk` effect below.
 const HEADER_H = 76
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
-  const [light, setLight]       = useState(false)
+  const [overInk, setOverInk]   = useState(false)
   const [open, setOpen]         = useState(false)
   const location = useLocation()
   const panelRef   = useRef<HTMLElement | null>(null)
@@ -25,20 +25,34 @@ export function Navbar() {
 
   useEffect(() => { setOpen(false) }, [location])
 
-  // Two things tracked on one handler. `scrolled` is the blur. `light` exists
-  // because the home hero is now a white panel under a fixed header whose
-  // every colour — white logo, white active link, #f0f0f0 on a #1f1f1f
-  // border — assumes a dark ground and disappears against paper.
+  // Two things tracked on one handler. `scrolled` is the blur. `overInk` is
+  // legibility: the header is fixed, the page is paper by default but punctuated
+  // with .ink-band sections, and ink-coloured nav links vanish over a black one.
   //
-  // The hero's height is measured rather than hard-coded, and `.hero-light`
-  // only exists on the home route, so this resolves to false everywhere else
-  // without needing to test the path. Re-subscribed per navigation: arriving
-  // at "/" from another page adds the panel without producing a scroll event.
+  // This replaces a `light` flag that asked the narrower question "is the white
+  // hero still under me". That worked while the hero was the only ground change
+  // on the site; the moment Work and Contact became bands it would have been
+  // wrong in two places on Home and would need another special case for every
+  // band added later. Asking "is a dark section under me" instead is the same
+  // amount of code and self-maintaining — a new .ink-band anywhere is handled
+  // by having been given the class.
+  //
+  // Every band is measured rather than just the first: on Home two of them
+  // pass under the header at different scroll depths. `some` short-circuits on
+  // the first hit and there are only ever a handful of bands, so this stays
+  // cheap enough for a passive scroll handler. Re-subscribed per navigation,
+  // because arriving on a route with bands produces no scroll event of its own.
   useEffect(() => {
     const fn = () => {
       setScrolled(window.scrollY > 80)
-      const hero = document.querySelector('.hero-light')
-      setLight(!!hero && hero.getBoundingClientRect().bottom > HEADER_H)
+      setOverInk(
+        Array.from(document.querySelectorAll('.ink-band')).some(el => {
+          const r = el.getBoundingClientRect()
+          // Straddling the header strip: already reaches above its bottom edge
+          // and has not yet finished passing its top edge.
+          return r.top < HEADER_H && r.bottom > 0
+        })
+      )
     }
     fn()
     window.addEventListener('scroll', fn, { passive: true })
@@ -102,22 +116,22 @@ export function Navbar() {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'navbar-blur' : ''} ${light ? 'navbar-light' : ''}`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'navbar-blur' : ''} ${overInk ? 'ink-scope' : ''}`}>
         <div className="rm-container">
           <nav className="flex items-center justify-between py-5" aria-label="Main navigation">
-            {/* Logo. The mark is drawn entirely in white, so over the light
-                hero it is inverted wholesale rather than re-coloured — see
-                .navbar-light .logo-invert. */}
+            {/* Logo. No class switching: the mark paints with currentColor from
+                var(--accent), so it follows whichever ground the header is
+                scoped to on its own. */}
             <NavLink to="/" aria-label="Home">
-              <RMLogo showText size={28} className={light ? 'logo-invert' : undefined} />
+              <RMLogo showText size={28} />
             </NavLink>
 
             {/* Desktop links — DM Mono uppercase.
                 No inline colour for the active state: react-router appends an
                 `active` class when className is a string, and .nav-link.active
-                already sets it — so the one rule in .navbar-light is enough to
-                flip it. The inline style that used to be here hard-coded
-                #ffffff and would have overridden that. */}
+                already sets it from var(--text-*), which flips with the scope.
+                The inline style that used to be here hard-coded #ffffff and
+                would have overridden both. */}
             <ul className="hidden md:flex items-center gap-8" role="list">
               {navItems.map(item => (
                 <li key={item.href}>
@@ -139,7 +153,7 @@ export function Navbar() {
               </MagneticButton>
 
               {/* Mobile menu. Colours moved out of the inline style and into
-                  .nav-burger so .navbar-light can reach them. */}
+                  .nav-burger so a stylesheet rule can reach them. */}
               <button ref={triggerRef} onClick={() => setOpen(true)} className="md:hidden nav-burger"
                 aria-label="Open menu" aria-expanded={open} aria-haspopup="dialog">
                 <Menu size={16} />
@@ -153,20 +167,20 @@ export function Navbar() {
       <AnimatePresence>
         {open && (
           <>
-            <motion.div className="fixed inset-0 z-[60]" style={{ background:'rgba(0,0,0,0.7)', backdropFilter:'blur(6px)' }}
+            <motion.div className="fixed inset-0 z-[60]" style={{ background:'rgba(var(--figure-rgb), 0.45)', backdropFilter:'blur(6px)' }}
               initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
               onClick={() => setOpen(false)} />
             <motion.aside ref={panelRef} className="fixed top-0 right-0 bottom-0 z-[70] w-64 flex flex-col"
-              style={{ background:'#111111', borderLeft:'1px solid #1f1f1f' }}
+              style={{ background:'var(--bg-surface)', borderLeft:'1px solid var(--border)' }}
               initial={{ x:'100%' }} animate={{ x:0 }} exit={{ x:'100%' }}
               transition={{ type:'spring', stiffness:280, damping:28 }}
               aria-modal="true" role="dialog" aria-label="Site menu">
-              <div className="flex items-center justify-between p-5" style={{ borderBottom:'1px solid #1f1f1f' }}>
+              <div className="flex items-center justify-between p-5" style={{ borderBottom:'1px solid var(--border)' }}>
                 <RMLogo showText size={24} />
                 {/* aria-label is load-bearing: the only child is an icon, so
                     without it this button is announced as just "button". */}
                 <button onClick={() => setOpen(false)} className="w-8 h-8 flex items-center justify-center border"
-                  style={{ border:'1px solid #1f1f1f', background:'transparent', color:'#f0f0f0' }}
+                  style={{ border:'1px solid var(--border)', background:'transparent', color:'var(--text-1)' }}
                   aria-label="Close menu">
                   <X size={14} />
                 </button>
@@ -185,7 +199,7 @@ export function Navbar() {
                   ))}
                 </ul>
               </nav>
-              <div className="p-5" style={{ borderTop:'1px solid #1f1f1f' }}>
+              <div className="p-5" style={{ borderTop:'1px solid var(--border)' }}>
                 <NavLink to="/contact" className="btn-primary w-full justify-center text-xs py-3"
                   style={{ fontFamily:"'DM Mono', monospace", letterSpacing:'0.08em', textTransform:'uppercase' }}>
                   Hire Me

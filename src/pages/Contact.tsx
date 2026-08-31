@@ -25,9 +25,9 @@ const init: Form = { name:'', email:'', subject:'', message:'' }
 // so the inputs had no visible caret cursor at all.
 function field(err?: boolean): React.CSSProperties {
   return {
-    background:'#111111', border:`1px solid ${err?'#ffffff':'#1f1f1f'}`, color:'#f0f0f0',
+    background:'var(--bg-surface)', border:`1px solid ${err?'var(--accent)':'var(--border)'}`, color:'var(--text-1)',
     borderRadius:0, padding:'0.875rem 1rem', width:'100%',
-    fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', outline:'none',
+    fontFamily:"'DM Sans', sans-serif", fontSize:'0.9375rem', outline:'none',
     transition:'border-color 0.2s',
   }
 }
@@ -63,7 +63,7 @@ export default function Contact() {
 
   return (
     <PageTransition className="pt-28">
-      <section className="rm-section" style={{ background:'#0a0a0a' }}>
+      <section className="rm-section" style={{ background:'var(--bg-base)' }}>
         <div className="rm-container">
           <div className="flex items-center gap-4 mb-16">
             <span className="eyebrow">/ Contact</span>
@@ -74,12 +74,12 @@ export default function Contact() {
             {/* Left */}
             <div>
               <TextReveal as="h1" trigger="load" splitBy="words" delay={0.1} duration={DUR_SLOW} stagger={0.07} skewY={3}
-                style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(2.5rem,7vw,5.5rem)', letterSpacing:'-0.04em', color:'#f0f0f0', lineHeight:1, marginBottom:'2rem' }}>
+                style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(2.5rem,7vw,5.5rem)', letterSpacing:'-0.015em', color:'var(--text-1)', lineHeight:1, marginBottom:'2rem' }}>
                 Let's work together.
               </TextReveal>
 
               <ClipReveal direction="down">
-                <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a', lineHeight:1.75, marginBottom:'2.5rem' }}>
+                <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'1rem', color:'var(--text-muted)', lineHeight:1.75, marginBottom:'2.5rem' }}>
                   Open to collaborations, academic partnerships, and freelance projects. Reach out — I reply within 24–48 hours.
                 </p>
               </ClipReveal>
@@ -88,9 +88,9 @@ export default function Contact() {
               <ClipReveal direction="down" delay={0.1}>
                 <MagneticButton strength={0.2}>
                   <a href={`mailto:${contactEmail}`}
-                    style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(0.9rem,2vw,1.25rem)', letterSpacing:'-0.02em', color:'#f0f0f0', display:'block', paddingBottom:'0.25rem', borderBottom:'1px solid #1f1f1f', marginBottom:'2rem', transition:'color 0.2s, border-color 0.2s' }}
-                    onMouseEnter={e=>{ e.currentTarget.style.color='#ffffff'; e.currentTarget.style.borderColor='#ffffff' }}
-                    onMouseLeave={e=>{ e.currentTarget.style.color='#f0f0f0'; e.currentTarget.style.borderColor='#1f1f1f' }}>
+                    style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(0.9rem,2vw,1.25rem)', letterSpacing:'0em', color:'var(--text-1)', display:'block', paddingBottom:'0.25rem', borderBottom:'1px solid var(--border)', marginBottom:'2rem', transition:'color 0.2s, border-color 0.2s' }}
+                    onMouseEnter={e=>{ e.currentTarget.style.color='var(--accent)'; e.currentTarget.style.borderColor='var(--accent)' }}
+                    onMouseLeave={e=>{ e.currentTarget.style.color='var(--text-1)'; e.currentTarget.style.borderColor='var(--border)' }}>
                     {contactEmail}
                   </a>
                 </MagneticButton>
@@ -98,17 +98,17 @@ export default function Contact() {
 
               {/* Socials */}
               <ClipReveal direction="down" delay={0.15}>
-                <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#2a2a2a', marginBottom:'1rem' }}>Find me on</p>
+                <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--text-subtle)', marginBottom:'1rem' }}>Find me on</p>
                 <div style={{ display:'flex', gap:'0.75rem' }}>
                   {socialLinks.map(link => {
                     const Icon = iconMap[link.icon] ?? Github
                     return (
                       <MagneticButton key={link.platform} strength={0.4}>
                         <a href={link.url} target="_blank" rel="noopener noreferrer"
-                          style={{ width:'40px', height:'40px', border:'1px solid #1f1f1f', display:'flex', alignItems:'center', justifyContent:'center', color:'#5a5a5a', background:'transparent', transition:'border-color 0.2s, color 0.2s', borderRadius:0 }}
+                          style={{ width:'40px', height:'40px', border:'1px solid var(--border)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', background:'transparent', transition:'border-color 0.2s, color 0.2s', borderRadius:0 }}
                           aria-label={link.label}
-                          onMouseEnter={e=>{e.currentTarget.style.borderColor='#ffffff'; e.currentTarget.style.color='#ffffff'}}
-                          onMouseLeave={e=>{e.currentTarget.style.borderColor='#1f1f1f'; e.currentTarget.style.color='#5a5a5a'}}>
+                          onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--accent)'; e.currentTarget.style.color='var(--accent)'}}
+                          onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)'; e.currentTarget.style.color='var(--text-muted)'}}>
                           <Icon size={16} />
                         </a>
                       </MagneticButton>
@@ -120,20 +120,20 @@ export default function Contact() {
 
             {/* Form */}
             <ClipReveal direction="left">
-              <div style={{ border:'1px solid #1f1f1f', padding:'2.5rem' }}>
+              <div style={{ border:'1px solid var(--border)', padding:'2.5rem' }}>
                 <AnimatePresence mode="wait">
                   {status === 'success' ? (
                     <motion.div key="ok" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
                       role="status" aria-live="polite"
                       style={{ textAlign:'center', padding:'3rem 0', display:'flex', flexDirection:'column', alignItems:'center', gap:'1rem' }}>
-                      <CheckCircle size={36} style={{ color:'#ffffff' }} />
+                      <CheckCircle size={36} style={{ color:'var(--accent)' }} />
                       {/* h2, not h3: the only other heading on this page is the h1,
                           so h3 skipped a level. role="status" above it means the
                           confirmation is announced — submitting replaces the whole
                           form, which a screen reader would otherwise pass silently. */}
-                      <h2 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.25rem', color:'#f0f0f0' }}>Message Sent!</h2>
-                      <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a' }}>I'll reply within 24–48 hours.</p>
-                      <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', color:'#2a2a2a', padding:'0.5rem 1rem', border:'1px solid #1f1f1f' }}>Connect EmailJS in .env to enable real sending</p>
+                      <h2 style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', letterSpacing:'0em', fontWeight:400, fontSize:'1.25rem', color:'var(--text-1)' }}>Message Sent!</h2>
+                      <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'0.9375rem', color:'var(--text-muted)' }}>I'll reply within 24–48 hours.</p>
+                      <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', color:'var(--text-subtle)', padding:'0.5rem 1rem', border:'1px solid var(--border)' }}>Connect EmailJS in .env to enable real sending</p>
                       <button onClick={()=>{setForm(init);setErrors({});setStatus('idle')}} className="btn-ghost" style={{ marginTop:'0.5rem', fontSize:'0.75rem' }}>Send Another</button>
                     </motion.div>
                   ) : (
@@ -143,38 +143,38 @@ export default function Contact() {
                       <div className="grid grid-cols-2 gap-4">
                         {[{id:'name', name:'from_name', label:'Name', type:'text', placeholder:'Your name', auto:'name'}, {id:'email', name:'from_email', label:'Email', type:'email', placeholder:'your@email.com', auto:'email'}].map(f => (
                           <div key={f.id} style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>
-                            <label htmlFor={f.id} style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a' }}>{f.label}</label>
+                            <label htmlFor={f.id} style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text-muted)' }}>{f.label}</label>
                             <input id={f.id} name={f.name} type={f.type} placeholder={f.placeholder} autoComplete={f.auto}
                               value={form[f.id === 'name' ? 'name' : 'email']}
                               onChange={onChange}
                               style={field(!!errors[f.id === 'name' ? 'name' : 'email'])}
-                              onFocus={e=>{ e.target.style.borderColor='#ffffff' }}
-                              onBlur={e=>{ e.target.style.borderColor=errors[f.id === 'name' ? 'name' : 'email']?'#ffffff':'#1f1f1f' }} />
-                            {errors[f.id === 'name' ? 'name' : 'email'] && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ffffff', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors[f.id === 'name' ? 'name' : 'email']}</p>}
+                              onFocus={e=>{ e.target.style.borderColor='var(--accent)' }}
+                              onBlur={e=>{ e.target.style.borderColor=errors[f.id === 'name' ? 'name' : 'email']?'var(--accent)':'var(--border)' }} />
+                            {errors[f.id === 'name' ? 'name' : 'email'] && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'var(--accent)', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors[f.id === 'name' ? 'name' : 'email']}</p>}
                           </div>
                         ))}
                       </div>
 
                       <div style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>
-                        <label htmlFor="subject" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a' }}>Subject</label>
+                        <label htmlFor="subject" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text-muted)' }}>Subject</label>
                         <input id="subject" name="subject" type="text" placeholder="Project inquiry" value={form.subject} onChange={onChange}
                           style={field(!!errors.subject)}
-                          onFocus={e=>{ e.target.style.borderColor='#ffffff' }}
-                          onBlur={e=>{ e.target.style.borderColor=errors.subject?'#ffffff':'#1f1f1f' }} />
-                        {errors.subject && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ffffff', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors.subject}</p>}
+                          onFocus={e=>{ e.target.style.borderColor='var(--accent)' }}
+                          onBlur={e=>{ e.target.style.borderColor=errors.subject?'var(--accent)':'var(--border)' }} />
+                        {errors.subject && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'var(--accent)', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors.subject}</p>}
                       </div>
 
                       <div style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>
-                        <label htmlFor="message" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a' }}>Message</label>
+                        <label htmlFor="message" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text-muted)' }}>Message</label>
                         <textarea id="message" name="message" rows={5} placeholder="Tell me about your project…" value={form.message} onChange={onChange}
                           style={{ ...field(!!errors.message), resize:'vertical', minHeight:'120px' }}
-                          onFocus={e=>{ e.target.style.borderColor='#ffffff' }}
-                          onBlur={e=>{ e.target.style.borderColor=errors.message?'#ffffff':'#1f1f1f' }} />
-                        {errors.message && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ffffff', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors.message}</p>}
+                          onFocus={e=>{ e.target.style.borderColor='var(--accent)' }}
+                          onBlur={e=>{ e.target.style.borderColor=errors.message?'var(--accent)':'var(--border)' }} />
+                        {errors.message && <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'var(--accent)', display:'flex', alignItems:'center', gap:'0.25rem' }}><AlertCircle size={10}/>{errors.message}</p>}
                       </div>
 
                       {status === 'error' && (
-                        <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'#ffffff', padding:'0.75rem', border:'1px solid rgba(255,255,255,0.18)', background:'rgba(255,255,255,0.05)', display:'flex', gap:'0.5rem', alignItems:'center' }}>
+                        <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', color:'var(--accent)', padding:'0.75rem', border:'1px solid rgba(var(--figure-rgb), 0.18)', background:'rgba(var(--figure-rgb), 0.05)', display:'flex', gap:'0.5rem', alignItems:'center' }}>
                           <AlertCircle size={12}/>Failed to send. Check EmailJS config.
                         </p>
                       )}
@@ -182,12 +182,12 @@ export default function Contact() {
                       <MagneticButton strength={0.2}>
                         <button type="submit" disabled={status==='sending'} className="btn-primary" style={{ width:'100%', justifyContent:'center', opacity: status==='sending'?0.6:1 }}>
                           {status==='sending'
-                            ? <><span style={{ width:14, height:14, border:'1px solid rgba(10,10,10,0.3)', borderTopColor:'#0a0a0a', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />Sending…</>
+                            ? <><span style={{ width:14, height:14, border:'1px solid rgba(var(--ground-rgb), 0.3)', borderTopColor:'var(--bg-base)', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />Sending…</>
                             : <><Send size={14}/>Send Message</>}
                         </button>
                       </MagneticButton>
 
-                      <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.08em', color:'#2a2a2a', textAlign:'center' }}>
+                      <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.08em', color:'var(--text-subtle)', textAlign:'center' }}>
                         Set VITE_EMAILJS_* in .env · See .env.example
                       </p>
                     </motion.form>

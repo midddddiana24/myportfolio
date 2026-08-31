@@ -17,7 +17,7 @@ export function Footer() {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
   return (
-    <footer style={{ borderTop:'1px solid #1f1f1f', background:'#0a0a0a' }} role="contentinfo">
+    <footer style={{ borderTop:'1px solid var(--border)', background:'var(--bg-base)' }} role="contentinfo">
 
       {/* Top section */}
       <div className="rm-container py-16">
@@ -26,7 +26,7 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2 flex flex-col gap-5">
             <RMLogo showText size={28} />
-            <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.875rem', color:'#5a5a5a', lineHeight:1.65, maxWidth:'280px' }}>
+            <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'0.875rem', color:'var(--text-muted)', lineHeight:1.65, maxWidth:'280px' }}>
               BSIT student at WVSU – Janiuay Campus. Building modern web applications and systems.
             </p>
             <SocialLinks />
@@ -34,16 +34,16 @@ export function Footer() {
 
           {/* Navigation */}
           <nav aria-label="Footer navigation">
-            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#2a2a2a', marginBottom:'1.25rem' }}>
+            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--text-subtle)', marginBottom:'1.25rem' }}>
               Navigation
             </p>
             <ul className="flex flex-col gap-2.5">
               {navItems.map(item => (
                 <li key={item.href}>
                   <NavLink to={item.href}
-                    style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.875rem', color:'#5a5a5a', transition:'color 0.15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.color = '#f0f0f0' }}
-                    onMouseLeave={e => { e.currentTarget.style.color = '#5a5a5a' }}>
+                    style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'0.875rem', color:'var(--text-muted)', transition:'color 0.15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-1)' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)' }}>
                     {item.label}
                   </NavLink>
                 </li>
@@ -53,10 +53,10 @@ export function Footer() {
 
           {/* Info */}
           <div>
-            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#2a2a2a', marginBottom:'1.25rem' }}>
+            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--text-subtle)', marginBottom:'1.25rem' }}>
               Info
             </p>
-            <div className="flex flex-col gap-2" style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.875rem', color:'#5a5a5a' }}>
+            <div className="flex flex-col gap-2" style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'0.875rem', color:'var(--text-muted)' }}>
               <span>WVSU – Janiuay Campus</span>
               <span>Iloilo, Philippines</span>
               <span>Expected: 2027</span>
@@ -67,10 +67,10 @@ export function Footer() {
       </div>
 
       {/* Bottom bar — spec layout */}
-      <div className="rm-container py-5 border-t" style={{ borderColor:'#1f1f1f' }}>
+      <div className="rm-container py-5 border-t" style={{ borderColor:'var(--border)' }}>
         <div className="flex items-center justify-between gap-4">
           {/* Left */}
-          <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'#2a2a2a' }}>
+          <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'var(--text-subtle)' }}>
             © {year} Roberto Mediana Jr.
           </p>
 
@@ -82,7 +82,7 @@ export function Footer() {
           </MagneticButton>
 
           {/* Right */}
-          <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'#2a2a2a' }}>
+          <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'var(--text-subtle)' }}>
             Designed &amp; built by Roberto M. Jr.
           </p>
         </div>

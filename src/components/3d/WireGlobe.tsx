@@ -63,16 +63,21 @@ const VERT = /* glsl */ `
 const FRAG = /* glsl */ `
   uniform float uReveal;   // 0..1, driven by scroll
   uniform float uOpacity;
+  uniform vec3  uInk;
   varying float vLat;
   varying float vFront;
   void main() {
     // Lines arrive from the equator outward as uReveal climbs.
     float draw = 1.0 - smoothstep(uReveal * 1.15, uReveal * 1.15 + 0.16, vLat);
     if (draw <= 0.001) discard;
-    // The far side of the sphere stays dimmer — with no shading to work
+    // The far side of the sphere stays fainter — with no shading to work
     // with on a wireframe, that contrast is the only thing reading as volume.
-    float a = uOpacity * draw * mix(0.22, 1.0, vFront);
-    gl_FragColor = vec4(1.0, 1.0, 1.0, a);
+    // The floor is 0.30 rather than 0.22 because paper has less room below
+    // it than ink had above it: at 0.22 the back of the sphere composited to
+    // roughly #efefef and simply stopped existing, taking the volume cue
+    // with it.
+    float a = uOpacity * draw * mix(0.30, 1.0, vFront);
+    gl_FragColor = vec4(uInk, a);
   }
 `
 
@@ -88,7 +93,8 @@ function Globe({ host, reduced }: {
   const uniforms = useMemo(() => ({
     uRadius:  { value: radius },
     uReveal:  { value: reduced ? 1 : 0 },
-    uOpacity: { value: 0.3 },
+    uOpacity: { value: 0.36 },
+    uInk:     { value: new THREE.Color('#3a3a3a') },
   }), [reduced])
 
   const p = useRef(reduced ? 1 : 0)
@@ -122,7 +128,9 @@ function Globe({ host, reduced }: {
         uniforms={uniforms}
         transparent
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        // See the note in TerrainCanvas: additive blending brightens toward
+        // white, which on a paper ground means it brightens toward nothing.
+        blending={THREE.NormalBlending}
       />
     </lineSegments>
   )

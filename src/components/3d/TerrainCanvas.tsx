@@ -14,10 +14,11 @@ import * as THREE from 'three'
 // Lives behind the About section, not the hero — the hero is now the
 // light panel carrying the name. Everything here is measured against
 // this component's own box (see the progress note in useFrame), so it
-// is placeable in any near-black full-width section; the wrapper's
-// vignette fades to #0a0a0a, which is the ground it expects.
+// is placeable in any full-width section; the wrapper's vignette fades
+// to var(--bg-base), which is the ground it expects.
 //
-// Monochrome only — see project design system. Colour never appears.
+// Draws ink hairlines on paper. Monochrome only — see project design
+// system. Colour never appears.
 // ================================================================
 
 /* ── Shared input state, written by DOM handlers, read in useFrame ── */
@@ -139,7 +140,9 @@ const FRAG = /* glsl */ `
 
   void main() {
     vec3 c = mix(uBase, uHot, vScan);
-    // ridges read brighter than valleys, so elevation carries hierarchy
+    // Inverted with the ground: uHot is now the DARKEST colour, so the scan
+    // crest reads as a wave of ink rather than a wave of glow, and elevation
+    // carries hierarchy by getting denser instead of brighter.
     float a = uOpacity * vFade * (0.30 + 0.70 * smoothstep(-0.9, 1.4, vHeight));
     a += vScan * 0.6 * vFade;
     if (a < 0.004) discard;
@@ -167,8 +170,13 @@ function Terrain({ input, host, reduced, seg, size }: {
     uScanLift:  { value: 1.15 },
     uFadeNear:  { value: 14 },
     uFadeFar:   { value: 74 },
-    uBase:      { value: new THREE.Color('#6e6e6e') },
-    uHot:       { value: new THREE.Color('#ffffff') },
+    // Graphite, not mid-grey. Under additive blending on the old near-black
+    // ground these two values were *added* to the backdrop, so a mid-grey
+    // line lit up. Under normal blending on paper the colour is composited
+    // instead, and the alpha above does the lightening — so the colour has
+    // to start dark or the line arrives as white-on-white.
+    uBase:      { value: new THREE.Color('#3a3a3a') },
+    uHot:       { value: new THREE.Color('#0a0a0a') },
     uOpacity:   { value: 0.5 },
   }), [size])
 
@@ -255,7 +263,14 @@ function Terrain({ input, host, reduced, seg, size }: {
           uniforms={uniforms}
           transparent
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          // NormalBlending, not Additive. Additive can only ever brighten what
+          // is behind it, so on a #f8f8f8 ground every fragment clamps to white
+          // and the entire terrain disappears — this one line is the difference
+          // between a visible scene and an empty hero. Compositing normally
+          // also keeps the density gain where lines cross: with depthWrite off
+          // each layer composites over the last, so grazing angles still stack
+          // into darker mesh, which is the inverse of the old glow pile-up.
+          blending={THREE.NormalBlending}
         />
       </lineSegments>
     </group>

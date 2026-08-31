@@ -70,7 +70,7 @@ export function GitHubStats() {
                 ].map((s, i) => (
                   <ClipReveal key={s.label} direction="down" delay={i*0.07}>
                     <div style={{ background:'#111111', padding:'2rem 1.5rem' }}>
-                      <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:800, fontSize:'2.5rem', letterSpacing:'-0.05em', color:'#ffffff', lineHeight:1 }}>
+                      <p style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'2.5rem', letterSpacing:'-0.01em', color:'#ffffff', lineHeight:1 }}>
                         {s.value}
                       </p>
                       <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'#5a5a5a', marginTop:'0.5rem' }}>
@@ -89,7 +89,7 @@ export function GitHubStats() {
                     transition={{ delay:i*0.07, duration:0.45 }} viewport={{ once:true }}>
                     <div style={{ background:'#111111', padding:'1.75rem', display:'flex', flexDirection:'column', gap:'0.75rem', height:'100%' }}>
                       <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:'0.5rem' }}>
-                        <h3 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'0.9375rem', letterSpacing:'-0.02em', color:'#f0f0f0' }}>
+                        <h3 style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'0.9375rem', letterSpacing:'0.02em', color:'#f0f0f0' }}>
                           {repo.name}
                         </h3>
                         <a href={repo.html_url} target="_blank" rel="noopener noreferrer"
@@ -100,7 +100,7 @@ export function GitHubStats() {
                         </a>
                       </div>
                       {repo.description && (
-                        <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.8125rem', color:'#5a5a5a', lineHeight:1.6, flex:1 }}>
+                        <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'0.8125rem', color:'#5a5a5a', lineHeight:1.6, flex:1 }}>
                           {repo.description.length > 80 ? repo.description.slice(0,80)+'…' : repo.description}
                         </p>
                       )}

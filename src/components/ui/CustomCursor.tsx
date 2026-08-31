@@ -95,8 +95,8 @@ export function CustomCursor() {
 
   // Ring size / style by state
   const ringSize     = state === 'view' ? 72 : state === 'canvas' ? 56 : state === 'link' ? 52 : state === 'button' ? 44 : 40
-  const ringBg       = state === 'view' ? 'rgba(255,255,255,0.92)' : state === 'link' ? 'rgba(255,255,255,0.06)' : 'transparent'
-  const ringBorder   = state === 'view' ? 'none' : '1.5px solid #ffffff'
+  const ringBg       = state === 'view' ? 'rgba(var(--figure-rgb), 0.92)' : state === 'link' ? 'rgba(var(--figure-rgb), 0.06)' : 'transparent'
+  const ringBorder   = state === 'view' ? 'none' : '1.5px solid var(--accent)'
   const dotVisible   = state === 'view' || state === 'link' ? 0 : 1
   const labelVisible = state === 'view' ? 1 : 0
 
@@ -106,10 +106,10 @@ export function CustomCursor() {
       <div ref={dotRef} style={{
         position: 'fixed', top: 0, left: 0, zIndex: 99999,
         width: 10, height: 10, borderRadius: '50%',
-        background: '#ffffff',
+        background: 'var(--accent)',
         opacity: dotVisible,
         pointerEvents: 'none',
-        boxShadow: '0 0 8px rgba(255,255,255,0.35)',
+        boxShadow: '0 0 8px rgba(var(--figure-rgb), 0.35)',
         transition: 'opacity 0.2s',
         willChange: 'transform',
       }} />
@@ -134,7 +134,7 @@ export function CustomCursor() {
           fontSize: '0.5625rem',
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
-          color: '#0a0a0a',
+          color: 'var(--bg-base)',
           opacity: labelVisible,
           transition: 'opacity 0.2s',
           userSelect: 'none',

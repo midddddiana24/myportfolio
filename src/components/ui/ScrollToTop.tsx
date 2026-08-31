@@ -20,12 +20,12 @@ export function ScrollToTop() {
           aria-label="Scroll to top"
           style={{
             position:'fixed', bottom:'1.75rem', right:'1.75rem', zIndex:500,
-            width:'40px', height:'40px', border:'1px solid #1f1f1f',
-            background:'transparent', color:'#5a5a5a',
+            width:'40px', height:'40px', border:'1px solid var(--border)',
+            background:'transparent', color:'var(--text-muted)',
             display:'flex', alignItems:'center', justifyContent:'center',
             borderRadius:0, transition:'border-color 0.2s, color 0.2s',
           }}
-          whileHover={{ borderColor:'#ffffff', color:'#ffffff' }}
+          whileHover={{ borderColor:'var(--accent)', color:'var(--accent)' }}
           whileTap={{ scale:0.94 }}
         >
           <ArrowUp size={15} />

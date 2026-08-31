@@ -12,7 +12,11 @@ function FireworkCanvas() {
 
     interface P { x:number; y:number; vx:number; vy:number; alpha:number; size:number; color:string }
     const particles: P[] = []
-    const colors = ['#ffffff','#e4e4e4','#f0f0f0','#8a8a8a','#c8c8c8']
+    // Ink, not white. A 2D canvas cannot resolve var(), and these particles
+    // are painted over the overlay's rgba(var(--ground-rgb), 0.92) wash — so
+    // on paper a white firework is a firework you cannot see. Spread across
+    // the ramp rather than flat ink so the burst still has depth.
+    const colors = ['#0a0a0a','#2a2a2a','#3a3a3a','#5a5a5a','#8a8a8a']
 
     for (let b = 0; b < 6; b++) {
       const bx = Math.random() * canvas.width, by = Math.random() * canvas.height * 0.6 + 50
@@ -60,7 +64,7 @@ export function EasterEgg() {
         <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
           role="status" aria-live="polite" aria-label="Easter egg unlocked"
           onClick={dismiss}
-          style={{ position:'fixed', inset:0, zIndex:9990, background:'rgba(10,10,10,0.92)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+          style={{ position:'fixed', inset:0, zIndex:9990, background:'rgba(var(--ground-rgb), 0.92)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', justifyContent:'center' }}>
           {/* The reward panel still appears — the person typed a ten-key
               cheat code to get here and should get their payoff. It's the
               420 particles flying outward under gravity that go, since a
@@ -68,17 +72,17 @@ export function EasterEgg() {
           {!reduced && <FireworkCanvas />}
           <motion.div initial={{ scale:0.8, y:24 }} animate={{ scale:1, y:0 }} exit={{ scale:0.85, y:16 }}
             transition={{ type:'spring', stiffness:260, damping:22 }}
-            style={{ position:'relative', zIndex:1, textAlign:'center', padding:'3rem 3.5rem', background:'#111111', border:'1px solid #1f1f1f', maxWidth:'400px' }}>
+            style={{ position:'relative', zIndex:1, textAlign:'center', padding:'3rem 3.5rem', background:'var(--bg-surface)', border:'1px solid var(--border)', maxWidth:'400px' }}>
             {/* Decorative: the heading already says "You found it!", so
                 announcing "party popper" first adds nothing. */}
             <p aria-hidden="true" style={{ fontSize:'3rem', marginBottom:'1rem' }}>🎉</p>
-            <h2 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'1.75rem', letterSpacing:'-0.04em', color:'#f0f0f0', marginBottom:'0.5rem' }}>You found it!</h2>
+            <h2 style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'1.75rem', letterSpacing:'0em', color:'var(--text-1)', marginBottom:'0.5rem' }}>You found it!</h2>
             <p aria-label="Up up down down left right left right B A"
-              style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'#ffffff', marginBottom:'1rem' }}>↑ ↑ ↓ ↓ ← → ← → B A</p>
-            <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'0.9375rem', color:'#5a5a5a', lineHeight:1.6 }}>
+              style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--accent)', marginBottom:'1rem' }}>↑ ↑ ↓ ↓ ← → ← → B A</p>
+            <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'0.9375rem', color:'var(--text-muted)', lineHeight:1.6 }}>
               Props to curious developers who explore. I appreciate you. 🚀
             </p>
-            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', color:'#2a2a2a', marginTop:'1.5rem' }}>Press Esc to close · auto-closes in 5s</p>
+            <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.5625rem', letterSpacing:'0.1em', color:'var(--text-subtle)', marginTop:'1.5rem' }}>Press Esc to close · auto-closes in 5s</p>
           </motion.div>
         </motion.div>
       )}

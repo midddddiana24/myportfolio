@@ -28,10 +28,22 @@ function BrokenGeo() {
 
   return (
     <>
+      {/* The lights keep no explicit colour: three's default is already white,
+          and unlike a surface a light source has no meaningful inversion —
+          "dark light" is not a thing. Dropping the props removes two hex
+          literals from the file without changing a pixel. What did have to
+          change is everything they shine on. */}
       <ambientLight intensity={0.3} />
-      <pointLight position={[4,4,4]} color="#ffffff" intensity={4} />
-      <pointLight position={[-3,-2,3]} color="#e4e4e4" intensity={2} />
+      <pointLight position={[4,4,4]} intensity={4} />
+      <pointLight position={[-3,-2,3]} intensity={2} />
 
+      {/* Graphite solids, metalness 0. The old materials were white at
+          metalness 0.8 with no <Environment> in the scene — a metal with
+          nothing to reflect, which rendered as near-black bodies carrying
+          two bright speculars. That read as intentional on the near-black
+          ground and would read as smudges on paper. Diffuse ink shapes let
+          the two point lights separate the facets instead, which is the
+          same drawn-solid language as the terrain and the globe. */}
       <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.6}>
         <group>
           {/* `ref={g1}` was on both the solid tetrahedron and its wireframe
@@ -44,28 +56,30 @@ function BrokenGeo() {
           <group ref={g1} position={[-0.4, 0.3, 0]}>
             <mesh>
               <tetrahedronGeometry args={[1.1, 0]} />
-              <meshStandardMaterial color="#ffffff" metalness={0.8} roughness={0.1} transparent opacity={0.9} />
+              <meshStandardMaterial color="#2a2a2a" metalness={0} roughness={0.55} transparent opacity={0.9} />
             </mesh>
             <mesh>
               <tetrahedronGeometry args={[1.1, 0]} />
-              <meshBasicMaterial wireframe color="#ffffff" transparent opacity={0.15} />
+              <meshBasicMaterial wireframe color="#0a0a0a" transparent opacity={0.35} />
             </mesh>
           </group>
 
           <mesh ref={g2} position={[0.6, -0.4, 0.2]}>
             <octahedronGeometry args={[0.65, 0]} />
-            <meshStandardMaterial color="#e4e4e4" metalness={0.9} roughness={0.1} transparent opacity={0.8} />
+            <meshStandardMaterial color="#3a3a3a" metalness={0} roughness={0.5} transparent opacity={0.85} />
           </mesh>
 
           <mesh ref={g3} position={[-0.2, -0.5, -0.3]}>
             <icosahedronGeometry args={[0.38, 0]} />
-            <meshStandardMaterial color="#f0f0f0" metalness={0.6} roughness={0.2} transparent opacity={0.6} />
+            <meshStandardMaterial color="#4a4a4a" metalness={0} roughness={0.6} transparent opacity={0.7} />
           </mesh>
 
-          {/* Ghost wireframe of original */}
+          {/* Ghost wireframe of original. Lifted from 0.04 to 0.10: ink at 4%
+              over #f8f8f8 lands around #f1f1f1, which is under the threshold
+              most panels can even display. */}
           <mesh>
             <icosahedronGeometry args={[1.5, 1]} />
-            <meshBasicMaterial wireframe color="#ffffff" transparent opacity={0.04} />
+            <meshBasicMaterial wireframe color="#0a0a0a" transparent opacity={0.10} />
           </mesh>
         </group>
       </Float>
@@ -97,15 +111,15 @@ export default function NotFound() {
           transition={{ duration:0.6, delay:0.2, ease:[0.22,1,0.36,1] }}
           style={{ textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', gap:'1rem' }}>
 
-          <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.2em', textTransform:'uppercase', color:'#ffffff' }}>
+          <p style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--accent)' }}>
             Error 404
           </p>
 
-          <h1 style={{ fontFamily:"'Space Grotesk', sans-serif", fontWeight:700, fontSize:'clamp(3rem,10vw,7rem)', letterSpacing:'-0.05em', color:'#f0f0f0', lineHeight:1 }}>
+          <h1 style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(3rem,10vw,7rem)', letterSpacing:'-0.015em', color:'var(--text-1)', lineHeight:1 }}>
             Not<br/>Found.
           </h1>
 
-          <p style={{ fontFamily:"'Space Grotesk', sans-serif", fontSize:'1rem', color:'#5a5a5a', maxWidth:'320px', lineHeight:1.65 }}>
+          <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'1rem', color:'var(--text-muted)', maxWidth:'320px', lineHeight:1.65 }}>
             The page you're looking for doesn't exist or was moved.
           </p>
 

@@ -22,11 +22,11 @@ export function SocialLinks({ className, size=16, showLabels=false, direction='r
             style={{
               display:'inline-flex', alignItems:'center', gap:'0.5rem',
               padding: showLabels ? '0.5rem 0.875rem' : '0.5rem',
-              border:'1px solid #1f1f1f', background:'transparent',
-              color:'#5a5a5a', borderRadius:0, transition:'border-color 0.2s, color 0.2s',
+              border:'1px solid var(--border)', background:'transparent',
+              color:'var(--text-muted)', borderRadius:0, transition:'border-color 0.2s, color 0.2s',
             }}
-            onMouseEnter={e=>{ e.currentTarget.style.borderColor='#ffffff'; e.currentTarget.style.color='#ffffff' }}
-            onMouseLeave={e=>{ e.currentTarget.style.borderColor='#1f1f1f'; e.currentTarget.style.color='#5a5a5a' }}>
+            onMouseEnter={e=>{ e.currentTarget.style.borderColor='var(--accent)'; e.currentTarget.style.color='var(--accent)' }}
+            onMouseLeave={e=>{ e.currentTarget.style.borderColor='var(--border)'; e.currentTarget.style.color='var(--text-muted)' }}>
             <Icon size={size} />
             {showLabels && (
               <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', textTransform:'uppercase' }}>

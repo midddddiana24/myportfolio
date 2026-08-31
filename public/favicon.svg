@@ -1,7 +1,24 @@
 <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <!-- Opaque ground, not a tint: the glyphs are white now, so a near-
-       transparent background would leave them invisible against a light
-       browser tab bar. Dark ground works in both light and dark chrome. -->
+  <!-- DELIBERATELY still an ink tile, after the palette inversion turned the
+       rest of the site paper-first. This is the one asset where "match the
+       page" is the wrong rule, so the reasoning is recorded rather than left
+       to be re-litigated:
+
+       A favicon is not adjacent to the page. It sits in the tab strip, which
+       is coloured by the browser and the OS theme, not by us — so it has to
+       hold up against BOTH a near-white light-mode tab bar and a near-black
+       dark-mode one. An ink tile with light glyphs does that. A paper tile
+       would dissolve into a light tab strip, which is the majority case, and
+       the mark would simply disappear for most visitors.
+
+       It also happens to be on-language: the site is paper punctuated by
+       near-black bands, and a solid ink square is exactly that punctuation at
+       32px. The glyph colours are the .ink-band token values (#f0f0f0 text,
+       #ffffff accent) for that reason — this tile is a band, not an exception.
+
+       theme-color in index.html and theme_color in manifest.json are the
+       opposite case: those DO paint chrome adjacent to the page, and both were
+       moved to #f8f8f8. -->
   <rect width="32" height="32" fill="#0a0a0a"/>
   <text x="4" y="22" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
         font-weight="700" font-size="13" fill="#f0f0f0" letter-spacing="-0.5">RM</text>

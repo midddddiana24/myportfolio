@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { useTheme } from '@/hooks/useTheme'
 
 // ================================================================
 // ParticleCanvas — ambient dot-and-line web behind the page content.
 //
 // Deliberately NOT rendered on the home route. Home now carries the
 // wireframe terrain in the hero and the wireframe globe in Expertise,
-// and this canvas draws white dots joined by white hairlines — the
+// and this canvas draws ink dots joined by ink hairlines — the
 // same visual idea a third time. Three overlapping line systems in
 // one viewport read as noise and blunt the terrain, which is the
 // thing the page is actually built around. On every other route this
@@ -35,7 +34,6 @@ export function ParticleCanvas() {
   const onHome = pathname === '/'
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const { isDark } = useTheme()
   const [reduced, setReduced] = useState(false)
 
   useEffect(() => {
@@ -82,8 +80,23 @@ export function ParticleCanvas() {
     resize()
     window.addEventListener('resize', resize, { passive: true })
 
-    const dim      = isDark ? 0.45 : 0.25
-    const lineDim  = isDark ? 0.18 : 0.10
+    // A 2D canvas cannot resolve var(), so the ink channel is read off the
+    // document once per mount and interpolated into the rgba() strings below.
+    // Reading it rather than hardcoding means the canvas follows the palette
+    // if --figure-rgb is ever retuned, instead of silently drifting out of it.
+    // documentElement is the right element to read: this canvas is
+    // position:fixed over the whole viewport, so it never sits inside an
+    // .ink-band and always stands on the page ground.
+    const figure = getComputedStyle(document.documentElement)
+      .getPropertyValue('--figure-rgb').trim() || '10, 10, 10'
+
+    // Halved from the values this used on the near-black ground. The texture
+    // is now ink on paper, which means it shares a colour with the body copy
+    // sitting on top of it — dark noise behind dark text costs far more
+    // legibility than light noise behind light text did. With the element's
+    // own opacity: 0.75 the effective alphas land near 0.135 and 0.05.
+    const dim      = 0.18
+    const lineDim  = 0.07
     const maxDist  = 130
 
     const paint = (advance: boolean) => {
@@ -105,7 +118,7 @@ export function ParticleCanvas() {
       }
       for (let b = 0; b < DOT_BUCKETS; b++) {
         const a = (0.2 + ((b + 0.5) / DOT_BUCKETS) * 0.5) * dim
-        ctx.fillStyle = `rgba(255,255,255,${a})`
+        ctx.fillStyle = `rgba(${figure}, ${a})`
         ctx.fill(dots[b])
       }
 
@@ -125,7 +138,7 @@ export function ParticleCanvas() {
       }
       ctx.lineWidth = 0.7
       for (let k = 0; k < LINE_BUCKETS; k++) {
-        ctx.strokeStyle = `rgba(255,255,255,${((k + 0.5) / LINE_BUCKETS) * lineDim})`
+        ctx.strokeStyle = `rgba(${figure}, ${((k + 0.5) / LINE_BUCKETS) * lineDim})`
         ctx.stroke(lines[k])
       }
     }
@@ -142,7 +155,7 @@ export function ParticleCanvas() {
       if (raf) cancelAnimationFrame(raf)
       window.removeEventListener('resize', resize)
     }
-  }, [isDark, reduced, onHome])
+  }, [reduced, onHome])
 
   if (onHome) return null
 

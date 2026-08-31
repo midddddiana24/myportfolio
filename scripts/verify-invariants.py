@@ -144,10 +144,23 @@ elif m.group(1).lower() != n.group(1).lower():
 else:
     note(f"--text-subtle agrees across both files ({m.group(1)})")
 
-if not re.search(r"borderColor\s*:\s*\{\s*DEFAULT\s*:\s*'#1f1f1f'", tw):
-    fail("borderColor.DEFAULT is not pinned to #1f1f1f in tailwind.config.ts")
+# borderColor.DEFAULT is what a bare `className="border"` paints. It used to be
+# asserted against a hardcoded #1f1f1f, which is the value from before the
+# inversion — so this check failed on the palette flip while telling us nothing
+# about whether anything was actually wrong. Derived from --border instead: the
+# point was never the specific hex, it was that a Tailwind `border` utility and
+# a `1px solid var(--border)` must not render two different greys side by side.
+b_css = re.search(r"--border\s*:\s*(#[0-9a-fA-F]{3,6})", css)
+b_tw  = re.search(r"borderColor\s*:\s*\{\s*DEFAULT\s*:\s*'(#[0-9a-fA-F]{3,6})'", tw)
+if not b_css or not b_tw:
+    fail("could not locate --border in index.css and borderColor.DEFAULT in "
+         "tailwind.config.ts — the border colours can no longer be compared")
+elif b_css.group(1).lower() != b_tw.group(1).lower():
+    fail(f"borderColor.DEFAULT ({b_tw.group(1)}) disagrees with --border "
+         f"({b_css.group(1)}): `className=\"border\"` and `1px solid "
+         f"var(--border)` would paint two different greys")
 else:
-    note("borderColor.DEFAULT pinned to #1f1f1f")
+    note(f"borderColor.DEFAULT tracks --border ({b_css.group(1)})")
 
 # ------------------------------------------------------- 6. public/ assets
 PUB = os.path.join(ROOT, "public")
@@ -475,31 +488,86 @@ try:
 except ImportError:
     note("collage colour check SKIPPED — Pillow not installed")
 
-# --------------------- 17. the light theme stays inside the hero
-# One light panel on an otherwise near-black site. A `background: var(--paper)`
-# that escapes its scope does not degrade gracefully — it whites out a section
-# whose text is all #f0f0f0 on the assumption of a dark ground.
-LIGHT_SCOPES = ("hero-", "navbar-light", "btn-ink", "link-ink", "social-ink")
+# --------------------- 17. the two grounds stay structurally sound
+# This check used to assert the opposite of what it now asserts, and the
+# inversion is why. It read "one light panel on an otherwise near-black site —
+# a `background: var(--paper)` that escapes its scope whites out a section
+# whose text assumes a dark ground". Paper is the default ground now, so a
+# leaking light background is not a bug, it is the baseline. What replaced that
+# risk is the mirror image of it: three selectors share one token block, and
+# the whole inversion rests on them not drifting apart.
 BLOCK = re.compile(r"([^{}]+)\{([^{}]*)\}")
+
+# (a) One block, not three copies. Two blocks that agree today are two blocks
+#     that disagree after the next edit, and a half-inverted scope fails
+#     silently — text flips, its background doesn't.
+ink_sel = re.search(r"\.ink-band,\s*\n\.ink-scope,\s*\n\.hero-rule\s*\{([^{}]*)\}", css_nc)
+if not ink_sel:
+    fail("index.css: the shared ink token block is not `.ink-band, .ink-scope, "
+         ".hero-rule` — the three dark scopes have drifted into separate blocks")
+else:
+    note("ink tokens: one block shared by .ink-band, .ink-scope and .hero-rule")
+
+# (b) .ink-scope must never paint. It exists so the fixed header can borrow
+#     ink colours while staying transparent until .navbar-blur's wash kicks
+#     in; a background here drops a black slab across the top of every page.
 for mm in BLOCK.finditer(css_nc):
-    sel, body_ = mm.group(1).strip(), mm.group(2)
-    if sel.startswith("@") or sel.startswith(":root"):
+    sel, body_ = " ".join(mm.group(1).split()), mm.group(2)
+    if sel.startswith("@"):
         continue
-    if re.search(r"background(?:-color)?\s*:[^;]*var\(--paper", body_) \
-       and not any(s in sel for s in LIGHT_SCOPES):
-        fail(f"index.css: '{sel[:60]}' paints var(--paper) but is not scoped to "
-             f"the light hero — light ground leaking onto a dark page")
+    bare = [s.strip() for s in sel.split(",")]
+    if ".ink-scope" in bare and re.search(r"(?:^|;)\s*background(?:-color)?\s*:", body_):
+        fail(f"index.css: '{sel[:60]}' gives .ink-scope a background — the scope "
+             f"borrows ink tokens without painting, or the header goes opaque")
+
+# (c) The band must paint, or every one of its sections renders ink-on-paper.
+#     Found by scanning selector lists rather than matching `\n.ink-band {`:
+#     the adversarial probe for (b) rewrote the painting rule as
+#     `.ink-band, .ink-scope {`, and a line-anchored pattern reported the
+#     background as missing when it was right there. A check that fires on
+#     formatting rather than meaning costs more than it catches.
+paints = False
+for mm in BLOCK.finditer(css_nc):
+    sel, body_ = " ".join(mm.group(1).split()), mm.group(2)
+    if sel.startswith("@"):
+        continue
+    if ".ink-band" in [s.strip() for s in sel.split(",")] and \
+       re.search(r"(?:^|;)\s*background(?:-color)?\s*:", body_):
+        paints = True
+        break
+if not paints:
+    fail("index.css: no rule paints a background on .ink-band — its sections "
+         "would keep the paper ground while their text inverts to near-white")
+
+# (d) Home's ground rhythm. The user asked for "white with dark punctuation",
+#     not an all-white site, so the bands are load-bearing design rather than
+#     an implementation detail: with zero, the page is a single flat white
+#     scroll; the navbar's overInk measurement also has nothing to find.
+n_band = len(re.findall(r"rm-section ink-band", home))
+if n_band < 2:
+    fail(f"Home.tsx has {n_band} .ink-band section(s) — the ground rhythm needs "
+         f"at least two dark bands to read as punctuation rather than an accident")
+else:
+    note(f"Home ground rhythm: {n_band} ink bands punctuating the paper page")
 
 n_light = len(re.findall(r'className="hero-light"', home))
 if n_light != 1:
     fail(f"expected exactly one .hero-light panel in Home.tsx, found {n_light}")
 
-# ------------- 18. every colour in the light scope clears AA on its ground
+# ------------- 18. every text colour clears AA on every ground it can stand on
 # These ratios were computed by hand once (#5a5a5a on #f8f8f8 = 6.50:1 pass;
 # #c8c8c8 = 1.58:1, rules and borders only) and hand arithmetic does not
 # survive the next edit. The reference design's own inactive nav labels are
 # roughly #c8c8c8 on white — copying them faithfully would have shipped 1.58:1,
 # so this is exactly the check that has to be mechanical.
+#
+# It was hero-only when the hero was the only light thing on a dark site. Now
+# there are two grounds in the other direction, so the ratio has to be computed
+# TWICE for anything that can appear on both, against a token table resolved
+# per ground. That is the part hand arithmetic could never have kept up with:
+# --text-2 is #4a4a4a on paper and #c8c8c8 on ink, and the alias chain
+# (--ink-soft → --text-muted → a hex that differs per ground) means the same
+# declaration is two different colours depending on its ancestors.
 def _hex_rgb(h):
     h = h.lstrip("#")
     if len(h) == 3: h = "".join(c * 2 for c in h)
@@ -517,53 +585,373 @@ def _ratio(a, b):
     hi, lo = max(la, lb), min(la, lb)
     return (hi + 0.05) / (lo + 0.05)
 
-# :root tokens, so `color: var(--ink-soft)` can be resolved to a real value.
-root_m = re.search(r":root\s*\{([^}]*)\}", css_nc)
-TOKENS = {}
-if root_m:
-    for k, v in re.findall(r"(--[a-zA-Z0-9-]+)\s*:\s*(#[0-9a-fA-F]{3,6})\s*;",
-                           root_m.group(1)):
-        TOKENS[k] = _hex_rgb(v)
+# Two token tables, one per ground. The old version read only literal hexes
+# straight out of :root, which is why it stopped working the moment the hero's
+# five colours became ALIASES (--paper: var(--bg-base)) instead of their own
+# palette — it saw no hex and concluded the check could not run. Following the
+# alias chain is not a nicety here: --paper, --ink, --ink-soft, --hairline,
+# --text-1/2/3, --surface and --card are all indirect now, and they are exactly
+# the tokens the hero's stylesheet is written in.
+def _decls(block):
+    return {k: v.strip() for k, v in
+            re.findall(r"(--[a-zA-Z0-9-]+)\s*:\s*([^;]+);", block)}
 
-def _resolve(decl):
+root_m = re.search(r":root\s*\{([^{}]*)\}", css_nc)
+PAPER_RAW = _decls(root_m.group(1)) if root_m else {}
+INK_RAW   = dict(PAPER_RAW)
+if ink_sel:
+    INK_RAW.update(_decls(ink_sel.group(1)))
+
+def _token(name, raw, depth=0):
+    """Follow var() aliases to a flat rgb, or None for gradients/rgba/etc."""
+    if depth > 8 or name not in raw:
+        return None
+    v = raw[name]
+    a = re.match(r"^var\(\s*(--[a-zA-Z0-9-]+)", v)
+    if a:
+        return _token(a.group(1), raw, depth + 1)
+    h = re.match(r"^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$", v)
+    return _hex_rgb(h.group(1)) if h else None
+
+def _resolve(decl, raw):
     """A single declaration value → rgb, or None if not a flat colour."""
     v = re.search(r"var\(\s*(--[a-zA-Z0-9-]+)", decl)
     if v:
-        return TOKENS.get(v.group(1))
+        return _token(v.group(1), raw)
     h = re.search(r"#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b", decl)
     return _hex_rgb(h.group(1)) if h else None
 
-if not TOKENS.get("--paper") or not TOKENS.get("--ink"):
-    fail("index.css: --paper/--ink not readable from :root, so the light-hero "
-         "contrast check cannot run")
+# Scopes that carry the ink token set. A rule matching one of these is measured
+# against ink; every other rule is measured against paper, the default ground.
+INK_SCOPES = (".ink-band", ".ink-scope", ".hero-rule")
+
+if not _token("--paper", PAPER_RAW) or not _token("--ink", PAPER_RAW):
+    fail("index.css: --paper/--ink do not resolve to a colour from :root, so "
+         "the contrast check cannot run")
+elif not ink_sel:
+    pass                      # already reported by 17(a); don't double-count
 else:
-    n_checked = 0
+    n_checked = n_dual = 0
     for mm in BLOCK.finditer(css_nc):
-        sel, body_ = mm.group(1).strip(), mm.group(2)
-        if sel.startswith("@") or not any(s in sel for s in LIGHT_SCOPES):
+        sel, body_ = " ".join(mm.group(1).split()), mm.group(2)
+        if sel.startswith("@") or sel.startswith(":root"):
             continue
         cm2 = re.search(r"(?:^|;)\s*color\s*:([^;]+)", body_)
         if not cm2:
             continue
-        fg = _resolve(cm2.group(1))
-        if not fg:
-            continue
-        # Ground: the block's own background when it declares a flat one —
-        # which is how .btn-ink:hover (paper on ink) reads correctly — else the
-        # ink bar for anything inside .hero-rule, else the paper panel.
         bm = re.search(r"background(?:-color)?\s*:([^;]+)", body_)
-        bg = _resolve(bm.group(1)) if bm else None
-        if bg is None:
-            bg = TOKENS["--ink"] if "hero-rule" in sel else TOKENS["--paper"]
-        r = _ratio(fg, bg)
-        n_checked += 1
-        if r < 4.5:
-            fail(f"index.css: '{sel[:52]}' renders rgb{fg} on rgb{bg} = "
-                 f"{r:.2f}:1 — below AA 4.5:1 for text")
+
+        # A rule inside an ink scope is only ever measured on ink. Anything
+        # else is measured on paper AND on ink, because a section can be given
+        # .ink-band at any time and the rule travels into it unchanged. That
+        # dual pass is what caught .hero-rule: `background: var(--ink)` with a
+        # literal `color: #8a8a8a` measured 5.74:1 where it stood and 3.45:1
+        # one nesting level away — a self-inverting ground under a fixed
+        # foreground. Both ends now read the same token table.
+        scoped = any(s in sel for s in INK_SCOPES)
+        grounds = [("ink", INK_RAW)] if scoped else [("paper", PAPER_RAW),
+                                                     ("ink", INK_RAW)]
+        if not scoped:
+            n_dual += 1
+        for label, raw in grounds:
+            fg = _resolve(cm2.group(1), raw)
+            if not fg:
+                continue
+            # Ground: the block's own background when it declares a flat one —
+            # which is how .btn-ink:hover (paper on ink) reads correctly — else
+            # whichever page ground this scope stands on.
+            bg = _resolve(bm.group(1), raw) if bm else None
+            if bg is None:
+                bg = _token("--bg-base", raw)
+            if bg is None:
+                continue
+            r = _ratio(fg, bg)
+            n_checked += 1
+            if r < 4.5:
+                fail(f"index.css: '{sel[:48]}' on {label} renders rgb{fg} on "
+                     f"rgb{bg} = {r:.2f}:1 — below AA 4.5:1 for text")
     if not n_checked:
-        fail("light-hero contrast check inspected no declarations — the scope "
-             "list is out of date with the stylesheet")
-    note(f"light hero: {n_checked} text colours checked, all ≥ 4.5:1 on their ground")
+        fail("contrast check inspected no declarations — its block regex is "
+             "out of date with the stylesheet")
+    note(f"contrast: {n_checked} colour/ground pairs ≥ 4.5:1 "
+         f"({n_dual} rules measured on both grounds)")
+
+# ---------- 19. nothing opts itself out of the inversion by hardcoding a ground
+# The whole flip is one :root block plus one ink block, and it only works
+# because the stylesheet reads through var(). A literal ground colour is a
+# silent opt-out: it looks right on the ground it was written for and wrong on
+# the other, with no error anywhere. These four are the values that ARE the two
+# grounds, so a literal one is always a mistake — greys in between are fine,
+# they're the ramp.
+GROUND_HEXES = ("#f8f8f8", "#0a0a0a", "#ffffff", "#111111")
+for mm in BLOCK.finditer(css_nc):
+    sel, body_ = " ".join(mm.group(1).split()), mm.group(2)
+    if sel.startswith("@") or sel.startswith(":root") or \
+       any(s in [x.strip() for x in sel.split(",")] for s in INK_SCOPES):
+        continue
+    bm = re.search(r"(?:^|;)\s*background(?:-color)?\s*:([^;]+)", body_)
+    if not bm:
+        continue
+    val = bm.group(1).strip().lower()
+    for h in GROUND_HEXES:
+        if re.search(rf"{h}\b", val) and "gradient" not in val:
+            fail(f"index.css: '{sel[:48]}' hardcodes the ground {h} instead of "
+                 f"var(--bg-base)/var(--bg-surface) — it will not invert")
+note(f"grounds: no rule outside the token blocks hardcodes a page ground")
+
+# --------- 20. the 3D scenes draw with a blend mode that works on paper
+# AdditiveBlending can only brighten TOWARD white. On the old near-black ground
+# that was the glow; on a #f8f8f8 ground every fragment clamps and the geometry
+# does not merely dim, it disappears. One prop per file was the difference
+# between a visible scene and an empty canvas, and nothing else in the toolchain
+# can see it — it compiles, it runs, it renders nothing.
+n_blend = 0
+for p in sorted(live):
+    if "/3d/" not in p.replace("\\", "/") and "NotFound" not in p:
+        continue
+    b = strip(open(p, encoding="utf-8").read())
+    if "AdditiveBlending" in b:
+        fail(f"{rel(p)}: uses THREE.AdditiveBlending — additive brightens toward "
+             f"white, so on the paper ground this geometry renders invisible")
+    if "NormalBlending" in b:
+        n_blend += 1
+if n_blend:
+    note(f"3D blending: {n_blend} live scene(s) on NormalBlending, none additive")
+
+# ----------- 21. no reference survives to a font the page no longer downloads
+# Space Grotesk was dropped from index.html when Anton took over every heading:
+# five weights with no consumer left. A leftover font-family does not error, it
+# silently falls back to whatever the OS offers, so the page renders in a
+# different typeface on every machine and looks fine on the one it was built on.
+head = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+loaded = {f.replace("+", " ") for f in re.findall(r"family=([A-Za-z+]+)", head)}
+
+# The JSX and CSS spellings need different parsers, and getting this wrong is
+# how the check first "passed": inline styles read
+# `fontFamily:"'DM Sans', sans-serif"` — a double-quoted string whose FIRST
+# character is a single quote. A naive [^"']+ class can't match at that
+# position, so the pattern matched nothing real and reported an empty family
+# name instead. Grab the whole quoted value, then split it.
+JSX_FF = re.compile(r"""fontFamily\s*:\s*("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'"""
+                    r"""|`(?:[^`\\]|\\.)*`)""")
+declared_fams = {}
+for p in sorted(live) + [os.path.join(SRC, "index.css")]:
+    b = strip(open(p, encoding="utf-8").read(), css=p.endswith(".css"))
+    for m in JSX_FF.finditer(b):
+        first = m.group(1)[1:-1].split(",")[0].strip().strip("'\"")
+        declared_fams.setdefault(first, set()).add(rel(p))
+    for fam in re.findall(r"font-family\s*:\s*([^;}\n]+)", b):
+        first = fam.split(",")[0].strip().strip("'\"")
+        declared_fams.setdefault(first, set()).add(rel(p))
+
+GENERIC = {"sans-serif", "serif", "monospace", "ui-monospace", "system-ui",
+           "inherit", "cursive", "fantasy", ""}
+checked = 0
+for fam, where in sorted(declared_fams.items()):
+    if fam in GENERIC or fam.startswith("var(") or fam.startswith("-"):
+        continue
+    checked += 1
+    if fam not in loaded:
+        fail(f"font-family '{fam}' is used in {', '.join(sorted(where)[:3])} but "
+             f"index.html does not load it — it will silently fall back to a "
+             f"different face on machines that don't happen to have it")
+if not checked:
+    fail("font check matched no families — its parser is out of date with the "
+         "way fonts are declared in this codebase")
+note(f"fonts: {checked} families declared across live files, all {len(loaded)} "
+     f"loaded ({', '.join(sorted(loaded))})")
+
+# ------- 22. the ground declared OUTSIDE src/ agrees with the ground inside it
+# Everything up to here reads src/. But four separate files outside it also name
+# a background colour, and none of them is reachable from main.tsx, so the
+# import-graph walk that powers this whole sweep is blind to all four:
+#
+#   index.html  <style>html{background}</style>   the pre-paint ground
+#   index.html  <meta name="theme-color">         mobile browser chrome
+#   manifest.json  theme_color, background_color  PWA chrome and splash
+#   public/og-image.{svg,png}                      the link-preview card
+#
+# Every one of them was still #0a0a0a after the palette inversion, and not one
+# produced a warning from anything — no compiler, no linter, no type checker and
+# not this sweep either. The pre-paint rule was the expensive one: it painted the
+# viewport black on every cold load and then snapped to paper when React mounted,
+# under a comment asserting there was no flash. That is the signature of this
+# whole class of bug — the artefacts a build tool copies verbatim are exactly the
+# ones a refactor forgets, because nothing ever parses them.
+#
+# So this invariant asserts one thing: a colour that will be painted next to the
+# app must equal the app's own --bg-base. Derived from the stylesheet, never
+# hardcoded, so re-inverting the palette moves all five in one edit.
+ground = _token("--bg-base", PAPER_RAW)
+if not ground:
+    fail("index.css: --bg-base does not resolve from :root, so the platform "
+         "metadata cannot be checked against the app's ground")
+else:
+    g_hex = "#%02x%02x%02x" % ground
+    PUB = os.path.join(ROOT, "public")
+
+    def same(label, got, where):
+        if got is None:
+            fail(f"{where}: could not find {label} — this check is out of date "
+                 f"with the file's shape, which means it is not checking anything")
+        elif _hex_rgb(got.lstrip("#")) != ground:
+            fail(f"{where}: {label} is {got}, but the app's ground is {g_hex} — "
+                 f"this colour is painted right next to the page, so the "
+                 f"mismatch is visible (a cold-load flash, or browser chrome "
+                 f"that clashes with the content under it)")
+
+    m = re.search(r"html\s*\{\s*background\s*:\s*(#[0-9a-fA-F]{3,6})", head)
+    same("the pre-paint html background", m.group(1) if m else None, "index.html")
+    m = re.search(r'name="theme-color"\s+content="(#[0-9a-fA-F]{3,6})"', head)
+    same("theme-color", m.group(1) if m else None, "index.html")
+
+    mf_path = os.path.join(PUB, "manifest.json")
+    try:
+        mf = json.load(open(mf_path, encoding="utf-8"))
+    except Exception as e:
+        fail(f"public/manifest.json: unreadable ({e})")
+        mf = {}
+    for k in ("theme_color", "background_color"):
+        same(k, mf.get(k), "public/manifest.json")
+
+    # --- the OG card, on both of its formats
+    # The SVG is the vector source and the PNG is what actually ships: every
+    # social scraper refuses SVG, so a wrong PNG means a wrong preview even
+    # when the SVG beside it is perfect. Both get checked, because they are
+    # generated together and drift silently apart the moment one is hand-edited.
+    svg_p, png_p = os.path.join(PUB, "og-image.svg"), os.path.join(PUB, "og-image.png")
+    if not os.path.isfile(svg_p) or not os.path.isfile(png_p):
+        fail("public/: og-image.svg and og-image.png must both exist — "
+             "index.html advertises the PNG to every scraper that reads the page")
+    else:
+        og = open(svg_p, encoding="utf-8").read()
+        m = re.search(r"<rect[^>]*\bfill=\"(#[0-9a-fA-F]{3,6})\"", og)
+        same("the background rect", m.group(1) if m else None, "public/og-image.svg")
+
+        # Anton ships exactly one weight. A synthetic 700 smears it, and the
+        # card is the one place the wordmark is rasterised rather than rendered
+        # by a browser that would at least fake it consistently.
+        for w in set(re.findall(r'font-weight="(\d+)"', og)):
+            if w != "400":
+                fail(f"public/og-image.svg: font-weight=\"{w}\" — Anton has a "
+                     f"single weight, so this is a synthetic bold")
+        for fam in set(re.findall(r'font-family="([^"]+)"', og)):
+            first = fam.split(",")[0].strip().strip("'\"")
+            if first not in loaded and first not in GENERIC:
+                fail(f"public/og-image.svg: names '{first}', which index.html "
+                     f"does not load — the card would render in a fallback face")
+
+        # The PNG's first pixel, read WITHOUT Pillow. The sweep has to run on
+        # rober's Windows machine with a bare python3, so taking a hard
+        # dependency on PIL here would trade a check for an ImportError.
+        #
+        # Reading one pixel is exact rather than approximate: for the very first
+        # pixel of the first scanline every PNG filter type collapses to the
+        # identity, because all three predictors (left, up, up-left) are zero
+        # outside the image. So the raw bits after the filter byte ARE the
+        # pixel, whichever filter the encoder picked.
+        #
+        # All five colour types and every bit depth are handled, which is not
+        # over-engineering — it is the difference between a check and a false
+        # alarm. This card is pure greyscale, so any optimiser (pngquant,
+        # oxipng, zopflipng) will happily re-encode it as 8-bit palettised or
+        # 1-bit grey. The first version of this reader rejected anything that
+        # was not 8-bit truecolour, so it would have failed the build on a
+        # correctly optimised file while claiming the colour was wrong.
+        try:
+            import struct, zlib
+            raw = open(png_p, "rb").read()
+            if raw[:8] != b"\x89PNG\r\n\x1a\n":
+                raise ValueError("not a PNG")
+            pos, idat, ihdr, plte = 8, b"", None, b""
+            while pos + 8 <= len(raw):
+                ln, typ = struct.unpack(">I", raw[pos:pos+4])[0], raw[pos+4:pos+8]
+                body = raw[pos+8:pos+8+ln]
+                if   typ == b"IHDR": ihdr = struct.unpack(">IIBBBBB", body)
+                elif typ == b"IDAT": idat += body
+                elif typ == b"PLTE": plte = body
+                elif typ == b"IEND": break
+                pos += 12 + ln
+            if not ihdr:
+                raise ValueError("no IHDR")
+            w_, h_, depth_, ctype, _, _, interlace = ihdr
+            if (w_, h_) != (1200, 630):
+                fail(f"public/og-image.png: is {w_}x{h_}; index.html declares "
+                     f"og:image:width 1200 and og:image:height 630, and scrapers "
+                     f"lay the card out from those numbers before fetching it")
+            if interlace:
+                # Adam7 puts a subsampled pass first, so byte 1 is not pixel 0.
+                raise ValueError("interlaced PNGs are not read here")
+            data = zlib.decompress(idat)[1:]        # drop the filter byte
+
+            def sample(i):
+                """Sample i of the first pixel, normalised to 0-255.
+
+                The 16-bit branch takes the high byte, which is the spec-correct
+                reading: a sample is a fraction of 65535, so 0xF8F8 is paper and
+                0x00F8 is very nearly black. Worth stating because Pillow's own
+                `convert('I;16')` writes an 8-bit 248 as 0x00F8 and then reads
+                it back as 248 by truncating cast — the two disagree, and it is
+                Pillow's round-trip that is loose, not this.
+                """
+                if depth_ == 16:
+                    return data[i * 2]                    # high byte only
+                if depth_ == 8:
+                    return data[i]
+                # Sub-byte depths pack left-to-right from the high bits.
+                shift = 8 - depth_ * (i + 1)
+                v = (data[0] >> shift) & ((1 << depth_) - 1)
+                return v * (255 // ((1 << depth_) - 1))   # 1->255, 2->85, 4->17
+
+            if ctype in (0, 4):                            # grey, grey+alpha
+                g = sample(0); px = (g, g, g)
+            elif ctype in (2, 6):                          # rgb, rgba
+                px = (sample(0), sample(1), sample(2))
+            elif ctype == 3:                               # palette index
+                idx = data[0] if depth_ == 8 else \
+                      (data[0] >> (8 - depth_)) & ((1 << depth_) - 1)
+                if len(plte) < idx * 3 + 3:
+                    raise ValueError("palette index outside PLTE")
+                px = tuple(plte[idx*3:idx*3+3])
+            else:
+                raise ValueError(f"unknown colour type {ctype}")
+            if px != ground:
+                fail("public/og-image.png: its corner pixel is #%02x%02x%02x, "
+                     "but the app's ground is %s — the shipped link preview "
+                     "contradicts the site it links to. Re-cut it with "
+                     "scripts/make-og.py" % (px + (g_hex,)))
+        except Exception as e:
+            fail(f"public/og-image.png: could not read its corner pixel ({e})")
+
+    # index.html points scrapers at absolute URLs; only the filename is ours to
+    # verify, but a rename silently kills every preview, so verify that much.
+    for prop in (r'property="og:image"', r'name="twitter:image"'):
+        m = re.search(prop + r'\s+content="([^"]+)"', head)
+        if not m:
+            fail(f"index.html: no {prop} — social cards need it")
+        elif not os.path.isfile(os.path.join(PUB, m.group(1).rsplit("/", 1)[-1])):
+            fail(f"index.html: {prop} points at "
+                 f"'{m.group(1).rsplit('/', 1)[-1]}', which is not in public/")
+
+    # favicon.svg is the ONE deliberate exception and is checked differently on
+    # purpose. It is not adjacent to the page — it sits in the tab strip, whose
+    # colour belongs to the browser, so it has to survive both a light and a
+    # dark surround and an ink tile is the correct answer even on a paper site.
+    # Pinning it to --bg-base would therefore be wrong. It still gets checked,
+    # just against a weaker rule: whatever ground it uses must be one the design
+    # system actually defines, so a stray colour is still caught.
+    fav = os.path.join(PUB, "favicon.svg")
+    if os.path.isfile(fav):
+        m = re.search(r"<rect[^>]*\bfill=\"(#[0-9a-fA-F]{3,6})\"",
+                      strip(open(fav, encoding="utf-8").read(), css=True))
+        allowed = {_token("--bg-base", PAPER_RAW), _token("--bg-base", INK_RAW)}
+        if not m:
+            fail("public/favicon.svg: no background rect found")
+        elif _hex_rgb(m.group(1).lstrip("#")) not in allowed:
+            fail(f"public/favicon.svg: ground {m.group(1)} is neither of the two "
+                 f"grounds the design system defines")
+    note(f"platform metadata: pre-paint, theme-color, manifest x2 and the OG "
+         f"card all on {g_hex}; favicon exempt by design")
 
 print("=" * 68)
 for n in notes: print("  ·", n)

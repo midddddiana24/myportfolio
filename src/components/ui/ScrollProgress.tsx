@@ -9,6 +9,6 @@ export function ScrollProgress() {
   if (!vis) return null
   return (
     <motion.div className="fixed top-0 left-0 right-0 z-[100] origin-left"
-      style={{ height:'2px', scaleX, background:'#ffffff', boxShadow:'0 0 8px rgba(255,255,255,0.30)' }} />
+      style={{ height:'2px', scaleX, background:'var(--accent)', boxShadow:'0 0 8px rgba(var(--figure-rgb), 0.30)' }} />
   )
 }
