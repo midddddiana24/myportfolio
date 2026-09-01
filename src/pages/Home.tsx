@@ -16,26 +16,25 @@ import { MagneticButton }    from '@/components/motion/MagneticButton'
 import { ClipReveal }        from '@/components/motion/ClipReveal'
 import { Marquee }           from '@/components/motion/Marquee'
 import { PageTransition }    from '@/components/layout/PageTransition'
+import { CareerJourney }     from '@/components/home/CareerJourney'
+import { ProjectBento }      from '@/components/projects/ProjectBento'
 import { SocialLinks }       from '@/components/ui/SocialLinks'
-import { SafeImage }         from '@/components/ui/SafeImage'
-import { StatCounter }       from '@/components/ui/StatCounter'
 import { projects }          from '@/data/projects'
 import { socialLinks }       from '@/data/socials'
 
-const TerrainCanvas = lazy(() => import('@/components/3d/TerrainCanvas').then(m => ({ default: m.TerrainCanvas })))
 const WireGlobe = lazy(() => import('@/components/3d/WireGlobe').then(m => ({ default: m.WireGlobe })))
 
 // ================================================================
-// Home v9 — Paper & Ink editorial
+// Home v10 — Paper & Ink editorial
 // Ink on paper · Anton headings · DM Sans body · DM Mono labels
 // No border-radius. No chromatic accent anywhere on the site.
 //
 // GROUND RHYTHM, reading down the page:
-//   Hero      white panel   — the name
-//   About 01  paper         — hosts the wireframe terrain
-//   Work 02   INK BAND      — dark punctuation
-//   Skills 03 paper         — hosts the wireframe globe
-//   Contact 04 INK BAND     — dark punctuation, closes the page
+//   Hero        white panel  — the name
+//   Journey 01  paper        — hosts the wireframe terrain
+//   Work 02     INK BAND     — dark punctuation, holds the bento grid
+//   Skills 03   paper        — hosts the wireframe globe
+//   Contact 04  INK BAND     — dark punctuation, closes the page
 //
 // The two bands are Work and Contact specifically, and NOT the two
 // sections carrying the 3D scenes. The terrain and the globe were both
@@ -43,6 +42,15 @@ const WireGlobe = lazy(() => import('@/components/3d/WireGlobe').then(m => ({ de
 // black band would mean keeping two versions of each shader and asking
 // every scene to know which ground it is on. Punctuating with the two
 // flat sections instead costs nothing and still alternates.
+//
+// Section 01 was "About me" until 2026-09-01 and is now the Career
+// Journey: same slot, same ground, same terrain behind it, but the
+// panels travel sideways under a pinned stage instead of stacking. The
+// bio paragraphs and the three stat counters were not deleted — they
+// moved into its first panel, via src/data/journey.ts. The terrain
+// moved with it, and lives on CareerJourney's outer section rather
+// than the pinned stage; the reason is load-bearing and is written up
+// in that file.
 // ================================================================
 
 const CV_URL = '/assets/resume-placeholder.pdf'
@@ -325,112 +333,17 @@ function Hero() {
   )
 }
 
-// ── ABOUT — 01 ────────────────────────────────────────────────────
-function AboutSection() {
-  return (
-    <section className="rm-section relative overflow-hidden" style={{ background:'var(--bg-base)' }}>
-      {/* The wireframe terrain, moved down from the hero — the hero is the
-          name now. This is the first dark section, so the ink bar closing the
-          first section below the hero, and the wrap's vignette fades to the
-          same var(--bg-base) on all four edges so no seam is visible. Kept off the
-          Skills section deliberately: WireGlobe already lives there, and two
-          WebGL contexts competing in one viewport is what task #13 fixed. */}
-      <Suspense fallback={<div className="terrain-fallback" aria-hidden="true" />}>
-        <TerrainCanvas />
-      </Suspense>
-
-      {/* relative z-10 is load-bearing: .terrain-wrap is absolutely
-          positioned, so without it the canvas paints over this in-flow
-          content. Same reason SkillsSection's container carries it. */}
-      <div className="rm-container relative z-10">
-        {/* Section header */}
-        <div className="flex items-center gap-4 mb-16">
-          <span className="eyebrow">/ About me</span>
-          <div className="rule flex-1" />
-          <span className="eyebrow">01</span>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left: watermark + eyebrow */}
-          <div className="relative">
-            <div className="section-watermark absolute -left-4 -top-8 select-none" aria-hidden="true">01</div>
-            <div className="relative z-10">
-              <TextReveal as="h2" trigger="scroll" splitBy="words" duration={DUR_SLOW} stagger={0.06}
-                style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(2rem,5vw,3.5rem)', letterSpacing:'-0.015em', color:'var(--text-1)', lineHeight:1.1 }}>
-                Building the web, one pixel at a time.
-              </TextReveal>
-            </div>
-          </div>
-
-          {/* Right: bio + stats */}
-          <div>
-            <ClipReveal direction="down">
-              <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'1rem', color:'var(--text-muted)', lineHeight:1.75, marginBottom:'1.25rem' }}>
-                I'm an IT student with a genuine passion for building software that solves real problems.
-                I work across the full stack — from clean, responsive UIs to reliable server-side logic
-                and database architecture.
-              </p>
-              <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'1rem', color:'var(--text-muted)', lineHeight:1.75, marginBottom:'2rem' }}>
-                Currently pursuing my BSIT at West Visayas State University – Janiuay Campus and actively
-                building my capstone system while exploring web security and AI integrations.
-              </p>
-            </ClipReveal>
-
-            {/* Stat counters */}
-            <ClipReveal direction="down" delay={0.15}>
-              <div className="grid grid-cols-3 gap-0 border-t border-l" style={{ borderColor:'var(--border)' }}>
-                {[
-                  { target:4, suffix:'th', label:'Year of Study' },
-                  { target:20, suffix:'+', label:'Technologies' },
-                  { target:3, suffix:'+', label:'Projects Built' },
-                ].map(s => (
-                  <div key={s.label} className="border-b border-r p-5" style={{ borderColor:'var(--border)' }}>
-                    <StatCounter target={s.target} suffix={s.suffix} label={s.label} duration={1800}
-                      className={undefined} />
-                  </div>
-                ))}
-              </div>
-            </ClipReveal>
-
-            <ClipReveal direction="down" delay={0.25}>
-              <div className="mt-6">
-                <MagneticButton strength={0.3}>
-                  <Link to="/about" className="btn-ghost text-sm">
-                    More About Me <ArrowRight size={14} />
-                  </Link>
-                </MagneticButton>
-              </div>
-            </ClipReveal>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
 // ── WORK / PROJECTS — 02 ──────────────────────────────────────────
-const catLabels: Record<string,string> = { school:'School', capstone:'Capstone', personal:'Personal' }
-
 function WorkSection() {
-  const listRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const el = listRef.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const rows = el.querySelectorAll('.project-row')
-    const ctx  = gsap.context(() => {
-      rows.forEach(row => {
-        gsap.fromTo(row,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: DUR_NORMAL, ease: EASE_POWER4,
-            scrollTrigger: { trigger: row, start: 'top 88%', once: true } }
-        )
-      })
-    }, listRef)
-    return () => ctx.revert()
-  }, [])
-
-  const featuredProj = projects.find(p => p.featured) ?? projects[0]
+  // A compact slice of the bento grid used in full on /projects. Five tiles
+  // is the smallest count where the cycling span pattern still reads as a
+  // composition — the 2x2 anchor plus a 2x1 and two 1x1s fills the four
+  // columns exactly, and the "view every project" tile closes the row.
+  //
+  // No GSAP here any more, and no framer-motion: ProjectBento owns the tile
+  // transforms outright, and a second animator on the same nodes is how you
+  // get tiles stuck mid-scatter.
+  const preview = projects.slice(0, 5)
 
   return (
     <section className="rm-section ink-band">
@@ -454,108 +367,7 @@ function WorkSection() {
           </MagneticButton>
         </div>
 
-        {/* Featured project — large card */}
-        {featuredProj && (
-          <ClipReveal direction="down" className="mb-3">
-            <div className="project-card relative overflow-hidden" style={{ minHeight:'360px' }} data-cursor="view">
-              {/* Image reveal on hover */}
-              {featuredProj.image && !featuredProj.image.includes('placeholder') && (
-                <div className="project-thumb">
-                  <SafeImage src={featuredProj.image} alt={featuredProj.title} className="w-full h-full object-cover" />
-                </div>
-              )}
-
-              <div className="relative z-10 p-8 flex flex-col justify-between" style={{ minHeight:'360px' }}>
-                <div className="flex items-start justify-between">
-                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--accent)' }}>
-                    Featured · Capstone
-                  </span>
-                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.1em', color:'var(--text-muted)' }}>
-                    {featuredProj.date}
-                  </span>
-                </div>
-
-                <div>
-                  <h3 style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(1.5rem,4vw,2.5rem)', letterSpacing:'-0.01em', color:'var(--text-1)', marginBottom:'0.75rem' }}>
-                    {featuredProj.title}
-                  </h3>
-                  <p style={{ fontFamily:"'DM Sans', sans-serif", fontSize:'0.9375rem', color:'var(--text-muted)', maxWidth:'520px', lineHeight:1.6, marginBottom:'1.25rem' }}>
-                    {featuredProj.shortDescription}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-5">
-                    {featuredProj.technologies.slice(0,5).map(t => <span key={t} className="rm-tag">{t}</span>)}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <MagneticButton strength={0.3}>
-                      <Link to={`/projects/${featuredProj.slug}`} className="btn-primary text-sm">
-                        View Case Study <ArrowUpRight size={14} />
-                      </Link>
-                    </MagneticButton>
-                    {featuredProj.githubUrl && (
-                      <MagneticButton strength={0.3}>
-                        <a href={featuredProj.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ padding:'0.75rem' }}
-                          aria-label={`View ${featuredProj.title} source on GitHub (opens in a new tab)`}>
-                          <Github size={16} />
-                        </a>
-                      </MagneticButton>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ClipReveal>
-        )}
-
-        {/* Project list rows */}
-        <div ref={listRef} className="border-t mt-2" style={{ borderColor:'var(--border)' }}>
-          {projects.map((project, i) => (
-            <div key={project.id} className="project-row" data-cursor="view">
-              {/* Hover thumbnail */}
-              {project.image && !project.image.includes('placeholder') && (
-                <div className="project-thumb" aria-hidden="true">
-                  <SafeImage src={project.image} alt="" className="w-full h-full object-cover" />
-                  <div style={{ position:'absolute', inset:0, background:'rgba(var(--ground-rgb), 0.6)' }} />
-                </div>
-              )}
-
-              <Link to={`/projects/${project.slug}`} className="relative z-10 flex items-center justify-between p-6 md:p-8 gap-4 group">
-                {/* Left: number + title */}
-                <div className="flex items-center gap-6 min-w-0">
-                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', color:'var(--text-subtle)', letterSpacing:'0.05em', flexShrink:0 }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div className="min-w-0">
-                    <h3 style={{ fontFamily:"'Anton', sans-serif", textTransform:'uppercase', fontWeight:400, fontSize:'clamp(1rem,2.5vw,1.375rem)', letterSpacing:'0em', color:'var(--text-2)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', transition:'color 0.2s' }}
-                      className="group-hover:text-[var(--accent)]">
-                      {project.title}
-                    </h3>
-                    <div className="flex flex-wrap gap-2 mt-1 hidden sm:flex">
-                      {project.technologies.slice(0,3).map(t => <span key={t} className="rm-tag" style={{ fontSize:'0.5625rem' }}>{t}</span>)}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right: category + year + arrow */}
-                <div className="flex items-center gap-6 flex-shrink-0">
-                  <span className="hidden md:block" style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text-muted)' }}>
-                    {catLabels[project.category]}
-                  </span>
-                  <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', color:'var(--text-subtle)' }}>{project.date}</span>
-                  <ArrowUpRight size={16} style={{ color:'var(--text-subtle)', transition:'color 0.2s, transform 0.2s' }}
-                    className="group-hover:text-[var(--accent)] group-hover:rotate-12" />
-                </div>
-              </Link>
-            </div>
-          ))}
-
-          {/* Growing message */}
-          <div className="py-8 px-6 flex items-center gap-4" style={{ borderBottom:'1px solid var(--border)' }}>
-            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.625rem', color:'var(--text-subtle)' }}>—</span>
-            <span style={{ fontFamily:"'DM Mono', monospace", fontSize:'0.6875rem', letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--text-subtle)' }}>
-              More projects in progress — portfolio growing continuously
-            </span>
-          </div>
-        </div>
+        <ProjectBento items={preview} moreHref="/projects" />
       </div>
     </section>
   )
@@ -734,7 +546,7 @@ export default function Home() {
   return (
     <PageTransition>
       <Hero />
-      <AboutSection />
+      <CareerJourney />
       <WorkSection />
       <SkillsSection />
       <ContactSection />

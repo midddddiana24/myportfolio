@@ -25,6 +25,17 @@ export interface Project {
   challenges?: string[]
   learningOutcomes?: string[]
   featured?: boolean
+  /**
+   * Marks a filler entry that exists to give the bento grid enough tiles to
+   * read as a grid, not a real shipped project.
+   *
+   * This flag is not cosmetic — it is a safety rail. Sample tiles render a
+   * visible SAMPLE badge and are excluded from the stat counts, so a filler
+   * entry can never quietly pass itself off as work that exists. Remove the
+   * `...sampleProjects` spread in src/data/projects.ts and every one of them
+   * disappears at once.
+   */
+  sample?: boolean
 }
 
 export type ProjectCategory =

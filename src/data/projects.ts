@@ -4,8 +4,24 @@ import type { Project } from '@/types'
 // RM Portfolio — Projects Data
 // Add / edit projects here. UI updates automatically.
 // ===================================================
+//
+// IMAGES. Every project's `image` points at its own file under
+// public/assets/projects/. None of those files have to exist yet: the bento
+// grid and the list rows both render through components/ui/SafeImage, which
+// swaps a failed load onto PROJECT_SLOT — a generated "drop a screenshot
+// here" tile that holds the layout's shape instead of leaving a hole. Drop
+// the real PNG at the path named below and it appears with no code change.
+//
+// The slot file is `_slot.png`, not `_placeholder.png`, on purpose: several
+// render paths guard on `image.includes('placeholder')` to mean "this is a
+// stub, skip it", and a fallback carrying that word in its own name would be
+// skipped by the very code meant to display it.
 
-export const projects: Project[] = [
+/** Fallback tile for a project whose screenshot isn't on disk yet. */
+export const PROJECT_SLOT = '/assets/projects/_slot.png'
+
+// ── Real work ───────────────────────────────────────
+const realProjects: Project[] = [
   {
     id: 'mis-service-request',
     slug: 'mis-service-request-system',
@@ -49,6 +65,95 @@ export const projects: Project[] = [
     featured: true,
   },
 ]
+
+// ── Sample tiles ────────────────────────────────────
+// FILLER, NOT PORTFOLIO. A bento grid needs five or six tiles before the
+// mixed spans read as a composition rather than an accident, and there is
+// one real project so far. These four exist to hold that shape.
+//
+// Each carries `sample: true`, which makes the UI stamp a visible SAMPLE
+// badge on the tile and keeps the entry out of the project counts. That is
+// deliberate: a portfolio that pads itself is worse than a short one, so
+// filler is labelled as filler on the page itself, not just in this comment.
+//
+// TO USE: overwrite a block with a real project and delete the `sample`
+// line. TO REMOVE ALL: delete the `...sampleProjects` spread below.
+const sampleProjects: Project[] = [
+  {
+    id: 'sample-portfolio',
+    slug: 'sample-portfolio-site',
+    title: 'Portfolio Site',
+    category: 'personal',
+    shortDescription:
+      'This site — a monochrome editorial portfolio with scroll-driven type, a WebGL wireframe terrain and a pinned horizontal career timeline.',
+    fullDescription:
+      'Sample entry. Replace with a real project, or delete it from src/data/projects.ts.',
+    image: '/assets/projects/portfolio-site.png',
+    technologies: ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'GSAP', 'three.js'],
+    tools: ['Git', 'VS Code'],
+    date: '2026',
+    status: 'in-progress',
+    role: 'Designer & Developer',
+    type: 'web-app',
+    sample: true,
+  },
+  {
+    id: 'sample-inventory',
+    slug: 'sample-inventory-tracker',
+    title: 'Inventory Tracker',
+    category: 'school',
+    shortDescription:
+      'Coursework CRUD application for stock levels, suppliers and reorder thresholds, with printable stock reports.',
+    fullDescription:
+      'Sample entry. Replace with a real project, or delete it from src/data/projects.ts.',
+    image: '/assets/projects/inventory-tracker.png',
+    technologies: ['PHP', 'MySQL', 'Bootstrap', 'jQuery'],
+    date: '2023',
+    status: 'completed',
+    role: 'Full-Stack Developer',
+    type: 'web-app',
+    sample: true,
+  },
+  {
+    id: 'sample-recon',
+    slug: 'sample-recon-toolkit',
+    title: 'Recon Toolkit',
+    category: 'personal',
+    shortDescription:
+      'Command-line helper that chains subdomain enumeration, header inspection and TLS checks into one report for authorised targets.',
+    fullDescription:
+      'Sample entry. Replace with a real project, or delete it from src/data/projects.ts.',
+    image: '/assets/projects/recon-toolkit.png',
+    technologies: ['Python', 'Bash', 'Kali Linux'],
+    date: '2025',
+    status: 'in-progress',
+    role: 'Developer',
+    type: 'other',
+    sample: true,
+  },
+  {
+    id: 'sample-attendance',
+    slug: 'sample-attendance-qr',
+    title: 'QR Attendance',
+    category: 'school',
+    shortDescription:
+      'Class attendance logger that scans a rotating student QR code and exports a per-session CSV for instructors.',
+    fullDescription:
+      'Sample entry. Replace with a real project, or delete it from src/data/projects.ts.',
+    image: '/assets/projects/qr-attendance.png',
+    technologies: ['React', 'Node.js', 'Express.js', 'MongoDB'],
+    date: '2024',
+    status: 'completed',
+    role: 'Full-Stack Developer',
+    type: 'web-app',
+    sample: true,
+  },
+]
+
+export const projects: Project[] = [...realProjects, ...sampleProjects]
+
+/** Only work that actually exists. Use this for any number shown as a fact. */
+export const realProjectCount = realProjects.length
 
 // ── Project Categories ──────────────────────────────
 export const projectCategories = [
