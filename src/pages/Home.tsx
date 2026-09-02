@@ -31,26 +31,29 @@ const WireGlobe = lazy(() => import('@/components/3d/WireGlobe').then(m => ({ de
 //
 // GROUND RHYTHM, reading down the page:
 //   Hero        white panel  — the name
-//   Journey 01  paper        — hosts the wireframe terrain
+//   Journey 01  paper        — pinned horizontal milestone track
 //   Work 02     INK BAND     — dark punctuation, holds the bento grid
 //   Skills 03   paper        — hosts the wireframe globe
 //   Contact 04  INK BAND     — dark punctuation, closes the page
 //
-// The two bands are Work and Contact specifically, and NOT the two
-// sections carrying the 3D scenes. The terrain and the globe were both
-// re-cut to draw ink hairlines on paper; standing either of them on a
-// black band would mean keeping two versions of each shader and asking
-// every scene to know which ground it is on. Punctuating with the two
-// flat sections instead costs nothing and still alternates.
+// The two bands are Work and Contact specifically, and NOT the section
+// carrying the 3D scene. The globe was re-cut to draw ink hairlines on
+// paper; standing it on a black band would mean keeping two versions of
+// the shader and asking the scene to know which ground it is on.
+// Punctuating with the two flat sections instead costs nothing and still
+// alternates.
 //
 // Section 01 was "About me" until 2026-09-01 and is now the Career
-// Journey: same slot, same ground, same terrain behind it, but the
-// panels travel sideways under a pinned stage instead of stacking. The
-// bio paragraphs and the three stat counters were not deleted — they
-// moved into its first panel, via src/data/journey.ts. The terrain
-// moved with it, and lives on CareerJourney's outer section rather
-// than the pinned stage; the reason is load-bearing and is written up
-// in that file.
+// Journey: same slot, same ground, but the panels travel sideways under a
+// pinned stage instead of stacking. The bio paragraphs and the three stat
+// counters were not deleted — they moved into its first panel, via
+// src/data/journey.ts.
+//
+// The wireframe terrain moved with it and was then removed outright on
+// 2026-09-02 at rober's request, so Journey 01 is plain paper and the
+// globe in Skills 03 is the only 3D scene left on the page. That leaves
+// components/3d/TerrainCanvas.tsx unreferenced — it is still on disk, not
+// deleted, so remounting it is a one-line change.
 // ================================================================
 
 const CV_URL = '/assets/resume-placeholder.pdf'

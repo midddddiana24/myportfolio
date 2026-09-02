@@ -1044,8 +1044,10 @@ select::placeholder { color: var(--text-muted); opacity: 1; }
 
 /* ══════════════════════════════════════════════════════════════════
    CAREER JOURNEY — 01
-   Replaces the old home-page About block. Same slot in the page, same
-   paper ground, same terrain behind it; the axis is what changed.
+   Replaces the old home-page About block. Same slot in the page and the
+   same paper ground; the axis is what changed. (It also inherited that
+   section's wireframe-terrain backdrop for one day — removed 2026-09-02 on
+   rober's request, so this section is plain paper now.)
 
    Two layouts, split at 1024px, and the split is behavioural rather
    than cosmetic. Above it the stage is PINNED and GSAP translates the
@@ -1062,14 +1064,20 @@ select::placeholder { color: var(--text-muted); opacity: 1; }
 
 .journey-section {
   position: relative;
-  /* No overflow: hidden. Clipping is .journey-viewport's job, and an
-     overflow ancestor is the classic way to break a fixed-position pin.
-     The terrain canvas is inset: 0 and does not overflow anyway. */
+  /* No overflow: hidden, and this is load-bearing. Clipping is
+     .journey-viewport's job, and an overflow or transform ancestor is the
+     classic way to break a fixed-position pin — add one here and the stage
+     silently stops sticking. */
 }
 
 .journey-stage {
   position: relative;
-  z-index: 10;            /* .terrain-wrap is absolute at z-index 0 */
+  /* No z-index. It used to carry one because a wireframe-terrain canvas sat
+     absolutely positioned behind this section; that layer was removed on
+     rober's request 2026-09-02 and nothing in the section is out of flow any
+     more, so a stacking context here would only mislead the next reader into
+     hunting for a background layer. Restore `z-index: 10` if one ever
+     returns — an absolute canvas otherwise paints over the in-flow type. */
   display: flex;
   flex-direction: column;
   gap: 2.5rem;

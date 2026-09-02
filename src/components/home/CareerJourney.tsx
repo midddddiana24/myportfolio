@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, lazy, Suspense } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { gsap, ScrollTrigger, DUR_SLOW } from '@/lib/gsap'
@@ -9,18 +9,26 @@ import { StatCounter } from '@/components/ui/StatCounter'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { journeyIntro, milestones } from '@/data/journey'
 
-const TerrainCanvas = lazy(() =>
-  import('@/components/3d/TerrainCanvas').then(m => ({ default: m.TerrainCanvas })),
-)
-
 // ================================================================
 // CareerJourney — 01
 //
 // Replaces the old home-page About section. Reading down the page it holds
-// the same slot: first section after the hero, paper ground, hosting the
-// wireframe terrain. What changed is the axis. Entering it pins the stage and
-// converts vertical scroll into horizontal travel along the milestone track;
-// when the track runs out, the pin releases and the page scrolls on down.
+// the same slot: first section after the hero, on the paper ground. What
+// changed is the axis. Entering it pins the stage and converts vertical
+// scroll into horizontal travel along the milestone track; when the track
+// runs out, the pin releases and the page scrolls on down.
+//
+// ── NO BACKGROUND LAYER, ON REQUEST ──
+//
+// This section carried the WebGL wireframe terrain until 2026-09-02, when
+// rober asked for it gone. The section is plain paper now and there is
+// nothing absolutely positioned behind the stage, so if you add a canvas or
+// any other background layer back, two things come with it: the stage needs
+// its z-index restored (an absolute canvas otherwise paints over the in-flow
+// type), and the layer must mount on the OUTER section rather than inside
+// the stage — the stage is position: fixed for the length of the pin, so its
+// rect stops moving, and a scroll-driven scene reading its wrapper's rect
+// would freeze for the whole horizontal run.
 //
 // ── TWO MODES, AND THE BREAKPOINT IS A REAL DECISION ──
 //
@@ -175,22 +183,11 @@ export function CareerJourney() {
 
   return (
     <section ref={sectionRef} className="journey-section" style={{ background: 'var(--bg-base)' }}>
-      {/* The wireframe terrain, kept from the section this replaces. It sits
-          on the OUTER section rather than inside the pinned stage on purpose:
-          the stage is position: fixed for the length of the pin, so its rect
-          stops moving, and TerrainCanvas derives its scan progress from its
-          wrapper's rect — mounted inside, the scene would freeze for the
-          whole horizontal run. On the outer section the pin spacer makes the
-          element tall, so the rect travels normally and the scan keeps
-          crossing while the panels slide.
-
-          Note there is deliberately NO overflow: hidden here. Clipping is the
-          viewport's job; an overflow ancestor is also the classic way to
-          break a fixed-position pin. */}
-      <Suspense fallback={<div className="terrain-fallback" aria-hidden="true" />}>
-        <TerrainCanvas />
-      </Suspense>
-
+      {/* There is deliberately NO overflow: hidden on this section. Clipping
+          is .journey-viewport's job, and an overflow or transform ancestor is
+          the classic way to break a fixed-position pin — the stage would
+          simply stop sticking. That reason is about the pin and holds whether
+          or not anything is ever layered behind it. */}
       <div ref={stageRef} className="journey-stage">
         {/* Header — outside the track, so it holds still while panels pass */}
         <div className="rm-container">
